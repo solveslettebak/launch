@@ -17,6 +17,7 @@ from PyQt5.QtWidgets import (
     QFormLayout, QPushButton, QDialog, QFileDialog, QWidgetAction, QWidget,
 )
 import json
+import subprocess
 
 class settingsDialog(QDialog):
     def __init__(self):
@@ -33,25 +34,20 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("Launcher")
         self.resize(800,30)
+        self.setWindowFlag(Qt.FramelessWindowHint)
+        self.setStyleSheet("background-color: lightblue;border: 1px solid black;")
 
         self.pinOnTop = True
         self.onPinToggle(self.pinOnTop)
 
-        self.setWindowFlag(Qt.FramelessWindowHint)
-        self.setStyleSheet("background-color: lightblue;border: 1px solid black;")
-        #self.setStyleSheet("")
-
-
         self.menubar = self.menuBar()
         # self.menubar.setPalette(QPalette.Inactive.)
-        self.menubar.setFont(QFont('Times',14))
-        self.menubar.setMaximumWidth(750)
 
         self.generateMenus(self.menubar)
 
     def generateMenus(self, menubar):
-
-
+        self.menubar.setFont(QFont('Times',14))
+        self.menubar.setMaximumWidth(750)
         q = QAction(QIcon("quit.png"), "", self)
         q.triggered.connect(self.onQuit)
         menubar.addAction(q)
@@ -101,6 +97,7 @@ class MainWindow(QMainWindow):
 
         for button in data['buttons']:
             newbutton = QAction(button['name'],self)
+            d = button['link']
             newbutton.triggered.connect((lambda d: lambda: self.onMenuClick(d))(d)) # jesus christ.
             menubar.addAction(newbutton)
 
@@ -130,7 +127,8 @@ class MainWindow(QMainWindow):
 
     def onMenuClick(self, text):
         print("os command:", text)
-        os.system(text)
+        # os.system(text)
+        subprocess.Popen(text)
 
     def onQuit(self):
         QApplication.quit()
@@ -141,9 +139,16 @@ class MainWindow(QMainWindow):
         return
 
     def onLoadLayout(self):
-        self.defaultMenuFile, _ = QFileDialog.getOpenFileName(self)
-        # todo: check it's json and valid here... otherwise revert to old. Crash otherwise.
+        f, _ = QFileDialog.getOpenFileName(filter="*.json")
+        if len(f) == 0:
+            return
+        try:
+            str = json.loads(open(f).read())
+        except ValueError as e:
+            print('Invalid JSON file')
+            return
         print(self.defaultMenuFile)
+        self.defaultMenuFile = f
         self.onReload()
         return
 

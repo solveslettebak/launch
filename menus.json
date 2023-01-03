@@ -16,7 +16,10 @@
         },
         {
           "name": "Nav. only",
-          "link": "phoebus navigator"
+          "link": "\"C:\\Program Files\\CSS-Phoebus\\CSS-Phoebus.exe\""
+        },
+        {
+          "separator": true
         },
         {
           "name": "SL default",
@@ -29,6 +32,21 @@
         {
           "name": "RF default",
           "link": "phoebus RFdef"
+        },
+        {
+          "separator": true
+        },
+        {
+          "name": "Emergency",
+          "link": "phoebus"
+        },
+        {
+          "name": "Save & Restore",
+          "link": "phoebus"
+        },
+        {
+          "name": "Logbook",
+          "link": "phoebus logbook"
         }
       ]
     },
@@ -42,6 +60,10 @@
         {
           "name": "Open XAL",
           "link": "openxal"
+        },
+        {
+          "name": "Spectrogram",
+          "link": "spectro"
         }
       ]
     },
@@ -55,6 +77,14 @@
         {
           "name": "EAM",
           "link": "adsf"
+        },
+        {
+          "name": "Weather station",
+          "link": "asdf"
+        },
+        {
+          "name": "Windy",
+          "link": "http://windy"
         }
       ]
     },
@@ -93,6 +123,10 @@
         {
           "name": "Synoptics",
           "link": "asdf"
+        },
+        {
+          "name": "cmd",
+          "link": "cmd"
         }
       ]
     }
@@ -103,8 +137,12 @@
       "link": "python pvmon.py"
     },
     {
-      "name": "Pin",
-      "link": "internal link"
+      "name": "Cmd",
+      "link": "cmd"
+    },
+    {
+      "name": "QuickLog",
+      "link": "magic"
     }
   ]
 }
