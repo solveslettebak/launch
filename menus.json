@@ -139,10 +139,6 @@
     {
       "name": "Cmd",
       "link": "cmd"
-    },
-    {
-      "name": "QuickLog",
-      "link": "magic"
     }
   ]
 }
