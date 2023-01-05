@@ -1,93 +1,21 @@
-import sys
 from PyQt5 import QtCore
-import PyQt5.QtCore
 from PyQt5.QtGui import QIcon, QFont, QCursor, QPalette
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtWidgets import (
-    QAction,
-    QApplication,
-    QCheckBox,
-    QLabel,
-    QMainWindow,
-    QStatusBar,
-    QToolBar,
-    QLineEdit,
+    QAction, QApplication, QCheckBox, QLabel, QMainWindow, QStatusBar, QToolBar, QLineEdit, QSpinBox, QVBoxLayout,
     QFormLayout, QPushButton, QDialog, QFileDialog, QWidgetAction, QWidget, QGridLayout, QGroupBox, QDialogButtonBox,
-    QVBoxLayout, QPlainTextEdit, QSpinBox,
+    QPlainTextEdit,
 )
+import sys
 import json
 from subprocess import Popen,CREATE_NEW_CONSOLE
 
-class quickLog(QDialog):
-    def __init__(self,mainwin):
-        super().__init__()
-        self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
-        self.resize(400,200)
-        self.move(mainwin.pos().x()+500,mainwin.pos().y()+40)
-        # self.setWindowFlag(Qt.FramelessWindowHint)
-        # self.setAttribute(Qt.WA_TranslucentBackground)
-        # self.setStyleSheet("background-color: lightblue;border: 1px solid black;")
-        # self.setLayout(QGridLayout())
-        # self.setLayout(QFormLayout())
-
-        self.formGroupBox = QGroupBox("Send to olog:")
-        layout = QFormLayout()
-        layout.addRow(QLabel("text:"),QPlainTextEdit())
-        self.formGroupBox.setLayout(layout)
-
-        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        buttonBox.accepted.connect(self.accept)
-        buttonBox.rejected.connect(self.reject)
-
-        mainLayout = QVBoxLayout()
-        mainLayout.addWidget(self.formGroupBox)
-        mainLayout.addWidget(buttonBox)
-        self.setLayout(mainLayout)
-
-
-class settingsDialog(QDialog):
-    def __init__(self,position):
-        super().__init__()
-        self.setWindowTitle("Settings")
-        self.resize(300,150)
-        self.move(position.x(), position.y())
-
-        self.data = json.load(open("settings.json"))
-
-        self.formGroupBox = QGroupBox("Settings:")
-        layout = QFormLayout()
-        menufileinput = QLineEdit(self.data["defaultLayoutFile"])
-        layout.addRow(QLabel("Default layout:"),menufileinput) # could also be a dropdown..
-        spinbox = QSpinBox()
-        spinbox.setValue(int(self.data["fontsize"]))
-        spinbox.setMaximum(20)
-        spinbox.setMinimum(6)
-        layout.addRow(QLabel("Font size:"),spinbox)
-        self.formGroupBox.setLayout(layout)
-
-        okbutton = QDialogButtonBox.Ok
-        # okbutton.pressed.connect(lambda: print("test"))
-        buttonBox = QDialogButtonBox(okbutton | QDialogButtonBox.Cancel)
-        buttonBox.accepted.connect(self.onClickOK)
-        buttonBox.rejected.connect(self.reject)
-
-        mainLayout = QVBoxLayout()
-        mainLayout.addWidget(self.formGroupBox)
-        mainLayout.addWidget(buttonBox)
-        self.setLayout(mainLayout)
-
-    def onClickOK(self):
-        json.dump(self.data,open("settings.json","w"))
-        self.accept()
-
-
+from quickLog import quickLog
+from settingsDialog import settingsDialog
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-
-        self.loadSettings()
-
         self.setWindowTitle("Launcher")
         self.resize(800,30)
         self.move(700,-3) # -3 makes mouse "all the way up" still hover menus. :)
@@ -100,10 +28,13 @@ class MainWindow(QMainWindow):
         self.menubar = self.menuBar()
         # self.menubar.setPalette(QPalette.Inactive.)
 
+        self.loadSettings()
         self.generateMenus(self.menubar)
 
+        # self.setFixedSize(self.layout.sizeHint())
+
     def generateMenus(self, menubar):
-        self.menubar.setFont(QFont('Times',self.fontSize))
+
         self.menubar.setMaximumWidth(750)
         q = QAction(QIcon("quit.png"), "", self)
         q.triggered.connect(self.onQuit)
@@ -135,18 +66,32 @@ class MainWindow(QMainWindow):
         newmenu.addAction(newAction)
 
         # Generate dynamic menus
-        data = json.load(open(self.layoutFile))
+        try:
+            data = json.load(open(self.layoutFile))
+        except json.decoder.JSONDecodeError as e:
+            print('Invalid JSON - aborting')
+            self.onQuit()
+
         for menu in data['menus']:
+            if not "name" in menu:
+                print('Warning: Missing main menu name')
+                continue
             newmenu = menubar.addMenu(menu['name'])
             for each in menu['submenu']:
                 if "separator" in each:
                     newmenu.addSeparator()
                     continue
+                if not "name" in each:
+                    print('Warning: Missing name for menu item')
+                    continue
                 if "icon" in each:
                     newAction = QAction(QIcon(each["icon"]), each["name"], self)
                 else:
                     newAction = QAction(each['name'],self)
-                d = each['link']
+                if not "link" in each:
+                    d = "empty"
+                else:
+                    d = each['link']
                 newAction.triggered.connect((lambda d: lambda: self.onMenuClick(d))(d)) # Just keep swimming...
                 newmenu.addAction(newAction)
 
@@ -171,6 +116,7 @@ class MainWindow(QMainWindow):
         data = json.load(open("settings.json"))
         self.layoutFile = data["defaultLayoutFile"]
         self.fontSize = int(data["fontsize"])
+        self.menubar.setFont(QFont('Times',self.fontSize))
 
     def onQuickLog(self):
         self.qlog = quickLog(self)
@@ -198,6 +144,7 @@ class MainWindow(QMainWindow):
 
     def onQuit(self):
         QApplication.quit()
+        sys.exit()
 
     def onReload(self):
         self.menubar.clear()

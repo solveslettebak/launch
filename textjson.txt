@@ -55,6 +55,12 @@ menus[]
   submenu[]
     name = EAM
     link = adsf
+  submenu[]
+    name = Weather station
+    link = asdf
+  submenu[]
+    name = Windy
+    link = http://windy
 menus[]
   name = Tools
   submenu[]
@@ -89,6 +95,3 @@ buttons[]
 buttons[]
   name = Cmd
   link = cmd
-buttons[]
-  name = QuickLog
-  link = magic

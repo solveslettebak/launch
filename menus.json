@@ -64,6 +64,10 @@
         {
           "name": "Spectrogram",
           "link": "spectro"
+        },
+        {
+          "name": "Fil-heat ALL 6.30",
+          "link": "python \"C:\\Users\\solveslettebak\\Desktop\\projects\\RF scripts\\fil_start.py\" 6.30"
         }
       ]
     },

@@ -3,3 +3,4 @@ venv
 main.py
 *.bak
 tut*.py
+__pycache__
