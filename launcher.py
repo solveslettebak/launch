@@ -17,7 +17,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Launcher")
-        self.resize(800,30)
+        self.resize(950,30)
         self.move(700,-3) # -3 makes mouse "all the way up" still hover menus. :)
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setStyleSheet("background-color: lightblue;border: 1px solid black;")
