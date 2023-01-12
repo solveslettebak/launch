@@ -8,10 +8,28 @@ from PyQt5.QtWidgets import (
 )
 import sys
 import json
+import shlex
 from subprocess import Popen,CREATE_NEW_CONSOLE
 
 from quickLog import quickLog
 from settingsDialog import settingsDialog
+
+class dragable(QAction, QWidget):
+    def __init__(self, icon, name, parent):
+        super().__init__(icon, name, parent)
+    def mouseMoveEvent(self, event):
+        print('qwer')
+        if Qt.LeftButton and self.moveFlag:
+            self.move(event.globalPos() - self.movePosition)
+            event.accept()
+
+    def mousePressEvent(self, event):
+        print('asdf')
+        if event.button() == Qt.LeftButton:
+            self.moveFlag = True
+            self.movePosition = event.globalPos() - self.pos()
+            # self.setCursor(QCursor(Qt.OpenHandCursor))
+            event.accept()
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -20,6 +38,7 @@ class MainWindow(QMainWindow):
         self.resize(950,30)
         self.move(700,-3) # -3 makes mouse "all the way up" still hover menus. :)
         self.setWindowFlag(Qt.FramelessWindowHint)
+        self.setWindowFlag(Qt.BypassWindowManagerHint) # maybe fixes a linux issue...
         self.setStyleSheet("background-color: lightblue;border: 1px solid black;")
 
         self.pinOnTop = True
@@ -35,12 +54,19 @@ class MainWindow(QMainWindow):
 
     def generateMenus(self, menubar):
 
-        self.menubar.setMaximumWidth(750)
-        q = QAction(QIcon("quit.png"), "", self)
+        self.menubar.setMaximumWidth(850)
+
+        q = QAction(QIcon("icons/quit.png"), "", self)
         q.triggered.connect(self.onQuit)
         menubar.addAction(q)
 
-        icon = QAction(QIcon("pin.png"),"",self)
+        drag = dragable(QIcon("icons/drag.png"), "", self)
+        # drag.hovered.connect(self.onMoveHover)
+
+
+        menubar.addAction(drag)
+
+        icon = QAction(QIcon("icons/pin.png"),"",self)
         # icon = QPushButton(QIcon("quit.png"),"",self)
         # icon = QCheckBox("",self)
         # icon.setIcon(QIcon("quit.png"))
@@ -61,7 +87,7 @@ class MainWindow(QMainWindow):
         newAction.triggered.connect(self.onSettings)
         newmenu.addAction(newAction)
         newmenu.addSeparator()
-        newAction = QAction(QIcon("quit.png"),"Quit",self)
+        newAction = QAction(QIcon("icons/quit.png"),"Quit",self)
         newAction.triggered.connect(self.onQuit)
         newmenu.addAction(newAction)
 
@@ -69,7 +95,7 @@ class MainWindow(QMainWindow):
         try:
             data = json.load(open(self.layoutFile))
         except json.decoder.JSONDecodeError as e:
-            print('Invalid JSON - aborting')
+            print(self.layoutFile,': Invalid JSON - aborting')
             self.onQuit()
 
         for menu in data['menus']:
@@ -92,7 +118,7 @@ class MainWindow(QMainWindow):
                     d = "empty"
                 else:
                     d = each['link']
-                newAction.triggered.connect((lambda d: lambda: self.onMenuClick(d))(d)) # Just keep swimming...
+                newAction.triggered.connect((lambda d: lambda: self.onMenuClick(d))(d)) # wtf
                 newmenu.addAction(newAction)
 
         menubar.addAction(QAction("-",self))
@@ -100,7 +126,7 @@ class MainWindow(QMainWindow):
         for button in data['buttons']:
             newbutton = QAction(button['name'],self)
             d = button['link']
-            newbutton.triggered.connect((lambda d: lambda: self.onMenuClick(d))(d)) # jesus christ.
+            newbutton.triggered.connect((lambda d: lambda: self.onMenuClick(d))(d))
             menubar.addAction(newbutton)
 
         qlog = QAction("QuickLog",self)
@@ -131,14 +157,20 @@ class MainWindow(QMainWindow):
         if event.button() == Qt.LeftButton:
             self.moveFlag = True
             self.movePosition = event.globalPos() - self.pos()
-            self.setCursor(QCursor(Qt.OpenHandCursor))
+            # self.setCursor(QCursor(Qt.OpenHandCursor))
             event.accept()
+    #
+    # def onMoveHover(self):
+    #     self.moveHover = True
+    #     print('qwerq')
 
     def onMenuClick(self, text):
         print("os command:", text)
         # os.system(text)
         try:
-            Popen(text,creationflags=CREATE_NEW_CONSOLE)
+            print(shlex.split(text))
+            splitlist = shlex.split(text) # splits by spaces, but keeps quoted text unsplit. (on linux, maybe use posix=False option, to keep quotes)
+            Popen(splitlist,creationflags=CREATE_NEW_CONSOLE)
         except FileNotFoundError as e:
             print('File not found')
 
