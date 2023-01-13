@@ -11,6 +11,7 @@ import json
 import shlex
 from subprocess import Popen,CREATE_NEW_CONSOLE
 
+from argumentDialog import argumentDialog
 from quickLog import quickLog
 from settingsDialog import settingsDialog
 
@@ -118,7 +119,16 @@ class MainWindow(QMainWindow):
                     d = "empty"
                 else:
                     d = each['link']
-                newAction.triggered.connect((lambda d: lambda: self.onMenuClick(d))(d)) # wtf
+
+                if "arguments" in each: #let's also check the value eventually...
+                    h_arg = each['help_arg'] if "help_arg" in each else ""
+                    m_arg = each['mandatory_arg'] if "mandatory_arg" in each else ""
+                    descr = each['description'] if "description" in each else "You no get help! You figure out!"
+                    default = each['default_args'] if "default_args" in each else ""
+                    name = each['name']
+                    newAction.triggered.connect((lambda d: lambda: self.onMenuClickCommandline(d,name,h_arg,m_arg,descr,default))(d)) # this worked a bit too easily. Test with many items in menu etc.
+                else:
+                    newAction.triggered.connect((lambda d: lambda: self.onMenuClick(d))(d)) # wtf
                 newmenu.addAction(newAction)
 
         menubar.addAction(QAction("-",self))
@@ -137,6 +147,30 @@ class MainWindow(QMainWindow):
         searchContainer = QWidgetAction(self)
         searchContainer.setDefaultWidget(searchBar)
         menubar.addAction(searchContainer)
+
+    # Shows dialog box for input of parameters to a commandline program, and executes it.
+    def onMenuClickCommandline(self, link, name, help_arg, mand_arg, description, default):
+        self.argList = argumentDialog(self,link,name,help_arg,mand_arg,description, default)
+        # test = self.argList.show()
+
+        if self.argList.exec_() == 1:
+            splitlist = shlex.split(link)
+            splitlist += mand_arg.split()
+            splitlist += self.argList.getParams().split()
+            Popen(splitlist, creationflags=CREATE_NEW_CONSOLE)
+            print(splitlist)
+
+        # now we just need to get back something here...
+
+    def onMenuClick(self, text):
+        print("os command:", text)
+        # os.system(text)
+        try:
+            print(shlex.split(text))
+            splitlist = shlex.split(text) # splits by spaces, but keeps quoted text unsplit. (on linux, maybe use posix=False option, to keep quotes)
+            Popen(splitlist,creationflags=CREATE_NEW_CONSOLE)
+        except FileNotFoundError as e:
+            print('File not found')
 
     def loadSettings(self):
         data = json.load(open("settings.json"))
@@ -163,16 +197,6 @@ class MainWindow(QMainWindow):
     # def onMoveHover(self):
     #     self.moveHover = True
     #     print('qwerq')
-
-    def onMenuClick(self, text):
-        print("os command:", text)
-        # os.system(text)
-        try:
-            print(shlex.split(text))
-            splitlist = shlex.split(text) # splits by spaces, but keeps quoted text unsplit. (on linux, maybe use posix=False option, to keep quotes)
-            Popen(splitlist,creationflags=CREATE_NEW_CONSOLE)
-        except FileNotFoundError as e:
-            print('File not found')
 
     def onQuit(self):
         QApplication.quit()

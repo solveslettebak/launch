@@ -66,8 +66,13 @@
           "link": "spectro"
         },
         {
-          "name": "Fil-heat ALL 6.30",
-          "link": "python \"C:\\Users\\solveslettebak\\Desktop\\projects\\RF scripts\\fil_start.py\" 6.30"
+          "name": "Filament heater...",
+          "link": "python \"C:\\Users\\solveslettebak\\Desktop\\projects\\RF scripts\\fil_start.py\"",
+          "arguments": "manual",
+          "help_arg": "-h",
+          "mandatory_arg": "",
+          "default_args": "-k RFQ,DTL1 5.30",
+          "description": "example: fil_heat.py -k RFQ,DTL1 5.30"
         }
       ]
     },
