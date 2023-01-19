@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Launcher")
-        self.resize(950,30)
+        self.resize(950,1)
         self.move(700,-3) # -3 makes mouse "all the way up" still hover menus. :)
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setWindowFlag(Qt.BypassWindowManagerHint) # maybe fixes a linux issue...
@@ -46,6 +46,7 @@ class MainWindow(QMainWindow):
         self.onPinToggle(self.pinOnTop)
 
         self.menubar = self.menuBar()
+        self.menubar.setNativeMenuBar(False)
         # self.menubar.setPalette(QPalette.Inactive.)
 
         self.loadSettings()
@@ -151,16 +152,12 @@ class MainWindow(QMainWindow):
     # Shows dialog box for input of parameters to a commandline program, and executes it.
     def onMenuClickCommandline(self, link, name, help_arg, mand_arg, description, default):
         self.argList = argumentDialog(self,link,name,help_arg,mand_arg,description, default)
-        # test = self.argList.show()
 
         if self.argList.exec_() == 1:
             splitlist = shlex.split(link)
             splitlist += mand_arg.split()
             splitlist += self.argList.getParams().split()
             Popen(splitlist, creationflags=CREATE_NEW_CONSOLE)
-            print(splitlist)
-
-        # now we just need to get back something here...
 
     def onMenuClick(self, text):
         print("os command:", text)
@@ -177,6 +174,8 @@ class MainWindow(QMainWindow):
         self.layoutFile = data["defaultLayoutFile"]
         self.fontSize = int(data["fontsize"])
         self.menubar.setFont(QFont('Times',self.fontSize))
+
+
 
     def onQuickLog(self):
         self.qlog = quickLog(self)

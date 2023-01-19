@@ -4,3 +4,4 @@ main.py
 *.bak
 tut*.py
 __pycache__
+README_old.md
