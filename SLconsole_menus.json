@@ -1,0 +1,147 @@
+{
+  "defaultcolor": "#000000",
+  "defaulticon": "icbm.png",
+  "examplestring": "test",
+  "examplenumber": 5,
+  "examplebool": false,
+  "menus": [
+    {
+      "name": "Phoebus",
+      "submenu": [
+        {
+          "name": "As last",
+          "link": "/usr/local/bin/phoebus"
+        },
+        {
+          "name": "Nav. only",
+          "link": "/usr/local/bin/phoebus -resource /opt/opis/30-Operator/00-Navigator/navigator.bob"
+        },
+        {
+          "separator": true
+        },
+        {
+          "name": "SL default",
+          "link": "phoebus SLdef"
+        },
+        {
+          "name": "OP default",
+          "link": "phoebus OPdef"
+        },
+        {
+          "name": "RF default",
+          "link": "phoebus RFdef"
+        },
+        {
+          "separator": true
+        },
+        {
+          "name": "Emergency",
+          "link": "phoebus"
+        },
+        {
+          "name": "Save & Restore",
+          "link": "phoebus"
+        },
+        {
+          "name": "Logbook",
+          "link": "phoebus logbook"
+        }
+      ]
+    },
+    {
+      "name": "OP apps",
+      "submenu": [
+        {
+          "name": "AFT",
+          "link": "aft"
+        },
+        {
+          "name": "Open XAL",
+          "link": "./usr/local/bin/openxal-launcher.sh"
+        },
+        {
+          "name": "OpenXAL traj.corr",
+          "link": "java -DuseDefaultAccelerator=true -Djava.library.path=/opt/openxal-6.4/lib -jar /opt/openxal-6.4/apps/trajectorycorrection.jar"
+        },
+        {
+          "name": "Spectrogram",
+          "link": "spectro"
+        },
+        {
+          "name": "Filament heater",
+          "link": "python \"/nfs/Linacshare_controlroom/MCR/Solve/filament-heater/fil_heat.py\"",
+          "arguments": "manual",
+          "help_arg": "-h",
+          "mandatory_arg": "-p",
+          "default_args": "-k RFQ,DTL1 5.30",
+          "description": "example: fil_heat.py -k RFQ,DTL1 5.30"
+        }
+      ]
+    },
+    {
+      "name": "Weblinks",
+      "submenu": [
+        {
+          "name": "EAM",
+          "link": "adsf"
+        },
+        {
+          "name": "Weather station",
+          "link": "firefox https://telegraph.tn.esss.lu.se/d/UHF0XGFMz/weather-monitoring-station?orgId=5&refresh=5s"
+        }
+      ]
+    },
+    {
+      "name": "Tools",
+      "submenu": [
+        {
+          "name": "Calc",
+          "link": "./bin/gnome-calculator"
+        },
+        {
+          "name": "Screenshot",
+          "link": "scrshot"
+        },
+        {
+          "name": "Jupyter",
+          "link": "jupyter"
+        },
+        {
+          "name": "PV mon",
+          "link": "python pvmon.py"
+        },
+        {
+          "name": "Acronym finder",
+          "link": "python acrofind.py"
+        }
+      ]
+    },
+    {
+      "name": "Docs",
+      "submenu": [
+        {
+          "name": "OP ER procedure",
+          "link": "firefox confluence.etc"
+        },
+        {
+          "name": "Synoptics",
+          "link": "asdf"
+        },
+        {
+          "name": "cmd",
+          "link": "cmd"
+        }
+      ]
+    }
+  ],
+  "buttons": [
+    {
+      "name": "PVmon",
+      "link": "python pvmon.py"
+    },
+    {
+      "name": "Cmd",
+      "link": "cmd"
+    }
+  ]
+}

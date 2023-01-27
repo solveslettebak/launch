@@ -1,0 +1,100 @@
+defaultcolor = #000000
+defaulticon = icbm.png
+examplestring s = test
+examplenumber n = 5
+examplebool b = True
+
+menus[]
+  name = Phoebus
+  submenu[0]
+    name = As last
+    link = /usr/local/bin/phoebus
+  submenu[]
+    name = Nav. only
+    link = /usr/local/bin/phoebus -resource /opt/opis/30-Operator/00-Navigator/navigator.bob
+  submenu[]
+    separator b = true
+  submenu[]
+    name = SL default
+    link = phoebus SLdef
+  submenu[]
+    name = OP default
+    link = phoebus OPdef
+  submenu[]
+    name = RF default
+    link = phoebus RFdef
+  submenu[]
+    separator b = true
+  submenu[]
+    name = Emergency
+    link = phoebus
+  submenu[]
+    name = Save & Restore
+    link = phoebus
+  submenu[]
+    name = Logbook
+    link = phoebus logbook
+menus[]
+  name = OP apps
+  submenu[]
+    name = AFT
+    link = aft
+  submenu[]
+    name = Open XAL
+    link = ./usr/local/bin/openxal-launcher.sh
+  submenu[]
+    name = OpenXAL traj.corr
+    link = java -DuseDefaultAccelerator=true -Djava.library.path=/opt/openxal-6.4/lib -jar /opt/openxal-6.4/apps/trajectorycorrection.jar
+  submenu[]
+    name = Spectrogram
+    link = spectro
+  submenu[]
+    name = Filament heater
+    link = python "/nfs/Linacshare_controlroom/MCR/Solve/filament-heater/fil_heat.py"
+    arguments = manual
+    help_arg = -h
+    mandatory_arg = -p
+    default_args = -k RFQ,DTL1 5.30
+    description = example: fil_heat.py -k RFQ,DTL1 5.30
+menus[]
+  name = Weblinks
+  submenu[]
+    name = EAM
+    link = adsf
+  submenu[]
+    name = Weather station
+    link = firefox https://telegraph.tn.esss.lu.se/d/UHF0XGFMz/weather-monitoring-station?orgId=5&refresh=5s
+menus[]
+  name = Tools
+  submenu[]
+    name = Calc
+    link = ./bin/gnome-calculator
+  submenu[]
+    name = Screenshot
+    link = scrshot
+  submenu[]
+    name = Jupyter
+    link = jupyter
+  submenu[]
+    name = PV mon
+    link = python pvmon.py
+  submenu[]
+    name = Acronym finder
+    link = python acrofind.py
+menus[]
+  name = Docs
+  submenu[]
+    name = OP ER procedure
+    link = firefox confluence.etc
+  submenu[]
+    name = Synoptics
+    link = asdf
+  submenu[]
+    name = cmd
+    link = cmd
+buttons[]
+  name = PVmon
+  link = python pvmon.py
+buttons[]
+  name = Cmd
+  link = cmd
