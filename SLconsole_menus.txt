@@ -50,7 +50,7 @@ menus[]
     link = spectro
   submenu[]
     name = Filament heater
-    link = python "/nfs/Linacshare_controlroom/MCR/Solve/filament-heater/fil_heat.py"
+    link = python "/nfs/Linacshare_controlroom/MCR/Solve/filament-heater/fil_start.py"
     arguments = manual
     help_arg = -h
     mandatory_arg = -p

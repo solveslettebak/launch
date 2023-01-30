@@ -69,7 +69,7 @@
         },
         {
           "name": "Filament heater",
-          "link": "python \"/nfs/Linacshare_controlroom/MCR/Solve/filament-heater/fil_heat.py\"",
+          "link": "python \"/nfs/Linacshare_controlroom/MCR/Solve/filament-heater/fil_start.py\"",
           "arguments": "manual",
           "help_arg": "-h",
           "mandatory_arg": "-p",
@@ -129,7 +129,7 @@
         },
         {
           "name": "cmd",
-          "link": "cmd"
+          "link": "gnome-terminal"
         }
       ]
     }
@@ -137,11 +137,13 @@
   "buttons": [
     {
       "name": "PVmon",
-      "link": "python pvmon.py"
+      "link": "/nfs/Linacshare_controlroom/MCR/monitor.sh",
+      "arguments": "manual",
+      "help_arg": ""
     },
     {
       "name": "Cmd",
-      "link": "cmd"
+      "link": "gnome-terminal"
     }
   ]
 }

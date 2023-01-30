@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
 import sys
 import json
 import shlex
-from subprocess import Popen,CREATE_NEW_CONSOLE
+from subprocess import Popen# ,CREATE_NEW_CONSOLE
 
 from argumentDialog import argumentDialog
 from quickLog import quickLog
@@ -157,7 +157,7 @@ class MainWindow(QMainWindow):
             splitlist = shlex.split(link)
             splitlist += mand_arg.split()
             splitlist += self.argList.getParams().split()
-            Popen(splitlist, creationflags=CREATE_NEW_CONSOLE)
+            Popen(splitlist) #, creationflags=CREATE_NEW_CONSOLE)
 
     def onMenuClick(self, text):
         print("os command:", text)
@@ -165,7 +165,7 @@ class MainWindow(QMainWindow):
         try:
             print(shlex.split(text))
             splitlist = shlex.split(text) # splits by spaces, but keeps quoted text unsplit. (on linux, maybe use posix=False option, to keep quotes)
-            Popen(splitlist,creationflags=CREATE_NEW_CONSOLE)
+            Popen(splitlist) #,creationflags=CREATE_NEW_CONSOLE)
         except FileNotFoundError as e:
             print('File not found')
 
