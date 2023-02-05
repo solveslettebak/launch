@@ -21,15 +21,15 @@
         },
         {
           "name": "SL default",
-          "link": "phoebus SLdef"
+          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/Solve/launcher/launch.sh SL_default"
         },
         {
-          "name": "OP default",
-          "link": "phoebus OPdef"
+          "name": "Buncher conditioning",
+          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/Solve/launcher/launch.sh MEBT_cond"
         },
         {
-          "name": "RF default",
-          "link": "phoebus RFdef"
+          "name": "DTL conditioning",
+          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/Solve/launcher/launch.sh DTL_cond"
         },
         {
           "separator": true
@@ -53,11 +53,11 @@
       "submenu": [
         {
           "name": "AFT",
-          "link": "aft"
+          "link": "/bin/bash /home/operator-mcr/pytools/esslogbook-gui/start.sh"
         },
         {
           "name": "Open XAL",
-          "link": "./usr/local/bin/openxal-launcher.sh"
+          "link": "/bin/bash /usr/local/bin/openxal-launcher.sh"
         },
         {
           "name": "OpenXAL traj.corr",
@@ -68,12 +68,12 @@
           "link": "spectro"
         },
         {
-          "name": "Filament heater",
+          "name": "Filament heater...",
           "link": "python \"/nfs/Linacshare_controlroom/MCR/Solve/filament-heater/fil_start.py\"",
           "arguments": "manual",
           "help_arg": "-h",
           "mandatory_arg": "-p",
-          "default_args": "-k RFQ,DTL1 5.30",
+          "default_args": "-k DTL1,DTL2,DTL3,DTL4 5.30",
           "description": "example: fil_heat.py -k RFQ,DTL1 5.30"
         }
       ]
@@ -106,10 +106,7 @@
           "name": "Jupyter",
           "link": "jupyter"
         },
-        {
-          "name": "PV mon",
-          "link": "python pvmon.py"
-        },
+
         {
           "name": "Acronym finder",
           "link": "python acrofind.py"

@@ -9,7 +9,7 @@ class argumentDialog(QDialog):
     def __init__(self,mainwin,link,name,help_arg,mandatory_arg,description,def_arg):
         super().__init__()
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
-        self.resize(700,400)
+        self.resize(900,350)
         self.move(mainwin.pos().x()+200,mainwin.pos().y()+40)
         self.setWindowTitle(name+" arguments")
 
