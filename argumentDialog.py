@@ -20,7 +20,7 @@ class argumentDialog(QDialog):
 
         splitlist = shlex.split(link)
         splitlist.append(help_arg)
-        process = Popen(splitlist, stdout=PIPE, universal_newlines=True)
+        process = Popen(splitlist[2:], stdout=PIPE, universal_newlines=True) # that :2 thing... that's a dirty hack. need nice solution for new terminal function.
         try:
             (output,err) = process.communicate(timeout=2)
         except TimeoutError:

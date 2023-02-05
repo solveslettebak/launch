@@ -121,6 +121,14 @@ class MainWindow(QMainWindow):
                 else:
                     d = each['link']
 
+#                newterminal = True # if 'newterminal' in each else False
+                if "newterminal" in each:
+                    newterminal = True
+                else:
+                    newterminal = False
+                print(newterminal)
+                newterminal = False
+
                 if "arguments" in each: #let's also check the value eventually...
                     h_arg = each['help_arg'] if "help_arg" in each else ""
                     m_arg = each['mandatory_arg'] if "mandatory_arg" in each else ""
@@ -164,7 +172,12 @@ class MainWindow(QMainWindow):
         # os.system(text)
         try:
             print(shlex.split(text))
+#            print(newterminal)
             splitlist = shlex.split(text) # splits by spaces, but keeps quoted text unsplit. (on linux, maybe use posix=False option, to keep quotes)
+#            if newterminal:
+#                splitlist = ['gnome-terminal','--'] + splitlist
+                
+            #Popen(['gnome-terminal','--','python','/nfs/Linacshare_controlroom/MCR/Solve/filament-heater/fil_start.py','6.30','-p'])
             Popen(splitlist) #,creationflags=CREATE_NEW_CONSOLE)
         except FileNotFoundError as e:
             print('File not found')

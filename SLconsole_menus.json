@@ -21,30 +21,15 @@
         },
         {
           "name": "SL default",
-          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/Solve/launcher/launch.sh SL_default"
+          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh SL_default"
         },
         {
           "name": "Buncher conditioning",
-          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/Solve/launcher/launch.sh MEBT_cond"
+          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh MEBT_cond"
         },
         {
           "name": "DTL conditioning",
-          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/Solve/launcher/launch.sh DTL_cond"
-        },
-        {
-          "separator": true
-        },
-        {
-          "name": "Emergency",
-          "link": "phoebus"
-        },
-        {
-          "name": "Save & Restore",
-          "link": "phoebus"
-        },
-        {
-          "name": "Logbook",
-          "link": "phoebus logbook"
+          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh DTL_cond"
         }
       ]
     },
@@ -53,7 +38,8 @@
       "submenu": [
         {
           "name": "AFT",
-          "link": "/bin/bash /home/operator-mcr/pytools/esslogbook-gui/start.sh"
+          "link": "/bin/bash /home/operator-mcr/pytools/esslogbook-gui/start.sh",
+          "newterminal": true
         },
         {
           "name": "Open XAL",
@@ -64,12 +50,8 @@
           "link": "java -DuseDefaultAccelerator=true -Djava.library.path=/opt/openxal-6.4/lib -jar /opt/openxal-6.4/apps/trajectorycorrection.jar"
         },
         {
-          "name": "Spectrogram",
-          "link": "spectro"
-        },
-        {
           "name": "Filament heater...",
-          "link": "python \"/nfs/Linacshare_controlroom/MCR/Solve/filament-heater/fil_start.py\"",
+          "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/Solve/filament-heater/fil_start.py\"",
           "arguments": "manual",
           "help_arg": "-h",
           "mandatory_arg": "-p",
@@ -96,7 +78,11 @@
       "submenu": [
         {
           "name": "Calc",
-          "link": "./bin/gnome-calculator"
+          "link": "/bin/gnome-calculator"
+        },
+        {
+          "name": "x-kill",
+          "link": "xkill"
         },
         {
           "name": "Screenshot",
@@ -123,10 +109,6 @@
         {
           "name": "Synoptics",
           "link": "asdf"
-        },
-        {
-          "name": "cmd",
-          "link": "gnome-terminal"
         }
       ]
     }
@@ -139,7 +121,7 @@
       "help_arg": ""
     },
     {
-      "name": "Cmd",
+      "name": "Shell",
       "link": "gnome-terminal"
     }
   ]
