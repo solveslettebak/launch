@@ -38,8 +38,16 @@
       "submenu": [
         {
           "name": "AFT",
-          "link": "/bin/bash /home/operator-mcr/pytools/esslogbook-gui/start.sh",
+          "link": "gnome-terminal -- /bin/bash /home/operator-mcr/pytools/esslogbook-gui/start.sh",
           "newterminal": true
+        },
+        {
+          "name": "Shift Start",
+          "link": "gnome-terminal -- /bin/bash /home/operator-mcr/pytools/esslogbook-gui/start-shiftstart.sh",
+          "newterminal": true
+        },
+        {
+          "separator": true
         },
         {
           "name": "Open XAL",
@@ -64,13 +72,16 @@
       "name": "Weblinks",
       "submenu": [
         {
-          "name": "EAM",
-          "link": "adsf"
+          "name": "Web-Mail",
+          "link": "firefox https://mail.esss.lu.se"
         },
         {
-          "name": "Weather station",
-          "link": "firefox https://telegraph.tn.esss.lu.se/d/UHF0XGFMz/weather-monitoring-station?orgId=5&refresh=5s"
-        }
+          "name": "Shifter",
+          "link": "firefox https://shifter.esss.lu.se/"
+        },
+	{
+	  "separator": true
+	}
       ]
     },
     {
@@ -86,7 +97,7 @@
         },
         {
           "name": "Screenshot",
-          "link": "scrshot"
+          "link": "gnome-screenshot -i"
         },
         {
           "name": "Jupyter",
@@ -95,7 +106,8 @@
 
         {
           "name": "Acronym finder",
-          "link": "python acrofind.py"
+          "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/Solve/pyabbrdict/ESSdict.py",
+          "pauseOnExit": true
         }
       ]
     },
@@ -103,12 +115,21 @@
       "name": "Docs",
       "submenu": [
         {
+          "name": "Synoptics",
+          "link": "asdf"
+        }
+      ]
+    },
+    {
+      "name": "ER",
+      "submenu": [
+        {
           "name": "OP ER procedure",
           "link": "firefox confluence.etc"
         },
         {
-          "name": "Synoptics",
-          "link": "asdf"
+          "name": "Weather station",
+          "link": "firefox https://telegraph.tn.esss.lu.se/d/UHF0XGFMz/weather-monitoring-station?orgId=5&refresh=5s"
         }
       ]
     }

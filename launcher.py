@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import (
 import sys
 import json
 import shlex
+import os
 from subprocess import Popen# ,CREATE_NEW_CONSOLE
 
 from argumentDialog import argumentDialog
@@ -178,7 +179,7 @@ class MainWindow(QMainWindow):
 #                splitlist = ['gnome-terminal','--'] + splitlist
                 
             #Popen(['gnome-terminal','--','python','/nfs/Linacshare_controlroom/MCR/Solve/filament-heater/fil_start.py','6.30','-p'])
-            Popen(splitlist) #,creationflags=CREATE_NEW_CONSOLE)
+            Popen(splitlist, preexec_fn=os.setpgrp) #,creationflags=CREATE_NEW_CONSOLE)
         except FileNotFoundError as e:
             print('File not found')
 
