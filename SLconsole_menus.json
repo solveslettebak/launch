@@ -59,6 +59,7 @@
         },
         {
           "name": "Filament heater...",
+		  "icon": "filheat.png",
           "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/Solve/filament-heater/fil_start.py\"",
           "arguments": "manual",
           "help_arg": "-h",
