@@ -59,12 +59,12 @@
         },
         {
           "name": "Filament heater...",
-		  "icon": "filheat.png",
+          "icon": "filheat.png",
           "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/Solve/filament-heater/fil_start.py\"",
           "arguments": "manual",
           "help_arg": "-h",
           "mandatory_arg": "-p",
-          "default_args": "-k DTL1,DTL2,DTL3,DTL4 5.30",
+          "default_args": "-k RFQ,DTL1,DTL2,DTL3,DTL4 5.30",
           "description": "example: fil_heat.py -k RFQ,DTL1 5.30"
         }
       ]
@@ -77,12 +77,17 @@
           "link": "firefox https://mail.esss.lu.se"
         },
         {
-          "name": "Shifter",
-          "link": "firefox https://shifter.esss.lu.se/"
+          "name": "Confluence OP",
+          "link": "firefox https://mail.esss.lu.se"
         },
-	{
-	  "separator": true
-	}
+        {
+          "name": "CE-deploy",
+          "link": "firefox https://ce-deploy.esss.lu.se"
+        },
+        {
+          "name": "Shifter",
+          "link": "firefox https://confluence.esss.lu.se/display/AO/Control+Room+Operations+Group+Home+Page"
+        }
       ]
     },
     {
@@ -125,8 +130,8 @@
       "name": "ER",
       "submenu": [
         {
-          "name": "OP ER procedure",
-          "link": "firefox confluence.etc"
+          "name": "OP ER procedures",
+          "link": "firefox https://confluence.esss.lu.se/display/AO/Emergency+Procedures"
         },
         {
           "name": "Weather station",

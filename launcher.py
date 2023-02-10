@@ -114,7 +114,8 @@ class MainWindow(QMainWindow):
                     print('Warning: Missing name for menu item')
                     continue
                 if "icon" in each:
-                    newAction = QAction(QIcon(each["icon"]), each["name"], self)
+                    print('icon found')
+                    newAction = QAction(QIcon('icons/'+each["icon"]), each["name"], self)
                 else:
                     newAction = QAction(each['name'],self)
                 if not "link" in each:
@@ -127,7 +128,7 @@ class MainWindow(QMainWindow):
                     newterminal = True
                 else:
                     newterminal = False
-                print(newterminal)
+                # print(newterminal)
                 newterminal = False
 
                 if "arguments" in each: #let's also check the value eventually...
