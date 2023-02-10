@@ -137,7 +137,16 @@ class MainWindow(QMainWindow):
                     descr = each['description'] if "description" in each else "You no get help! You figure out!"
                     default = each['default_args'] if "default_args" in each else ""
                     name = each['name']
-                    newAction.triggered.connect((lambda d: lambda: self.onMenuClickCommandline(d,name,h_arg,m_arg,descr,default))(d)) # this worked a bit too easily. Test with many items in menu etc.
+                    link = d
+                    datapack = {}
+                    datapack['link'] = link
+                    datapack['h_arg'] = h_arg
+                    datapack['m_arg'] = m_arg
+                    datapack['descr'] = descr
+                    datapack['default'] = default
+                    datapack['name'] = name
+
+                    newAction.triggered.connect((lambda datapack: lambda: self.onMenuClickCommandline(datapack))(datapack)) # not winning any awards with this code, but it works, so shut up.
                 else:
                     newAction.triggered.connect((lambda d: lambda: self.onMenuClick(d))(d)) # wtf
                 newmenu.addAction(newAction)
@@ -160,7 +169,15 @@ class MainWindow(QMainWindow):
         menubar.addAction(searchContainer)
 
     # Shows dialog box for input of parameters to a commandline program, and executes it.
-    def onMenuClickCommandline(self, link, name, help_arg, mand_arg, description, default):
+    def onMenuClickCommandline(self, d):
+
+        link = d['link']
+        name = d['name']
+        help_arg = d['h_arg']
+        mand_arg = d['m_arg']
+        description = d['descr']
+        default = d['default']
+
         self.argList = argumentDialog(self,link,name,help_arg,mand_arg,description, default)
 
         if self.argList.exec_() == 1:

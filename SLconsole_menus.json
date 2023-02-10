@@ -66,6 +66,15 @@
           "mandatory_arg": "-p",
           "default_args": "-k RFQ,DTL1,DTL2,DTL3,DTL4 5.30",
           "description": "example: fil_heat.py -k RFQ,DTL1 5.30"
+        },
+        {
+          "name": "fil2", 
+          "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/Solve/filament-heater/fil_start.py\"",
+          "arguments": "manual",
+          "help_arg": "-h",
+          "mandatory_arg": "-p",
+          "default_args": "-k RFQ 5.40",
+          "description": "example: fil_heat.py -k RFQ,DTL1 5.30"
         }
       ]
     },
