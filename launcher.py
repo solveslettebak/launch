@@ -66,7 +66,6 @@ class MainWindow(QMainWindow):
         drag = dragable(QIcon("icons/drag.png"), "", self)
         # drag.hovered.connect(self.onMoveHover)
 
-
         menubar.addAction(drag)
 
         icon = QAction(QIcon("icons/pin.png"),"",self)
@@ -80,88 +79,90 @@ class MainWindow(QMainWindow):
 
         # Generate file menu
         newmenu = menubar.addMenu("File")
+
         newAction = QAction("Load layout...",self)
         newAction.triggered.connect(self.onLoadLayout)
         newmenu.addAction(newAction)
+
         newAction = QAction("Reload menus",self)
         newAction.triggered.connect(self.onReload)
         newmenu.addAction(newAction)
+
         newAction = QAction("Settings",self)
         newAction.triggered.connect(self.onSettings)
         newmenu.addAction(newAction)
+
         newmenu.addSeparator()
+
         newAction = QAction(QIcon("icons/quit.png"),"Quit",self)
         newAction.triggered.connect(self.onQuit)
         newmenu.addAction(newAction)
 
         # Generate dynamic menus
         try:
-            data = json.load(open(self.layoutFile))
+            #data = json.load(open(self.layoutFile))
+            data = json.load(open('test.json'))
         except json.decoder.JSONDecodeError as e:
             print(self.layoutFile,': Invalid JSON - aborting')
             self.onQuit()
 
-        for menu in data['menus']:
-            if not "name" in menu:
-                print('Warning: Missing main menu name')
-                continue
-            newmenu = menubar.addMenu(menu['name'])
-            for each in menu['submenu']:
-                if "separator" in each:
-                    newmenu.addSeparator()
-                    continue
-                if not "name" in each:
-                    print('Warning: Missing name for menu item')
-                    continue
-                if "icon" in each:
-                    print('icon found')
-                    newAction = QAction(QIcon('icons/'+each["icon"]), each["name"], self)
+        # read tree structured menus from .json and produce pyqt menu structure.
+        def recursive_read(menu, indent, currentmenu):
+            for each in menu:
+
+                for i in range(indent):
+                    print('\t',end='')
+
+                # submenu
+                if "menu" in each:
+                    assert "name" in each
+                    print(indent,each['name'])
+                    newmenu = currentmenu.addMenu(each['name'])
+                    recursive_read(each['menu'], indent + 1, newmenu)
+
+                # link/menu-item
                 else:
-                    newAction = QAction(each['name'],self)
-                if not "link" in each:
-                    d = "empty"
-                else:
-                    d = each['link']
+                    if 'separator' in each:
+                        if indent == 0:
+                            currentmenu.addAction(QAction("-",self))
+                        else:
+                            currentmenu.addSeparator()
+                        continue
 
-#                newterminal = True # if 'newterminal' in each else False
-                if "newterminal" in each:
-                    newterminal = True
-                else:
-                    newterminal = False
-                # print(newterminal)
-                newterminal = False
+                    assert 'name' in each and 'link' in each
 
-                if "arguments" in each: #let's also check the value eventually...
-                    h_arg = each['help_arg'] if "help_arg" in each else ""
-                    m_arg = each['mandatory_arg'] if "mandatory_arg" in each else ""
-                    descr = each['description'] if "description" in each else "You no get help! You figure out!"
-                    default = each['default_args'] if "default_args" in each else ""
-                    name = each['name']
-                    link = d
-                    datapack = {}
-                    datapack['link'] = link
-                    datapack['h_arg'] = h_arg
-                    datapack['m_arg'] = m_arg
-                    datapack['descr'] = descr
-                    datapack['default'] = default
-                    datapack['name'] = name
+                    # new terminal option? todo.. handle more arguments in same way as "datapack" for commandline
 
-                    newAction.triggered.connect((lambda datapack: lambda: self.onMenuClickCommandline(datapack))(datapack)) # not winning any awards with this code, but it works, so shut up.
-                else:
-                    newAction.triggered.connect((lambda d: lambda: self.onMenuClick(d))(d)) # wtf
-                newmenu.addAction(newAction)
+                    print(indent,each['name'])
 
-        menubar.addAction(QAction("-",self))
+                    if "icon" in each:
+                        newAction = QAction(QIcon('icons/'+each["icon"]), each["name"], self)
+                    else:                    
+                        newAction = QAction(each['name'],self)
 
-        for button in data['buttons']:
-            newbutton = QAction(button['name'],self)
-            d = button['link']
-            newbutton.triggered.connect((lambda d: lambda: self.onMenuClick(d))(d))
-            menubar.addAction(newbutton)
+                    link = each['link']
+                    if "arguments" in each: #let's also check the value eventually...
+                        datapack = {}
+                        datapack['h_arg'] = each['help_arg'] if "help_arg" in each else ""
+                        datapack['m_arg'] = each['mandatory_arg'] if "mandatory_arg" in each else ""
+                        datapack['descr'] = each['description'] if "description" in each else "You no get help! You figure out!"
+                        datapack['default'] = each['default_args'] if "default_args" in each else ""
+                        datapack['name'] = each['name']
+                        datapack['link'] = link
 
-        qlog = QAction("QuickLog",self)
-        qlog.triggered.connect(self.onQuickLog)
-        menubar.addAction(qlog)
+                        newAction.triggered.connect((lambda datapack: lambda: self.onMenuClickCommandline(datapack))(datapack)) # not winning any awards with this code...
+                    else:
+                        newAction.triggered.connect((lambda link: lambda: self.onMenuClick(link))(link)) # wtf
+
+                    currentmenu.addAction(newAction)
+
+        recursive_read(data['menu'], 0, menubar)
+
+        # / there will come a day when we can do this...
+        #qlog = QAction("QuickLog",self)
+        #qlog.triggered.connect(self.onQuickLog)
+        #menubar.addAction(qlog)
+        
 
         searchBar = QLabel("asdf")
         searchContainer = QWidgetAction(self)
