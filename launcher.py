@@ -15,6 +15,7 @@ from subprocess import Popen# ,CREATE_NEW_CONSOLE
 from argumentDialog import argumentDialog
 from quickLog import quickLog
 from settingsDialog import settingsDialog
+from phauncherDialog import phauncherDialog
 
 class dragable(QAction, QWidget):
     def __init__(self, icon, name, parent):
@@ -92,6 +93,10 @@ class MainWindow(QMainWindow):
         newAction.triggered.connect(self.onSettings)
         newmenu.addAction(newAction)
 
+        newAction = QAction("Phauncher",self)
+        newAction.triggered.connect(self.onPhauncher)
+        newmenu.addAction(newAction)
+
         newmenu.addSeparator()
 
         newAction = QAction(QIcon("icons/quit.png"),"Quit",self)
@@ -100,8 +105,7 @@ class MainWindow(QMainWindow):
 
         # Generate dynamic menus
         try:
-            #data = json.load(open(self.layoutFile))
-            data = json.load(open('test.json'))
+            data = json.load(open(self.layoutFile))
         except json.decoder.JSONDecodeError as e:
             print(self.layoutFile,': Invalid JSON - aborting')
             self.onQuit()
@@ -186,6 +190,12 @@ class MainWindow(QMainWindow):
             splitlist += mand_arg.split()
             splitlist += self.argList.getParams().split()
             Popen(splitlist) #, creationflags=CREATE_NEW_CONSOLE)
+
+    def onPhauncher(self):
+        phauncher = phauncherDialog(self.pos())
+        if phauncher.exec_() == 1:
+            print(phauncher.getParams())
+        return
 
     def onMenuClick(self, text):
         print("os command:", text)
