@@ -94,6 +94,14 @@
           "link": "firefox https://ce-deploy.esss.lu.se"
         },
         {
+          "name": "Jira NSOI",
+          "link": "firefox https://jira.esss.lu.se/projects/NSOI"
+        },
+        {
+          "name": "Naming service",
+          "link": "firefox https://naming.esss.lu.se"
+        },
+        {
           "name": "Shifter",
           "link": "firefox https://confluence.esss.lu.se/display/AO/Control+Room+Operations+Group+Home+Page"
         }
@@ -118,7 +126,11 @@
           "name": "Jupyter",
           "link": "jupyter"
         },
-
+        {
+          "name": "PVmon",
+          "link": "gnome-terminal -- /nfs/Linacshare_controlroom/MCR/monitor.sh",
+          "arguments": "manual"
+        },
         {
           "name": "Acronym finder",
           "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/Solve/pyabbrdict/ESSdict.py",
