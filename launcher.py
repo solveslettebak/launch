@@ -78,30 +78,7 @@ class MainWindow(QMainWindow):
         icon.triggered.connect(self.onPinToggle)
         menubar.addAction(icon)
 
-        # Generate file menu
-        newmenu = menubar.addMenu("File")
 
-        newAction = QAction("Load layout...",self)
-        newAction.triggered.connect(self.onLoadLayout)
-        newmenu.addAction(newAction)
-
-        newAction = QAction("Reload menus",self)
-        newAction.triggered.connect(self.onReload)
-        newmenu.addAction(newAction)
-
-        newAction = QAction("Settings",self)
-        newAction.triggered.connect(self.onSettings)
-        newmenu.addAction(newAction)
-
-        newAction = QAction("Phauncher",self)
-        newAction.triggered.connect(self.onPhauncher)
-        newmenu.addAction(newAction)
-
-        newmenu.addSeparator()
-
-        newAction = QAction(QIcon("icons/quit.png"),"Quit",self)
-        newAction.triggered.connect(self.onQuit)
-        newmenu.addAction(newAction)
 
         # Generate dynamic menus
         try:
@@ -156,7 +133,20 @@ class MainWindow(QMainWindow):
 
                         newAction.triggered.connect((lambda datapack: lambda: self.onMenuClickCommandline(datapack))(datapack)) # not winning any awards with this code...
                     else:
-                        newAction.triggered.connect((lambda link: lambda: self.onMenuClick(link))(link)) # wtf
+                        if link == '_phauncher':
+                            newAction.triggered.connect(self.onPhauncher)
+                        elif link == '_quit':
+                            newAction.triggered.connect(self.onQuit)
+                        elif link == '_reload':
+                            newAction.triggered.connect(self.onReload)
+                        elif link == '_settings':
+                            newAction.triggered.connect(self.onSettings)
+                        elif link == '_loadlayout':
+                            newAction.triggered.connect(self.onLoadLayout)
+                        elif link == '_quicklog':
+                            newAction.triggered.connect(self.onQuickLog)
+                        else:
+                            newAction.triggered.connect((lambda link: lambda: self.onMenuClick(link))(link)) # wtf
 
                     currentmenu.addAction(newAction)
 

@@ -1,4 +1,7 @@
 {
+  "
+
+
   "defaultcolor": "#000000",
   "defaulticon": "icbm.png",
   "examplestring": "test",
@@ -6,8 +9,41 @@
   "examplebool": false,
   "menu": [
     {
+      "name": "File",
+      "menu": [
+        {
+          "name": "Load layout...",
+          "link": "_loadlayout"
+        },
+        {
+          "name": "Reload menus",
+          "link": "_reload"
+        },
+        {
+          "name": "Settings",
+          "link": "_settings"
+        },
+        {
+          "separator": "true"
+        },
+        {
+          "name": "Quit",
+          "link": "_quit",
+          "icon": "quit.png"
+        }
+      ]
+    },
+    {
+
       "name": "Phoebus",
       "menu": [
+        {
+          "name": "Phauncher",
+          "link": "_phauncher"
+        },
+        {
+          "separator": true
+        },
         {
           "name": "As last",
           "link": "/usr/local/bin/phoebus"
@@ -143,9 +179,8 @@
           "link": "firefox https://jupyterhub.tn.esss.lu.se/"
         },
         {
-          "name": "PVmon",
-          "link": "gnome-terminal -- /nfs/Linacshare_controlroom/MCR/monitor.sh",
-          "arguments": "manual"
+          "name": "QuickLog",
+          "link": "_quicklog"
         },
         {
           "name": "Acronym finder [TBA..]",

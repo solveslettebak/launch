@@ -75,13 +75,11 @@ class phauncherDialog(QDialog):
             self.sidewindows.remove(rb.sidewin)
 
     def onClickOK(self):
-        print(self.mainwindow,' ',self.sidewindows)
         output = self.xml_start
         output += self.readfile(self.phauncherpath+'mainwindows/'+self.mainwindow)
         for each in self.sidewindows:
             output += self.readfile(self.phauncherpath+'sidewindows/'+each)
         output += self.xml_end
-        # os.system('rm '+self.memento_path)
         with open(self.memento_path,"w") as f:
             f.write(output)
         self.accept()
