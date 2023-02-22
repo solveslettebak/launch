@@ -82,6 +82,15 @@
           "mandatory_arg": "-p",
           "default_args": "-k RFQ,DTL1,DTL2,DTL3,DTL4 5.30",
           "description": "example: fil_heat.py -k RFQ,DTL1 5.30"
+        },
+        {
+          "name": "Buncher cleaner...",
+          "link": "gnome-terminal",
+          "arguments": "manual",
+          "help_arg": "-h",
+          "mandatory_arg": "-p",
+          "default_args": "-k RFQ,DTL1,DTL2,DTL3,DTL4 5.30",
+          "description": "example: fil_heat.py -k RFQ,DTL1 5.30"
         }
       ]
     },

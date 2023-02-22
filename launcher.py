@@ -194,7 +194,7 @@ class MainWindow(QMainWindow):
     def onPhauncher(self):
         phauncher = phauncherDialog(self.pos())
         if phauncher.exec_() == 1:
-            print(phauncher.getParams())
+            self.onMenuClick("/usr/local/bin/phoebus")
         return
 
     def onMenuClick(self, text):
