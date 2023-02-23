@@ -26,13 +26,15 @@ class phauncherDialog(QDialog):
         self.xml_end = '</memento>'
         self.memento_path = '/home/operator-mcr/.phoebus/memento'
 
+        self.helpRequest = False
+
         layout = QFormLayout()
 
         label = QLabel("Main window:")
         layout.addWidget(label)
 
         for each in os.scandir('../Solve/phauncher/mainwindows'):
-            rb = QRadioButton(each.name)
+            rb = QRadioButton(each.name.replace('_',' ').replace('.xml',''))
             rb.mainwin = each.name
             rb.toggled.connect(self.onClickedRadio)
             layout.addWidget(rb)
@@ -41,7 +43,7 @@ class phauncherDialog(QDialog):
         layout.addWidget(label)
 
         for each in os.scandir('../Solve/phauncher/sidewindows'):
-            cb = QCheckBox(each.name)
+            cb = QCheckBox(each.name.replace('_',' ').replace('.xml',''))
             cb.sidewin = each.name
             cb.toggled.connect(self.onClickedCheck)
             layout.addWidget(cb)
@@ -49,11 +51,15 @@ class phauncherDialog(QDialog):
 
         self.formGroupBox.setLayout(layout)
 
+        helpbutton = QDialogButtonBox.Help
+        
+
         okbutton = QDialogButtonBox.Ok
         # okbutton.pressed.connect(lambda: print("test"))
-        buttonBox = QDialogButtonBox(okbutton | QDialogButtonBox.Cancel)
+        buttonBox = QDialogButtonBox(okbutton | QDialogButtonBox.Cancel | helpbutton)
         buttonBox.accepted.connect(self.onClickOK)
         buttonBox.rejected.connect(self.reject)
+        buttonBox.helpRequested.connect(self.onHelp)
 
         mainLayout = QVBoxLayout()
         mainLayout.addWidget(self.formGroupBox)
@@ -74,15 +80,20 @@ class phauncherDialog(QDialog):
             print('unchecked:',rb.sidewin)
             self.sidewindows.remove(rb.sidewin)
 
-    def onClickOK(self):
-        output = self.xml_start
-        output += self.readfile(self.phauncherpath+'mainwindows/'+self.mainwindow)
-        for each in self.sidewindows:
-            output += self.readfile(self.phauncherpath+'sidewindows/'+each)
-        output += self.xml_end
-        with open(self.memento_path,"w") as f:
-            f.write(output)
+    def onHelp(self):
+        self.helpRequest = True
         self.accept()
+
+    def onClickOK(self):
+        if not self.mainwindow == '':
+            output = self.xml_start
+            output += self.readfile(self.phauncherpath+'mainwindows/'+self.mainwindow)
+            for each in self.sidewindows:
+                output += self.readfile(self.phauncherpath+'sidewindows/'+each)
+            output += self.xml_end
+            with open(self.memento_path,"w") as f:
+                f.write(output)
+            self.accept()
 
     def readfile(self,path):
         with open(path) as f:

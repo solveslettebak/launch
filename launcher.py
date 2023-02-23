@@ -91,13 +91,9 @@ class MainWindow(QMainWindow):
         def recursive_read(menu, indent, currentmenu):
             for each in menu:
 
-                for i in range(indent):
-                    print('\t',end='')
-
                 # submenu
                 if "menu" in each:
                     assert "name" in each
-                    print(indent,each['name'])
                     newmenu = currentmenu.addMenu(each['name'])
                     recursive_read(each['menu'], indent + 1, newmenu)
 
@@ -113,8 +109,6 @@ class MainWindow(QMainWindow):
                     assert 'name' in each and 'link' in each
 
                     # new terminal option? todo.. handle more arguments in same way as "datapack" for commandline
-
-                    print(indent,each['name'])
 
                     if "icon" in each:
                         newAction = QAction(QIcon('icons/'+each["icon"]), each["name"], self)
@@ -152,12 +146,6 @@ class MainWindow(QMainWindow):
 
         recursive_read(data['menu'], 0, menubar)
 
-        # / there will come a day when we can do this...
-        #qlog = QAction("QuickLog",self)
-        #qlog.triggered.connect(self.onQuickLog)
-        #menubar.addAction(qlog)
-        
-
         searchBar = QLabel("asdf")
         searchContainer = QWidgetAction(self)
         searchContainer.setDefaultWidget(searchBar)
@@ -184,7 +172,10 @@ class MainWindow(QMainWindow):
     def onPhauncher(self):
         phauncher = phauncherDialog(self.pos())
         if phauncher.exec_() == 1:
-            self.onMenuClick("/usr/local/bin/phoebus")
+            if phauncher.helpRequest:
+                self.onMenuClick("firefox https://confluence.esss.lu.se/display/~solveslettebak/Phauncher+help")
+            else:
+                self.onMenuClick("/usr/local/bin/phoebus")
         return
 
     def onMenuClick(self, text):
@@ -207,8 +198,6 @@ class MainWindow(QMainWindow):
         self.layoutFile = data["defaultLayoutFile"]
         self.fontSize = int(data["fontsize"])
         self.menubar.setFont(QFont('Times',self.fontSize))
-
-
 
     def onQuickLog(self):
         self.qlog = quickLog(self)
