@@ -35,7 +35,7 @@
       "name": "Phoebus",
       "menu": [
         {
-          "name": "Phauncher",
+          "name": "Phauncher...",
           "link": "_phauncher"
         },
         {
@@ -47,7 +47,7 @@
         },
         {
           "name": "Nav. only",
-          "link": "/usr/local/bin/phoebus -resource /opt/opis/30-Operator/00-Navigator/navigator.bob"
+          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh nav_only"
         },
         {
           "separator": true
@@ -118,11 +118,11 @@
         },
         {
           "name": "Buncher cleaner...",
-          "link": "gnome-terminal",
+          "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/Solve/Buncher_cond/bunch.py\"",
           "arguments": "manual",
           "help_arg": "-h",
-          "mandatory_arg": "-p",
-          "default_args": "-k RFQ,DTL1,DTL2,DTL3,DTL4 5.30",
+          "mandatory_arg": "",
+          "default_args": "-b 1,2,3 -p 0.05,0.1,0.2,0.3,0.4,0.5,0.75,1,2,3,4,5,6,7,8 -d [-10000,10000,2500]",
           "description": "example: fil_heat.py -k RFQ,DTL1 5.30"
         }
       ]
@@ -131,12 +131,31 @@
       "name": "Weblinks",
       "menu": [
         {
-          "name": "Web-Mail",
-          "link": "firefox https://mail.esss.lu.se"
+          "name": "Firefox",
+          "link": "firefox"
         },
+        {
+          "separator": true
+        },
+        {
+          "name": "GitLab",
+          "link": "firefox https://gitlab.esss.lu.se/accop/"
+        },
+
         {
           "name": "Confluence OP",
           "link": "firefox https://confluence.esss.lu.se/display/AO/Control+Room+Operations+Group+Home+Page"
+        },
+        {
+          "name": "BETS",
+          "link": "firefox https://confluence.esss.lu.se/pages/viewpage.action?pageId=435990027"
+        },
+        {
+          "name": "CR Handbook",
+          "link": "firefox https://confluence.esss.lu.se/display/AO/Handbook+for+Control+Room+Operations+Group"
+        },
+        {
+          "separator": true
         },
         {
           "name": "CE-deploy",
@@ -149,6 +168,10 @@
         {
           "name": "Naming service",
           "link": "firefox https://naming.esss.lu.se"
+        },
+        {
+          "name": "Web-Mail",
+          "link": "firefox https://mail.esss.lu.se"
         },
         {
           "name": "Shifter",

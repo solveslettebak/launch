@@ -167,6 +167,7 @@ class MainWindow(QMainWindow):
             splitlist = shlex.split(link)
             splitlist += mand_arg.split()
             splitlist += self.argList.getParams().split()
+            
             Popen(splitlist) #, creationflags=CREATE_NEW_CONSOLE)
 
     def onPhauncher(self):
