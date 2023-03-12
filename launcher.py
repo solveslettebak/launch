@@ -41,12 +41,16 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Launcher")
         self.resize(950,1)
         self.move(700,-3) # -3 makes mouse "all the way up" still hover menus. :)
+        
+        # These two lines seem to make the window frameless in any(?) OS, and also for whatever reason stay on top on linux/gnome
         self.setWindowFlag(Qt.FramelessWindowHint)
-        self.setWindowFlag(Qt.BypassWindowManagerHint) # maybe fixes a linux issue...
+        self.setWindowFlag(Qt.BypassWindowManagerHint) 
+        
         self.setStyleSheet("background-color: lightblue;border: 1px solid black;")
 
-        self.pinOnTop = True
-        self.onPinToggle(self.pinOnTop)
+        # linux refuses to cooperate on this, so fuck it. Window somehow stays on top anyway, just not when told to.
+        #self.pinOnTop = True
+        #self.onPinToggle(self.pinOnTop)
 
         self.menubar = self.menuBar()
         self.menubar.setNativeMenuBar(False)
@@ -70,14 +74,14 @@ class MainWindow(QMainWindow):
 
         # Logbook checker
         self.timer = QTimer()
-        #self.timer.start(1000)
+        self.timer.start(1000)
         self.timer.timeout.connect(self.logCheck)
         
 
     def logCheck(self):
         self.qlog = logCheck(self)
         self.qlog.show()
-        self.timer.stop()
+        #self.timer.stop()
 
     def generateMenus(self, menubar):
 
@@ -277,6 +281,7 @@ class MainWindow(QMainWindow):
             self.loadSettings()
         return
 
+    # more work than it's worth to make this work on linux it seems. Putting on ice.
     def onPinToggle(self,e):
         if e:
             self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
