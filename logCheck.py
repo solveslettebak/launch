@@ -1,7 +1,8 @@
 from PyQt5 import QtCore
+from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QDialog, QGroupBox, QFormLayout, QLabel, QPlainTextEdit, QDialogButtonBox, QVBoxLayout
 
-class quickLog(QDialog):
+class logCheck(QDialog):
     def __init__(self,mainwin):
         super().__init__()
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
@@ -14,12 +15,9 @@ class quickLog(QDialog):
         # self.setLayout(QGridLayout())
         # self.setLayout(QFormLayout())
 
-        self.formGroupBox = QGroupBox("Send to olog:")
+        self.formGroupBox = QGroupBox("ASDF:")
         layout = QFormLayout()
-        textfield = QPlainTextEdit()
-        textfield.setEnabled(False)
-        textfield.insertPlainText("Can't do this until we can edit the logbook... :(")
-        layout.addRow(QLabel("text:"),textfield)
+        layout.addRow(QLabel("text:"),QPlainTextEdit())
         self.formGroupBox.setLayout(layout)
 
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -31,4 +29,6 @@ class quickLog(QDialog):
         mainLayout.addWidget(buttonBox)
         self.setLayout(mainLayout)
 
-
+        #self.timer = QTimer()
+        #self.timer.timeout.connect(self.accept)
+        #self.timer.start(3000)

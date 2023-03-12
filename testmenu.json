@@ -1,4 +1,9 @@
 {
+  "defaultcolor": "#000000",
+  "defaulticon": "icbm.png",
+  "examplestring": "test",
+  "examplenumber": 5,
+  "examplebool": false,
   "menu": [
     {
       "name": "File",
@@ -46,8 +51,7 @@
       "menu": [
         {
           "name": "Phauncher...",
-          "link": "_phauncher",
-          "description":"Phlauncher!"
+          "link": "_phauncher"
         },
         {
           "separator": true
@@ -72,12 +76,21 @@
           "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh MEBT_cond"
         },
         {
-          "name": "DTL conditioning",
-          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh DTL_cond"
+          "name": "new submenu",
+          "menu": [
+            {
+              "name": "OP ER procedures",
+              "link": "firefox https://confluence.esss.lu.se/display/AO/Emergency+Procedures"
+            },
+            {
+              "name": "Weather station",
+              "link": "firefox https://telegraph.tn.esss.lu.se/d/UHF0XGFMz/weather-monitoring-station?orgId=5&refresh=5s"
+            }
+          ]
         },
         {
-          "name": "Annunciator Standalone",
-          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh Annunciator_standalone"
+          "name": "DTL conditioning",
+          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh DTL_cond"
         }
       ]
     },
@@ -203,7 +216,15 @@
           "name": "Screenshot",
           "link": "gnome-screenshot -i"
         },
-
+        {
+          "name": "QuickLog",
+          "link": "_quicklog"
+        },
+        {
+          "name": "Acronym finder [TBA..]",
+          "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/Solve/pyabbrdict/ESSdict.py",
+          "pauseOnExit": true
+        },
         {
           "name": "NVIDIA settings",
           "link": "nvidia-settings"
@@ -234,10 +255,6 @@
     {
       "name": "Shell",
       "link": "gnome-terminal"
-    },
-        {
-          "name": "Phauncher...",
-          "link": "_phauncher"
-        }
+    }
   ]
 }

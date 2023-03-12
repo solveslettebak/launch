@@ -1,10 +1,10 @@
 from PyQt5 import QtCore
 from PyQt5.QtGui import QIcon, QFont, QCursor, QPalette
-from PyQt5.QtCore import QSize, Qt
+from PyQt5.QtCore import QSize, Qt, QTimer
 from PyQt5.QtWidgets import (
     QAction, QApplication, QCheckBox, QLabel, QMainWindow, QStatusBar, QToolBar, QLineEdit, QSpinBox, QVBoxLayout,
     QFormLayout, QPushButton, QDialog, QFileDialog, QWidgetAction, QWidget, QGridLayout, QGroupBox, QDialogButtonBox,
-    QPlainTextEdit,
+    QPlainTextEdit, QMenu
 )
 import sys
 import json
@@ -16,6 +16,7 @@ from argumentDialog import argumentDialog
 from quickLog import quickLog
 from settingsDialog import settingsDialog
 from phauncherDialog import phauncherDialog
+from logCheck import logCheck
 
 class dragable(QAction, QWidget):
     def __init__(self, icon, name, parent):
@@ -49,6 +50,17 @@ class MainWindow(QMainWindow):
 
         self.menubar = self.menuBar()
         self.menubar.setNativeMenuBar(False)
+        
+        self.qmen = QMenu("test")
+        self.qmen.setToolTipsVisible(True)
+        #self.menubar.addMenu(self.qmen)
+        qa = QAction("asdf", self)
+        
+        self.qmen.addAction(qa)
+        qa.setStatusTip('status tip')
+        qa.setToolTip('tool tip')
+        qa.setWhatsThis('whats this?')
+
         # self.menubar.setPalette(QPalette.Inactive.)
 
         self.loadSettings()
@@ -56,9 +68,21 @@ class MainWindow(QMainWindow):
 
         # self.setFixedSize(self.layout.sizeHint())
 
+        # Logbook checker
+        self.timer = QTimer()
+        #self.timer.start(1000)
+        self.timer.timeout.connect(self.logCheck)
+        
+
+    def logCheck(self):
+        self.qlog = logCheck(self)
+        self.qlog.show()
+        self.timer.stop()
+
     def generateMenus(self, menubar):
 
         self.menubar.setMaximumWidth(850)
+
 
         q = QAction(QIcon("icons/quit.png"), "", self)
         q.triggered.connect(self.onQuit)
@@ -114,6 +138,10 @@ class MainWindow(QMainWindow):
                         newAction = QAction(QIcon('icons/'+each["icon"]), each["name"], self)
                     else:                    
                         newAction = QAction(each['name'],self)
+
+                    newAction.setStatusTip('status tip')
+                    newAction.setToolTip('tool tip')
+                    newAction.setWhatsThis('whats this?')
 
                     link = each['link']
                     if "arguments" in each: #let's also check the value eventually...
