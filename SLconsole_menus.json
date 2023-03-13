@@ -8,16 +8,23 @@
           "link": "_loadlayout"
         },
         {
-          "name": "Reload menus",
-          "link": "_reload"
-        },
-        {
           "name": "Settings",
           "link": "_settings"
         },
         {
+          "separator": "true"
+        },
+        {
           "name": "Edit menus",
           "link": "gedit SLconsole_menus.json"
+        },
+        {
+          "name": "Reload menus",
+          "link": "_reload"
+        },
+        {
+          "name": "Relaunch launcher",
+          "link": "_relaunch"
         },
         {
           "separator": "true"
@@ -184,7 +191,7 @@
         },
         {
           "name": "Shifter",
-          "link": "firefox https://confluence.esss.lu.se/display/AO/Control+Room+Operations+Group+Home+Page"
+          "link": "firefox https://shifter.esss.lu.se/"
         }
       ]
     },

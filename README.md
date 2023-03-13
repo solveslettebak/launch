@@ -14,3 +14,4 @@ Features:
 ## Installation
 
 Requires pyqt5. Otherwise all standard libraries. This may change.
+clone it, and: chmod a+x launcher.py, if you want "relaunch launcher" to work (not needed for users)

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from PyQt5 import QtCore
 from PyQt5.QtGui import QIcon, QFont, QCursor, QPalette
 from PyQt5.QtCore import QSize, Qt, QTimer
@@ -75,13 +77,13 @@ class MainWindow(QMainWindow):
         # Logbook checker
         self.timer = QTimer()
         self.timer.start(1000)
-        self.timer.timeout.connect(self.logCheck)
+        #self.timer.timeout.connect(self.logCheck)
         
 
     def logCheck(self):
         self.qlog = logCheck(self)
         self.qlog.show()
-        #self.timer.stop()
+        self.timer.stop()
 
     def generateMenus(self, menubar):
 
@@ -171,6 +173,8 @@ class MainWindow(QMainWindow):
                             newAction.triggered.connect(self.onLoadLayout)
                         elif link == '_quicklog':
                             newAction.triggered.connect(self.onQuickLog)
+                        elif link == '_relaunch':
+                            newAction.triggered.connect(self.onRelaunch)
                         else:
                             newAction.triggered.connect((lambda link: lambda: self.onMenuClick(link))(link)) # wtf
 
@@ -201,6 +205,9 @@ class MainWindow(QMainWindow):
             splitlist += self.argList.getParams().split()
             
             Popen(splitlist) #, creationflags=CREATE_NEW_CONSOLE)
+
+    def onRelaunch(self):
+        os.execv(__file__, sys.argv)
 
     def onPhauncher(self):
         phauncher = phauncherDialog(self.pos())
