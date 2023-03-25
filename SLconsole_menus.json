@@ -1,4 +1,14 @@
 {
+  "services": [
+    {
+      "name": "Phoebus layout manager",
+      "link": "_phlayout"
+    },
+    {
+      "name": "Phoebus layout manager",
+      "link": "_phlayout"
+    }
+  ],
   "menu": [
     {
       "name": "File",
@@ -93,13 +103,11 @@
       "menu": [
         {
           "name": "AFT",
-          "link": "gnome-terminal -- /bin/bash /home/operator-mcr/pytools/esslogbook-gui/start.sh",
-          "newterminal": true
+          "link": "gnome-terminal -- /bin/bash /home/operator-mcr/pytools/esslogbook-gui/start.sh"
         },
         {
-          "name": "Shift Start",
-          "link": "gnome-terminal -- /bin/bash /home/operator-mcr/pytools/esslogbook-gui/start-shiftstart.sh",
-          "newterminal": true
+          "name": "Shift Start/End",
+          "link": "gnome-terminal -- /bin/bash /home/operator-mcr/pytools/esslogbook-gui/start-shiftstart.sh"
         },
         {
           "separator": true
@@ -115,6 +123,13 @@
         {
           "separator": true
         },
+        {
+          "name": "Spectrogram",
+          "link": "python /home/operator-mcr/pytools/spectrogram/launcher.py"
+        },
+        {
+          "separator": true
+        },        
         {
           "name": "Filament heater...",
           "icon": "filheat.png",
@@ -133,6 +148,30 @@
           "mandatory_arg": "",
           "default_args": "-b 1,2,3 -p 0.05,0.1,0.2,0.3,0.4,0.5,0.75,1,2,3,4,5,6,7,8 -d [-10000,10000,2500]",
           "description": "example: fil_heat.py -k RFQ,DTL1 5.30"
+        },
+          {
+           "name":"RF shutdown [beta]",
+           "menu": [
+            {
+             "name": "Shutdown...",
+             "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/Solve/RF_shutdown/shutdown.py\"",
+             "arguments": "manual",
+             "help_arg": "-h",
+             "mandatory_arg": "-p",
+             "default_args": "RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 AUX"
+            },
+            {
+              "separator": true
+            },
+            {
+             "name": "ALL to FIL",
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/Solve/RF_shutdown/shutdown.py RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 FIL"
+            },
+            {
+             "name": "ALL to AUX",
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/Solve/RF_shutdown/shutdown.py RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 AUX"
+            }
+          ]
         }
       ]
     },
@@ -145,10 +184,6 @@
         },
         {
           "separator": true
-        },
-        {
-          "name": "GitLab",
-          "link": "firefox https://gitlab.esss.lu.se/accop/"
         },
         {
           "name": "Jupyter",
@@ -167,7 +202,15 @@
           "link": "firefox https://confluence.esss.lu.se/display/AO/Handbook+for+Control+Room+Operations+Group"
         },
         {
+          "name": "Site map",
+          "link": "firefox https://confluence.esss.lu.se/display/CER/PPE+on+ESS+Site?preview=/389345968/411750652/ESS%20map%20coloured%20safety%20areas%202022-06-21.jpg"
+        },
+        {
           "separator": true
+        },
+        {
+          "name": "GitLab",
+          "link": "firefox https://gitlab.esss.lu.se/accop/"
         },
         {
           "name": "CE-deploy",
@@ -199,7 +242,7 @@
       "name": "Tools",
       "menu": [
         {
-          "name": "Calc",
+          "name": "Calculator",
           "link": "/bin/gnome-calculator"
         },
         {
@@ -227,6 +270,15 @@
         {
           "name": "Weather station",
           "link": "firefox https://telegraph.tn.esss.lu.se/d/7VQNIo14k/weather-monitoring-public?orgId=5"
+        }
+      ]
+    },
+    {
+      "name": "Docs",
+      "menu": [
+        {
+          "name": "Olog markdown reference",
+          "link": "firefox https://olog.esss.lu.se/Olog/help/CommonmarkCheatsheet"
         }
       ]
     },

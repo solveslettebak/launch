@@ -87,7 +87,7 @@ class MainWindow(QMainWindow):
 
     def generateMenus(self, menubar):
 
-        self.menubar.setMaximumWidth(850)
+        self.menubar.setMaximumWidth(900)
 
 
         q = QAction(QIcon("icons/quit.png"), "", self)
@@ -106,7 +106,7 @@ class MainWindow(QMainWindow):
         icon.setCheckable(True)
         icon.setChecked(True)
         icon.triggered.connect(self.onPinToggle)
-        menubar.addAction(icon)
+        # menubar.addAction(icon) # this doesn't work easily on linux, it seems.
 
 
 
@@ -115,6 +115,8 @@ class MainWindow(QMainWindow):
             data = json.load(open(self.layoutFile))
         except json.decoder.JSONDecodeError as e:
             print(self.layoutFile,': Invalid JSON - aborting')
+            print('Running json.tool...')
+            os.system('python -m json.tool '+self.layoutFile)
             self.onQuit()
 
         # read tree structured menus from .json and produce pyqt menu structure.
@@ -125,6 +127,7 @@ class MainWindow(QMainWindow):
                 if "menu" in each:
                     assert "name" in each
                     newmenu = currentmenu.addMenu(each['name'])
+                    newmenu.setFont(QFont('Arial',self.fontSize - 2))
                     recursive_read(each['menu'], indent + 1, newmenu)
 
                 # link/menu-item
@@ -237,7 +240,7 @@ class MainWindow(QMainWindow):
         data = json.load(open("settings.json"))
         self.layoutFile = data["defaultLayoutFile"]
         self.fontSize = int(data["fontsize"])
-        self.menubar.setFont(QFont('Times',self.fontSize))
+        self.menubar.setFont(QFont('Arial',self.fontSize))
 
     def onQuickLog(self):
         self.qlog = quickLog(self)
