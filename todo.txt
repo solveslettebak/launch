@@ -15,3 +15,4 @@ Less important stuff:
 - Make it resize nicely when reducing font size
 
 DONE:- Change background color on hovered menu items
+DONE:- Tooltips
