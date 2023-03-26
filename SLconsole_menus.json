@@ -29,6 +29,10 @@
           "link": "gedit SLconsole_menus.json"
         },
         {
+          "name": "Todo-list",
+          "link": "gedit todo.txt"
+        },
+        {
           "name": "Reload menus",
           "link": "_reload"
         },

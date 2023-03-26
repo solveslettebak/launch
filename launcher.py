@@ -48,7 +48,7 @@ class MainWindow(QMainWindow):
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setWindowFlag(Qt.BypassWindowManagerHint) 
         
-        self.setStyleSheet("background-color: lightblue;border: 1px solid black;")
+        self.setStyleSheet("QMenu,QMenuBar,QMainWindow { background-color: lightblue;border: 1px solid black; } QMenu::item:selected { background-color: darkblue;}")
 
         # linux refuses to cooperate on this, so fuck it. Window somehow stays on top anyway, just not when told to.
         #self.pinOnTop = True
