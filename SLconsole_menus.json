@@ -229,8 +229,12 @@
           "link": "firefox https://mail.esss.lu.se"
         },
         {
-          "name": "Archiver",
-          "link": "firefox http://archiver-01.tn.esss.lu.se:17665/mgmt/ui/index.html"
+          "name": "Archiver (scalars)",
+          "link": "firefox http://archiver-linac-01.tn.esss.lu.se:17665/mgmt/ui/index.html"
+        },
+        {
+          "name": "Archiver (waveforms)",
+          "link": "firefox http://archiver-linac-wf-01.tn.esss.lu.se:17665/mgmt/ui/index.html"
         },
         {
           "name": "Shifter",
