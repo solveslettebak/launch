@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Launcher")
         self.resize(950,1)
-        self.move(700,-3) # -3 makes mouse "all the way up" still hover menus. :)
+        #self.move(700,-3) # -3 makes mouse "all the way up" still hover menus. :)
         
         # These two lines seem to make the window frameless in any(?) OS, and also for whatever reason stay on top on linux/gnome
         self.setWindowFlag(Qt.FramelessWindowHint)
@@ -281,12 +281,18 @@ class MainWindow(QMainWindow):
         except FileNotFoundError as e:
             print('File not found')
 
+    def changeSetting(self, field, value):
+        data = json.load(open(settingsPath))
+        data[field] = value
+        json.dump(data,open(settingsPath,"w"))
+
     def loadSettings(self):
         if not os.path.isfile(settingsPath):
             open(settingsPath,'w+').write(open('default_settings.json','r').read())
         data = json.load(open(settingsPath))
         self.layoutFile = data["defaultLayoutFile"]
         self.fontSize = int(data["fontsize"])
+        self.move(int(data['xpos']),int(data['ypos']))
         self.menubar.setFont(QFont('Arial',self.fontSize))
 
     def onQuickLog(self):
@@ -304,9 +310,12 @@ class MainWindow(QMainWindow):
             self.movePosition = event.globalPos() - self.pos()
             # self.setCursor(QCursor(Qt.OpenHandCursor))
             event.accept()
+
     def mouseReleaseEvent(self, event):
         print('mouse released')
         self.moveFlag = False
+        self.changeSetting('xpos',str(self.pos().x()))
+        self.changeSetting('ypos',str(self.pos().y()))
         event.accept()
     #
     # def onMoveHover(self):
