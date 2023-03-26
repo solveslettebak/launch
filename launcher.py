@@ -20,25 +20,16 @@ from settingsDialog import settingsDialog
 from phauncherDialog import phauncherDialog
 from logCheck import logCheck
 
+defaultSettings = {
+  "fontsize":"16",
+  "defaultLayoutFile":"SLconsole_menus.json",
+  
+}
+
+# there is probably a better way to do this.. 
+from common import settingsPath
 
 
-
-class dragable(QAction, QWidget):
-    def __init__(self, icon, name, parent):
-        super().__init__(icon, name, parent)
-    def mouseMoveEvent(self, event):
-        print('qwer')
-        if Qt.LeftButton and self.moveFlag:
-            self.move(event.globalPos() - self.movePosition)
-            event.accept()
-
-    def mousePressEvent(self, event):
-        print('asdf')
-        if event.button() == Qt.LeftButton:
-            self.moveFlag = True
-            self.movePosition = event.globalPos() - self.pos()
-            # self.setCursor(QCursor(Qt.OpenHandCursor))
-            event.accept()
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -146,10 +137,10 @@ class MainWindow(QMainWindow):
         q.triggered.connect(self.onQuit)
         menubar.addAction(q)
 
-        drag = dragable(QIcon("icons/drag.png"), "", self)
+        # drag = dragable(QIcon("icons/drag.png"), "", self)
         # drag.hovered.connect(self.onMoveHover)
 
-        menubar.addAction(drag)
+        # menubar.addAction(drag)
 
         icon = QAction(QIcon("icons/pin.png"),"",self)
         # icon = QPushButton(QIcon("quit.png"),"",self)
@@ -291,7 +282,9 @@ class MainWindow(QMainWindow):
             print('File not found')
 
     def loadSettings(self):
-        data = json.load(open("settings.json"))
+        if not os.path.isfile(settingsPath):
+            open(settingsPath,'w+').write(open('default_settings.json','r').read())
+        data = json.load(open(settingsPath))
         self.layoutFile = data["defaultLayoutFile"]
         self.fontSize = int(data["fontsize"])
         self.menubar.setFont(QFont('Arial',self.fontSize))
@@ -311,6 +304,10 @@ class MainWindow(QMainWindow):
             self.movePosition = event.globalPos() - self.pos()
             # self.setCursor(QCursor(Qt.OpenHandCursor))
             event.accept()
+    def mouseReleaseEvent(self, event):
+        print('mouse released')
+        self.moveFlag = False
+        event.accept()
     #
     # def onMoveHover(self):
     #     self.moveHover = True

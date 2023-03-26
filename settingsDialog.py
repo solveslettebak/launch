@@ -2,6 +2,8 @@ import json
 
 from PyQt5.QtWidgets import QDialog, QGroupBox, QFormLayout, QLineEdit, QLabel, QSpinBox, QDialogButtonBox, QVBoxLayout
 
+from common import settingsPath
+
 
 class settingsDialog(QDialog):
     def __init__(self,position):
@@ -10,7 +12,7 @@ class settingsDialog(QDialog):
         self.resize(300,150)
         self.move(position.x(), position.y())
 
-        self.data = json.load(open("settings.json"))
+        self.data = json.load(open(settingsPath))
 
         self.formGroupBox = QGroupBox("Settings:")
         layout = QFormLayout()
@@ -36,5 +38,5 @@ class settingsDialog(QDialog):
 
     def onClickOK(self):
         self.data["fontsize"] = str(self.fontsizeSpinbox.value())
-        json.dump(self.data,open("settings.json","w"))
+        json.dump(self.data,open(settingsPath,"w"))
         self.accept()

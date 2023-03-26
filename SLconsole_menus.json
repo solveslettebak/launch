@@ -33,18 +33,21 @@
           "link": "gedit /nfs/Linacshare_controlroom/MCR/launcher/todo.txt"
         },
         {
+          "separator": "true"
+        },
+        {
           "name": "Reload menus",
           "link": "_reload"
         },
         {
-          "name": "Relaunch launcher",
+          "name": "Relaunch this instance",
           "link": "_relaunch",
           "description": "Simply restarts the launcher."
         },
         {
           "name": "Relaunch all instances",
           "link": "_updateall",
-          "description": "Sets an update flag for all running instances of Launcher to see. Only instances implementing the _remoteupdate function will accept this command"
+          "description": "Sets an update flag for all running instances of Launcher to see."
         },
         {
           "separator": "true"
