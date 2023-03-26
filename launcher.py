@@ -57,17 +57,6 @@ class MainWindow(QMainWindow):
         self.menubar = self.menuBar()
         self.menubar.setNativeMenuBar(False)
         
-        self.qmen = QMenu("test")
-        self.qmen.setToolTipsVisible(True)
-        #self.menubar.addMenu(self.qmen)
-        qa = QAction("asdf", self)
-        
-        self.qmen.addAction(qa)
-        qa.setStatusTip('status tip')
-        qa.setToolTip('tool tip')
-        qa.setWhatsThis('whats this?')
-
-        # self.menubar.setPalette(QPalette.Inactive.)
 
         self.loadSettings()
         self.generateMenus(self.menubar)
@@ -127,6 +116,7 @@ class MainWindow(QMainWindow):
                 if "menu" in each:
                     assert "name" in each
                     newmenu = currentmenu.addMenu(each['name'])
+                    newmenu.setToolTipsVisible(True)
                     newmenu.setFont(QFont('Arial',self.fontSize - 2))
                     recursive_read(each['menu'], indent + 1, newmenu)
 
@@ -148,9 +138,8 @@ class MainWindow(QMainWindow):
                     else:                    
                         newAction = QAction(each['name'],self)
 
-                    newAction.setStatusTip('status tip')
-                    newAction.setToolTip('tool tip')
-                    newAction.setWhatsThis('whats this?')
+                    newAction.setToolTip(each['description'] if "description" in each else "no description") 
+
 
                     link = each['link']
                     if "arguments" in each: #let's also check the value eventually...
