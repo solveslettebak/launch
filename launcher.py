@@ -20,6 +20,9 @@ from settingsDialog import settingsDialog
 from phauncherDialog import phauncherDialog
 from logCheck import logCheck
 
+
+
+
 class dragable(QAction, QWidget):
     def __init__(self, icon, name, parent):
         super().__init__(icon, name, parent)
@@ -73,6 +76,16 @@ class MainWindow(QMainWindow):
         self.qlog = logCheck(self)
         self.qlog.show()
         self.timer.stop()
+
+    def parseMenus(file:str) -> dict:
+        try:
+            with open(file,'r') as file:
+                data = file.read()
+        except:
+            print('well, shit') #ok, make this..better. later.
+            return 
+        
+        
 
     def generateMenus(self, menubar):
 

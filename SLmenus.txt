@@ -1,0 +1,15 @@
+# comment..
+
+menu: File
+  item: Load Layout
+  link: _loadlayout
+
+  item: Another one
+  link: asdf
+
+menu: Phoebus
+  item: Phauncher..
+  link: phauncher
+  ----------------
+  item: As last
+  link: phoebus
