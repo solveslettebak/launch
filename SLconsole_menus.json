@@ -38,7 +38,13 @@
         },
         {
           "name": "Relaunch launcher",
-          "link": "_relaunch"
+          "link": "_relaunch",
+          "description": "Simply restarts the launcher."
+        },
+        {
+          "name": "Relaunch all instances",
+          "link": "_updateall",
+          "description": "Sets an update flag for all running instances of Launcher to see. Only instances implementing the _remoteupdate function will accept this command"
         },
         {
           "separator": "true"

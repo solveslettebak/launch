@@ -67,7 +67,57 @@ class MainWindow(QMainWindow):
         self.timer = QTimer()
         self.timer.start(1000)
         #self.timer.timeout.connect(self.logCheck)
+
+        self.remoteUpdateTimer = QTimer()
+        self.remoteUpdateTimer.start(4*1000)
+        self.remoteUpdateTimer.timeout.connect(self.remoteUpdateCheck)
+        self.updateInProgress = False
+        self.updateFlag = False
         
+
+    def remoteUpdateCheck(self):
+        if self.updateFlag: # If this instance initiates the remote update, then we don't listen to that signal. 
+            return
+        try:
+            data = open('update.flag','r').read()[0]
+        except OSError:
+            print('Problem reading update flag file. Giving up..')
+            self.remoteUpdateTimer.stop()
+        if data == '0' and self.updateInProgress: # perform the relaunch on a detected falling edge of the update flag.
+            updateInProgress = False
+            print('Remote update signal detected, relaunching..')
+            self.onRelaunch()
+        if data == '1' and not self.updateInProgress:
+            print('Prepare update..')
+            self.updateInProgress = True
+
+    def clearUpdateFlag(self):
+        print('qwer')
+        self.updateFlag = False
+        self.setRemoteUpdateTimer.stop()
+        try:
+            open('update.flag','w+').write('0')
+        except OSError:
+            print('Problem clearing update flag...')
+        print('Relaunching this instance...')
+        self.onRelaunch()
+    
+
+    def onInitiateUpdate(self):
+        print('Initiating remote update of running instances of launcher')
+        if self.updateFlag: # update already in progress.
+            return
+        self.updateFlag = True
+        self.setRemoteUpdateTimer = QTimer()
+        self.setRemoteUpdateTimer.start(10*1000)
+        self.setRemoteUpdateTimer.timeout.connect(self.clearUpdateFlag)
+        try:
+            open('update.flag','w+').write('1')
+        except OSError:
+            print('Problem setting update flag. Giving up..')
+            updateFlag = False
+            self.setRemoteUpdateTimer.stop()
+        print('done')
 
     def logCheck(self):
         self.qlog = logCheck(self)
@@ -167,6 +217,8 @@ class MainWindow(QMainWindow):
                             newAction.triggered.connect(self.onQuickLog)
                         elif link == '_relaunch':
                             newAction.triggered.connect(self.onRelaunch)
+                        elif link == '_updateall':
+                            newAction.triggered.connect(self.onInitiateUpdate)
                         else:
                             newAction.triggered.connect((lambda link: lambda: self.onMenuClick(link))(link)) # wtf
 
