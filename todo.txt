@@ -1,3 +1,6 @@
+This file is ignored by git, and is kept only in the MCR/launcher folder. Edit as you wish!
+
+More important stuff:
 - New menu format: human editable more easily, instead of json.
 - Checkboxes in menu (for internal functions)
 - Save settings on local computer, not shared (or some combination of local and shared settings)
@@ -16,3 +19,9 @@ Less important stuff:
 
 DONE:- Change background color on hovered menu items
 DONE:- Tooltips
+
+
+Suggestions:
+- More items about snipers
+- <marquee> and <blink> tags
+- ...

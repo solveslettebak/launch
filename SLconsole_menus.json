@@ -30,7 +30,7 @@
         },
         {
           "name": "Todo-list",
-          "link": "gedit todo.txt"
+          "link": "gedit /nfs/Linacshare_controlroom/MCR/launcher/todo.txt"
         },
         {
           "name": "Reload menus",
