@@ -224,6 +224,9 @@ class MainWindow(QMainWindow):
                         elif link == '_updateall':
                             newAction.triggered.connect(self.onInitiateUpdate)
                         else:
+                            if "cwd" in each:
+                                link = {"cwd":each['cwd'], "link":each['link']}
+                                print(link)
                             newAction.triggered.connect((lambda link: lambda: self.onMenuClick(link))(link)) # wtf
 
                     currentmenu.addAction(newAction)
@@ -270,14 +273,13 @@ class MainWindow(QMainWindow):
         print("os command:", text)
         # os.system(text)
         try:
-            print(shlex.split(text))
-#            print(newterminal)
-            splitlist = shlex.split(text) # splits by spaces, but keeps quoted text unsplit. (on linux, maybe use posix=False option, to keep quotes)
-#            if newterminal:
-#                splitlist = ['gnome-terminal','--'] + splitlist
-                
-            #Popen(['gnome-terminal','--','python','/nfs/Linacshare_controlroom/MCR/Solve/filament-heater/fil_start.py','6.30','-p'])
-            Popen(splitlist, preexec_fn=os.setpgrp) #,creationflags=CREATE_NEW_CONSOLE)
+            if type(text) is str:
+                print(shlex.split(text))
+                splitlist = shlex.split(text) # splits by spaces, but keeps quoted text unsplit. (on linux, maybe use posix=False option, to keep quotes)
+                Popen(splitlist, preexec_fn=os.setpgrp) #,creationflags=CREATE_NEW_CONSOLE)
+            else:
+                splitlist = shlex.split(text['link'])
+                Popen(splitlist, preexec_fn=os.setpgrp, cwd=text['cwd'])
         except FileNotFoundError as e:
             print('File not found')
 

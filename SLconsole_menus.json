@@ -141,6 +141,11 @@
           "link": "python /home/operator-mcr/pytools/spectrogram/launcher.py"
         },
         {
+          "name": "Acronym finder [TBA..]",
+          "cwd": "/nfs/Linacshare_controlroom/MCR/Solve/pyabbrdict/",
+          "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/Solve/pyabbrdict/ESSdict.py"
+        },
+        {
           "separator": true
         },        
         {
