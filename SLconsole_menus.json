@@ -138,12 +138,13 @@
         },
         {
           "name": "Spectrogram",
-          "link": "python /home/operator-mcr/pytools/spectrogram/launcher.py"
+          "link": "python /home/operator-mcr/pytools/spectrogram/launcher.py",
+          "description":"Waveform visualizer"
         },
         {
           "name": "Acronym finder",
-          "cwd": "/nfs/Linacshare_controlroom/MCR/Solve/pyabbrdict/",
-          "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/CROps/pyabbrdict/ESSdict.py --tk"
+          "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/CROps/pyabbrdict/ESSdict.py --tk",
+          "description":"Check acronyms here"
         },
         {
           "separator": true
@@ -156,7 +157,7 @@
           "help_arg": "-h",
           "mandatory_arg": "-p",
           "default_args": "-k RFQ,DTL1,DTL2,DTL3,DTL4 5.30",
-          "description": "example: fil_heat.py -k RFQ,DTL1 5.30"
+          "description":"Start filament heating at predefined time (or now), example: \n fil_heat.py -k RFQ,DTL1 5.30"
         },
         {
           "name": "Buncher cleaner...",
@@ -165,7 +166,7 @@
           "help_arg": "-h",
           "mandatory_arg": "",
           "default_args": "-b 1,2,3 -p 0.05,0.1,0.2,0.3,0.4,0.5,0.75,1,2,3,4,5,6,7,8 -d [-10000,10000,2500]",
-          "description": "example: fil_heat.py -k RFQ,DTL1 5.30"
+          "description": "For cleaning out electrons/multipacting in open loop, on bunchers. Example: \n fil_heat.py -k RFQ,DTL1 5.30"
         },
           {
            "name":"RF shutdown [beta]",
@@ -176,18 +177,21 @@
              "arguments": "manual",
              "help_arg": "-h",
              "mandatory_arg": "-p",
-             "default_args": "RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 AUX"
+             "default_args": "RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 AUX",
+             "descriotion":"Commandline application. \nSelect which klystrons and bunchers to bring to which end state."
             },
             {
               "separator": true
             },
             {
              "name": "ALL to FIL",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/Solve/RF_shutdown/shutdown.py RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 FIL"
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/Solve/RF_shutdown/shutdown.py RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 FIL",
+             "description":"All bunchers and klystrons to FIL state"
             },
             {
              "name": "ALL to AUX",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/Solve/RF_shutdown/shutdown.py RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 AUX"
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/Solve/RF_shutdown/shutdown.py RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 AUX",
+             "description":"All bunchers and klystrons to AUX state"
             }
           ]
         }
