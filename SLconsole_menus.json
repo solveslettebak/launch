@@ -231,6 +231,17 @@
           "separator": true
         },
         {
+          "name": "ISrc RFPM FW",
+          "link": "firefox http://isrc-rfpm-fw.tn.esss.lu.se/"
+        },
+        {
+          "name": "ISrc RFPM REF",
+          "link": "firefox http://isrc-rfpm-ref.tn.esss.lu.se/"
+        },
+        {
+          "separator": true
+        },
+        {
           "name": "GitLab",
           "link": "firefox https://gitlab.esss.lu.se/accop/"
         },
