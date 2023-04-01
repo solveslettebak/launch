@@ -75,6 +75,11 @@
       "name": "Phoebus",
       "menu": [
         {
+          "name": "",
+          "link": "gnome-terminal -- sh -c 'ls;echo Press enter to continue;exec bash'",
+          "description":"Phlauncher!"
+        },
+        {
           "name": "Phauncher...",
           "link": "_phauncher",
           "description":"Phlauncher!"
@@ -178,7 +183,7 @@
              "help_arg": "-h",
              "mandatory_arg": "-p",
              "default_args": "RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 AUX",
-             "descriotion":"Commandline application. \nSelect which klystrons and bunchers to bring to which end state."
+             "description":"Commandline application. \nSelect which klystrons and bunchers to bring to which end state."
             },
             {
               "separator": true
@@ -284,7 +289,8 @@
         },
         {
           "name": "x-kill",
-          "link": "xkill"
+          "link": "xkill",
+          "description": "Point on any window to kill its creator. Use with caution."
         },
         {
           "name": "Screenshot",
