@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import (
     QFormLayout, QPushButton, QDialog, QFileDialog, QWidgetAction, QWidget, QGridLayout, QGroupBox, QDialogButtonBox,
     QPlainTextEdit, QMenu
 )
+#import yaml
 import sys
 import json
 import shlex
@@ -19,12 +20,6 @@ from quickLog import quickLog
 from settingsDialog import settingsDialog
 from phauncherDialog import phauncherDialog
 from logCheck import logCheck
-
-defaultSettings = {
-  "fontsize":"16",
-  "defaultLayoutFile":"SLconsole_menus.json",
-  
-}
 
 # there is probably a better way to do this.. 
 from common import settingsPath
@@ -154,8 +149,9 @@ class MainWindow(QMainWindow):
 
 
         # Generate dynamic menus
+        #data = yaml.safe_load(open("SLconsole_menus.yaml",'r'))
         try:
-            data = json.load(open(self.layoutFile))
+            data = json.load(open(self.layoutFile))    
         except json.decoder.JSONDecodeError as e:
             print(self.layoutFile,': Invalid JSON - aborting')
             print('Running json.tool...')
