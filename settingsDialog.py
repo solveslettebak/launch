@@ -16,8 +16,8 @@ class settingsDialog(QDialog):
 
         self.formGroupBox = QGroupBox("Settings:")
         layout = QFormLayout()
-        menufileinput = QLineEdit(self.data["defaultLayoutFile"])
-        layout.addRow(QLabel("Default layout:"),menufileinput) # could also be a dropdown..
+        self.menufileinput = QLineEdit(self.data["defaultLayoutFile"])
+        layout.addRow(QLabel("Default layout:"),self.menufileinput) # could also be a dropdown..
         self.fontsizeSpinbox = QSpinBox()
         self.fontsizeSpinbox.setValue(int(self.data["fontsize"]))
         self.fontsizeSpinbox.setMaximum(20)
@@ -38,5 +38,6 @@ class settingsDialog(QDialog):
 
     def onClickOK(self):
         self.data["fontsize"] = str(self.fontsizeSpinbox.value())
+        self.data["defaultLayoutFile"] = self.menufileinput.text()
         json.dump(self.data,open(settingsPath,"w"))
         self.accept()

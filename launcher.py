@@ -286,6 +286,7 @@ class MainWindow(QMainWindow):
 
     def loadSettings(self):
         if not os.path.isfile(settingsPath):
+            print('Settings file not found, creating it with default values')
             open(settingsPath,'w+').write(open('default_settings.json','r').read())
         data = json.load(open(settingsPath))
         self.layoutFile = data["defaultLayoutFile"]
