@@ -166,7 +166,7 @@
           "help_arg": "-h",
           "mandatory_arg": "",
           "default_args": "-b 1,2,3 -p 0.05,0.1,0.2,0.3,0.4,0.5,0.75,1,2,3,4,5,6,7,8 -d [-10000,10000,2500]",
-          "description": "For cleaning out electrons/multipacting in open loop, on bunchers. Example: \n fil_heat.py -k RFQ,DTL1 5.30"
+          "description": "For cleaning out electrons/multipacting in open loop, on bunchers."
         },
           {
            "name":"RF shutdown [beta]",
@@ -316,6 +316,21 @@
         {
           "name": "Olog markdown reference",
           "link": "firefox https://olog.esss.lu.se/Olog/help/CommonmarkCheatsheet"
+        },
+        {
+          "separator": true
+        },
+        {
+          "name": "RF block diagrams",
+          "link": "firefox https://chess.esss.lu.se/enovia/link/21308.51166.25345.1735"
+        },
+        {
+          "name": "Tech. description NCL",
+          "link": "firefox https://chess.esss.lu.se/enovia/link/ESS-0159957/21308.51166.27638.56110/valid"
+        },
+        {
+          "name": "Physics for technical staff",
+          "link": "firefox https://chess.esss.lu.se/enovia/link/ESS-1941204/21308.51166.25088.35432/valid"
         }
       ]
     },
