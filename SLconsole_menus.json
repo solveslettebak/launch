@@ -75,11 +75,6 @@
       "name": "Phoebus",
       "menu": [
         {
-          "name": "",
-          "link": "gnome-terminal -- sh -c 'ls;echo Press enter to continue;exec bash'",
-          "description":"Phlauncher!"
-        },
-        {
           "name": "Phauncher...",
           "link": "_phauncher",
           "description":"Phlauncher!"
@@ -113,6 +108,17 @@
         {
           "name": "Annunciator Standalone",
           "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh Annunciator_standalone"
+        },
+        {
+          "separator": true
+        },
+        {
+          "name": "Push local layouts to git [TBA]",
+          "link": "ls"
+        },
+        {
+          "name": "Layouts git repo",
+          "link": "firefox https://gitlab.esss.lu.se/accop/phoebus-apps/shared-cs-studio-phoebus-layouts"
         }
       ]
     },
