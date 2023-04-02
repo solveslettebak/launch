@@ -95,7 +95,7 @@
         },
         {
           "name": "Nav. only with TS2 Olog",
-          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh nav_only https://gitlab.esss.lu.se/accop/phoebus-apps/configurations/-/raw/main/ts2.ini"
+          "link": "/bin/bash launch.sh nav_only https://gitlab.esss.lu.se/accop/phoebus-apps/configurations/-/raw/main/ts2.ini"
         },
         {
           "separator": true
