@@ -9,7 +9,7 @@ test -f "/nfs/Linacshare_controlroom/MCR/phoebus_configs/${1}/memento" || die "$
 rm /home/operator-mcr/.phoebus/memento
 cp /nfs/Linacshare_controlroom/MCR/phoebus_configs/${1}/memento /home/operator-mcr/.phoebus/memento
 
-if TEST-COMMAND
+if [ "$#" -eq 1 ]
 then
   phoebus
 else
