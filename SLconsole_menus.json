@@ -53,10 +53,6 @@
           "separator": "true"
         },
         {
-          "name": "About/help",
-          "link": "firefox https://confluence.esss.lu.se/display/~solveslettebak/Launcher"
-        },
-        {
           "name": "Git repo",
           "link": "firefox https://gitlab.esss.lu.se/accop/pytools/launcher"
         },
@@ -88,40 +84,41 @@
         },
         {
           "name": "Nav. only",
-          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh nav_only"
+          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh layout_Nav_only.memento"
         },
         {
           "separator": true
         },
         {
           "name": "Nav. only with TS2 Olog",
-          "link": "/bin/bash launch.sh nav_only https://gitlab.esss.lu.se/accop/phoebus-apps/configurations/-/raw/main/ts2.ini"
+          "link": "/bin/bash launch.sh layout_Nav_only.memento https://gitlab.esss.lu.se/accop/phoebus-apps/configurations/-/raw/main/ts2.ini"
         },
         {
           "separator": true
         },
         {
-          "name": "SL default",
-          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh SL_default"
+          "name": "Beam production",
+          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh layout_beam_production.memento"
         },
         {
           "name": "Buncher conditioning",
-          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh MEBT_cond"
+          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh layout_MEBT_bunchers.memento"
         },
         {
           "name": "DTL conditioning",
-          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh DTL_cond"
+          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh layout_DTL1_4_conditioning.memento"
         },
         {
           "name": "Annunciator Standalone",
-          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh Annunciator_standalone"
+          "icon": "speaker.png",
+          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh layout_annunciator.memento"
         },
         {
           "separator": true
         },
         {
           "name": "Push local layouts to git [TBA]",
-          "link": "ls"
+          "link": "/bin/bash layout_pusher.sh"
         },
         {
           "name": "Layouts git repo",
@@ -161,7 +158,8 @@
         },
         {
           "name": "Acronym finder",
-          "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/CROps/pyabbrdict/ESSdict.py --tk",
+          "icon":"wtf.png",
+          "link": "python /nfs/Linacshare_controlroom/MCR/CROps/pyabbrdict/ESSdict.py --tk",
           "description":"Check acronyms here"
         },
         {
@@ -179,15 +177,16 @@
         },
         {
           "name": "Buncher cleaner...",
-          "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/Solve/Buncher_cond/bunch.py\"",
+          "icon": "cleaner.png",
+          "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/scripts/buncher-cleaner/bunch.py\"",
           "arguments": "manual",
           "help_arg": "-h",
           "mandatory_arg": "",
-          "default_args": "-b 1,2,3 -p 0.05,0.1,0.2,0.3,0.4,0.5,0.75,1,2,3,4,5,6,7,8 -d [-10000,10000,2500]",
+          "default_args": "-b 1,2,3",
           "description": "For cleaning out electrons/multipacting in open loop, on bunchers."
         },
           {
-           "name":"RF shutdown [beta]",
+           "name":"RF shutdown",
            "menu": [
             {
              "name": "Shutdown...",
@@ -202,16 +201,25 @@
               "separator": true
             },
             {
-             "name": "ALL to FIL",
+             "name": "NCL: ALL to FIL",
+             "icon":"RF.png",
              "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/Solve/RF_shutdown/shutdown.py RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 FIL",
              "description":"All bunchers and klystrons to FIL state"
             },
             {
-             "name": "ALL to AUX",
+             "name": "NCL: ALL to AUX",
              "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/Solve/RF_shutdown/shutdown.py RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 AUX",
              "description":"All bunchers and klystrons to AUX state"
             }
           ]
+        },
+        {
+          "separator": true
+        },
+        {
+          "name": "Auto-ramp",
+          "link": "python /nfs/Linacshare_controlroom/MCR/Solve/autoramp/autoramp.py",
+          "description": "[beta] Automatic ramping"
         }
       ]
     },
@@ -220,13 +228,19 @@
       "menu": [
         {
           "name": "Firefox",
+          "icon":"firefox.png",
           "link": "firefox"
         },
         {
           "separator": true
         },
         {
+          "name": "Olog",
+          "link": "firefox https://olog.esss.lu.se/"
+        },
+        {
           "name": "Jupyter",
+          "icon": "jupyter.png",
           "link": "firefox https://jupyterhub.tn.esss.lu.se/"
         },
         {
@@ -261,6 +275,7 @@
         },
         {
           "name": "GitLab",
+          "icon":"gitlab.png",
           "link": "firefox https://gitlab.esss.lu.se/accop/"
         },
         {
@@ -281,6 +296,7 @@
         },
         {
           "name": "Archiver (scalars)",
+          "icon":"archive.png",
           "link": "firefox http://archiver-linac-01.tn.esss.lu.se:17665/mgmt/ui/index.html"
         },
         {
@@ -298,11 +314,13 @@
       "menu": [
         {
           "name": "Calculator",
+          "icon":"calc.png",
           "link": "/bin/gnome-calculator"
         },
         {
           "name": "x-kill",
           "link": "xkill",
+          "icon": "crosshair.png",
           "description": "Point on any window to kill its creator. Use with caution."
         },
         {
@@ -313,6 +331,14 @@
         {
           "name": "NVIDIA settings",
           "link": "nvidia-settings"
+        },
+        {
+          "separator": true
+        },
+        {
+          "name": "PVmon (old)",
+          "arguments": "manual",
+          "link": "gnome-terminal -- /nfs/Linacshare_controlroom/MCR/monitor.sh"
         }
       ]
     },
@@ -320,12 +346,32 @@
       "name": "ER",
       "menu": [
         {
+          "name": "KLARA",
+          "link": "firefox https://secure.port.se/Alphaquest/app_ess/pcmain.cfm?verkid=!%230%20%20%0A"
+        },
+        {
+          "name": "Weather station",
+          "icon": "weather.png",
+          "link": "firefox https://telegraph.tn.esss.lu.se/public-dashboards/c682f7caf6e4402ab9e1431bbac051c1?orgId=5"
+        },
+        {
+          "name": "On-call",
+          "link": "firefox https://confluence.esss.lu.se/display/AO/On+call"
+        },
+        {
+          "separator": true
+        },
+        {
+          "name": "Site map",
+          "link": "firefox https://confluence.esss.lu.se/display/CER/PPE+on+ESS+Site?preview=/389345968/411750652/ESS%20map%20coloured%20safety%20areas%202022-06-21.jpg"
+        },
+        {
           "name": "OP ER procedures",
           "link": "firefox https://confluence.esss.lu.se/display/AO/Emergency+Procedures"
         },
         {
-          "name": "Weather station",
-          "link": "firefox https://telegraph.tn.esss.lu.se/d/7VQNIo14k/weather-monitoring-public?orgId=5"
+          "name": "How to use Klara",
+          "link": "firefox https://confluence.esss.lu.se/display/AO/KLARA+for+Ops"
         }
       ]
     },
@@ -358,16 +404,11 @@
     },
     {
       "name": "PVmon",
-      "arguments": "manual",
-      "link": "gnome-terminal -- /nfs/Linacshare_controlroom/MCR/monitor.sh"
+      "link": "python /nfs/Linacshare_controlroom/MCR/scripts/PVmon/main.py"
     },
     {
       "name": "Shell",
       "link": "gnome-terminal"
-    },
-        {
-          "name": "Phauncher...",
-          "link": "_phauncher"
-        }
+    }
   ]
 }

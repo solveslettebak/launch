@@ -6,3 +6,7 @@ tut*.py
 __pycache__
 README_old.md
 todo.txt
+shared-cs-studio-phoebus-layouts
+.nfs*
+*.swp
+hs_err*

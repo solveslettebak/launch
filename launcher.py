@@ -138,15 +138,9 @@ class MainWindow(QMainWindow):
         # menubar.addAction(drag)
 
         icon = QAction(QIcon("icons/pin.png"),"",self)
-        # icon = QPushButton(QIcon("quit.png"),"",self)
-        # icon = QCheckBox("",self)
-        # icon.setIcon(QIcon("quit.png"))
         icon.setCheckable(True)
         icon.setChecked(True)
         icon.triggered.connect(self.onPinToggle)
-        # menubar.addAction(icon) # this doesn't work easily on linux, it seems.
-
-
 
         # Generate dynamic menus
         #data = yaml.safe_load(open("SLconsole_menus.yaml",'r'))

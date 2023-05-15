@@ -4,10 +4,12 @@ die () {
 }
 
 [[ "$#" -eq 1 ]] || [[ "$#" -eq 2 ]] || die "1 or 2 arguments required, $# provided"
-test -f "/nfs/Linacshare_controlroom/MCR/phoebus_configs/${1}/memento" || die "${1}: file not found"
+# test -f "/nfs/Linacshare_controlroom/MCR/phoebus_configs/${1}/memento" || die "${1}: file not found"
+test -f "/usr/local/share/cs-studio/layouts/${1}" || die "${1}: file not found"
 
 rm /home/operator-mcr/.phoebus/memento
-cp /nfs/Linacshare_controlroom/MCR/phoebus_configs/${1}/memento /home/operator-mcr/.phoebus/memento
+# cp /nfs/Linacshare_controlroom/MCR/phoebus_configs/${1}/memento /home/operator-mcr/.phoebus/memento
+cp /usr/local/share/cs-studio/layouts/${1} /home/operator-mcr/.phoebus/memento
 
 if [ "$#" -eq 1 ]
 then
