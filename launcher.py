@@ -19,6 +19,7 @@ from argumentDialog import argumentDialog
 from quickLog import quickLog
 from settingsDialog import settingsDialog
 from phauncherDialog import phauncherDialog
+from rePhauncherDialog import rePhauncherDialog
 from logCheck import logCheck
 
 # there is probably a better way to do this.. 
@@ -37,7 +38,10 @@ class MainWindow(QMainWindow):
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setWindowFlag(Qt.BypassWindowManagerHint) 
         
-        self.setStyleSheet("QMenu,QMenuBar,QMainWindow { background-color: lightblue;border: 1px solid black; } QMenu::item:selected { background-color: darkblue;}")
+        if os.getcwd().endswith('dev/launcher'):
+            self.setStyleSheet("QMenu,QMenuBar,QMainWindow { background-color: lightgreen;border: 1px solid black; } QMenu::item:selected { background-color: darkblue;}")
+        else:
+            self.setStyleSheet("QMenu,QMenuBar,QMainWindow { background-color: lightblue;border: 1px solid black; } QMenu::item:selected { background-color: darkblue;}")
 
         # linux refuses to cooperate on this, so fuck it. Window somehow stays on top anyway, just not when told to.
         #self.pinOnTop = True
@@ -199,6 +203,8 @@ class MainWindow(QMainWindow):
                     else:
                         if link == '_phauncher':
                             newAction.triggered.connect(self.onPhauncher)
+                        elif link == '_rephauncher':
+                            newAction.triggered.connect(self.onRePhauncher)
                         elif link == '_quit':
                             newAction.triggered.connect(self.onQuit)
                         elif link == '_reload':
@@ -252,6 +258,15 @@ class MainWindow(QMainWindow):
 
     def onPhauncher(self):
         phauncher = phauncherDialog(self.pos())
+        if phauncher.exec_() == 1:
+            if phauncher.helpRequest:
+                self.onMenuClick("firefox https://confluence.esss.lu.se/display/~solveslettebak/Phauncher+help")
+            else:
+                self.onMenuClick("/usr/local/bin/phoebus")
+        return
+
+    def onRePhauncher(self):
+        phauncher = rePhauncherDialog(self.pos())
         if phauncher.exec_() == 1:
             if phauncher.helpRequest:
                 self.onMenuClick("firefox https://confluence.esss.lu.se/display/~solveslettebak/Phauncher+help")

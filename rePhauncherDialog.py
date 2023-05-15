@@ -4,7 +4,7 @@ import os
 from PyQt5.QtWidgets import QDialog, QGroupBox, QFormLayout, QLineEdit, QLabel, QSpinBox, QDialogButtonBox, QVBoxLayout, QRadioButton, QCheckBox
 
 
-class phauncherDialog(QDialog):
+class rePhauncherDialog(QDialog):
     def __init__(self, position):
         super().__init__()
         self.setWindowTitle("Phauncher")
@@ -17,7 +17,7 @@ class phauncherDialog(QDialog):
         self.mainwindow = ''
         self.sidewindows = []
 
-        self.phauncherpath = '/nfs/Linacshare_controlroom/MCR/Solve/phauncher/'
+        self.layoutpath = '/usr/local/share/cs-studio/layouts/'
 
         self.xml_start = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <memento show_menu="true" show_statusbar="true" show_tabs="true" show_toolbar="true">
@@ -33,20 +33,22 @@ class phauncherDialog(QDialog):
         label = QLabel("Main window:")
         layout.addWidget(label)
 
-        for each in os.scandir(self.phauncherpath+'mainwindows'):
-            rb = QRadioButton(each.name.replace('_',' ').replace('.xml',''))
-            rb.mainwin = each.name
-            rb.toggled.connect(self.onClickedRadio)
-            layout.addWidget(rb)
+        for each in os.scandir(self.layoutpath):
+            if each.name.startswith('layout_'):
+                rb = QRadioButton(each.name.replace('layout_','').replace('_',' ').replace('.memento',''))
+                rb.mainwin = each.name
+                rb.toggled.connect(self.onClickedRadio)
+                layout.addWidget(rb)
 
         label = QLabel("Side windows:")
         layout.addWidget(label)
 
-        for each in os.scandir(self.phauncherpath+'sidewindows'):
-            cb = QCheckBox(each.name.replace('_',' ').replace('.xml',''))
-            cb.sidewin = each.name
-            cb.toggled.connect(self.onClickedCheck)
-            layout.addWidget(cb)
+        for each in os.scandir(self.layoutpath):
+            if each.name.startswith('window_'):
+                cb = QCheckBox(each.name.replace('window_','').replace('_',' ').replace('.memento',''))
+                cb.sidewin = each.name
+                cb.toggled.connect(self.onClickedCheck)
+                layout.addWidget(cb)
 
 
         self.formGroupBox.setLayout(layout)
@@ -86,10 +88,16 @@ class phauncherDialog(QDialog):
 
     def onClickOK(self):
         if not self.mainwindow == '':
-            output = self.xml_start
-            output += self.readfile(self.phauncherpath+'mainwindows/'+self.mainwindow)
+            output = self.readfile(self.layoutpath + self.mainwindow)
+            output = output[:len(output) - len('</memento>') - 1]
+
             for each in self.sidewindows:
-                output += self.readfile(self.phauncherpath+'sidewindows/'+each)
+                a = self.readfile(self.layoutpath + each)
+                a = a[:a.index('<')] + a[a.index('>')+1:]
+                a = a[:a.index('<')] + a[a.index('>')+1:]
+                a = a[:len(a) - len('</memento>') - 1]
+                output += a
+
             output += self.xml_end
             with open(self.memento_path,"w") as f:
                 f.write(output)

@@ -72,7 +72,7 @@
       "menu": [
         {
           "name": "Phauncher...",
-          "link": "_phauncher",
+          "link": "_rephauncher",
           "description":"Phlauncher!"
         },
         {
@@ -409,6 +409,11 @@
     {
       "name": "Shell",
       "link": "gnome-terminal"
+    },
+    {
+      "name": "Phauncher...",
+      "link": "_rephauncher",
+      "description":"Phlauncher!"
     }
   ]
 }
