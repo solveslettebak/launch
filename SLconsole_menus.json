@@ -304,6 +304,10 @@
           "link": "firefox http://archiver-linac-wf-01.tn.esss.lu.se:17665/mgmt/ui/index.html"
         },
         {
+          "name": "Archiver Viewer (waveforms)",
+          "link": "firefox http://archiver-linac-wf-01.tn.esss.lu.se:17668/retrieval/ui/viewer/archViewer.html"
+        },
+        {
           "name": "Shifter",
           "link": "firefox https://shifter.esss.lu.se/"
         }
@@ -336,9 +340,18 @@
           "separator": true
         },
         {
-          "name": "PVmon (old)",
+          "name": "PVmon (simple)",
           "arguments": "manual",
           "link": "gnome-terminal -- /nfs/Linacshare_controlroom/MCR/monitor.sh"
+        },
+        {
+          "name": "PVmon (shiny)",
+          "link": "python /nfs/Linacshare_controlroom/MCR/scripts/PVmon/main.py"
+        },
+        {
+          "name": "Reminder",
+          "link": "gnome-terminal -- sh -c 'python /nfs/Linacshare_controlroom/MCR/Bilal/reminder.py;echo Press any key to exit;read'",
+          "description": "Advanced reminder technology"
         }
       ]
     },
