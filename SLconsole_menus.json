@@ -168,7 +168,7 @@
         {
           "name": "Filament heater...",
           "icon": "filheat.png",
-          "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/Solve/filament-heater/fil_start.py\"",
+          "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py\"",
           "arguments": "manual",
           "help_arg": "-h",
           "mandatory_arg": "-p",
@@ -190,7 +190,7 @@
            "menu": [
             {
              "name": "Shutdown...",
-             "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/Solve/RF_shutdown/shutdown.py\"",
+             "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/scripts/RF_shutdown/shutdown.py\"",
              "arguments": "manual",
              "help_arg": "-h",
              "mandatory_arg": "-p",
@@ -203,12 +203,12 @@
             {
              "name": "NCL: ALL to FIL",
              "icon":"RF.png",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/Solve/RF_shutdown/shutdown.py RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 FIL",
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/RF_shutdown/shutdown.py RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 FIL",
              "description":"All bunchers and klystrons to FIL state"
             },
             {
              "name": "NCL: ALL to AUX",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/Solve/RF_shutdown/shutdown.py RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 AUX",
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/RF_shutdown/shutdown.py RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 AUX",
              "description":"All bunchers and klystrons to AUX state"
             }
           ]
@@ -218,7 +218,7 @@
         },
         {
           "name": "Auto-ramp",
-          "link": "python /nfs/Linacshare_controlroom/MCR/Solve/autoramp/autoramp.py",
+          "link": "python /nfs/Linacshare_controlroom/MCR/scripts/autoramp/autoramp.py",
           "description": "[beta] Automatic ramping"
         }
       ]
