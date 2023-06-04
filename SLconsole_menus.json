@@ -117,8 +117,8 @@
           "separator": true
         },
         {
-          "name": "Push local layouts to git [TBA]",
-          "link": "/bin/bash layout_pusher.sh"
+          "name": "Push local layouts",
+          "link": "gnome-terminal -- python gitpusher.py"
         },
         {
           "name": "Layouts git repo",
