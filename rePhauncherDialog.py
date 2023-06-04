@@ -33,22 +33,39 @@ class rePhauncherDialog(QDialog):
         label = QLabel("Main window:")
         layout.addWidget(label)
 
-        for each in os.scandir(self.layoutpath):
-            if each.name.startswith('layout_'):
-                rb = QRadioButton(each.name.replace('layout_','').replace('_',' ').replace('.memento',''))
-                rb.mainwin = each.name
+        files = os.listdir(self.layoutpath)
+        #sortedFiles.sort()
+        sortedFiles = sorted(files, key=str.casefold)
+        print(self.layoutpath)
+        print(os.listdir(self.layoutpath))
+        print(sortedFiles)
+        
+        for each in sortedFiles:
+            if each.startswith('layout_'):
+                rb = QRadioButton(each.replace('layout_','').replace('_',' ').replace('.memento',''))
+                rb.mainwin = each
                 rb.toggled.connect(self.onClickedRadio)
                 layout.addWidget(rb)
 
         label = QLabel("Side windows:")
         layout.addWidget(label)
 
-        for each in os.scandir(self.layoutpath):
-            if each.name.startswith('window_'):
-                cb = QCheckBox(each.name.replace('window_','').replace('_',' ').replace('.memento',''))
-                cb.sidewin = each.name
+        for each in sortedFiles:
+            if each.startswith('window_'):
+                cb = QCheckBox(each.replace('window_','').replace('_',' ').replace('.memento',''))
+                cb.sidewin = each
                 cb.toggled.connect(self.onClickedCheck)
                 layout.addWidget(cb)
+
+#        for each in os.scandir(self.layoutpath):
+#            if each.name.startswith('layout_'):
+
+
+
+
+#        for each in os.scandir(self.layoutpath):
+#            if each.name.startswith('window_'):
+
 
 
         self.formGroupBox.setLayout(layout)
