@@ -21,11 +21,9 @@ from settingsDialog import settingsDialog
 from phauncherDialog import phauncherDialog
 from rePhauncherDialog import rePhauncherDialog
 from logCheck import logCheck
-
-# there is probably a better way to do this.. 
 from common import settingsPath
 
-
+current_OS = sys.platform.lower()
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -38,23 +36,23 @@ class MainWindow(QMainWindow):
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setWindowFlag(Qt.BypassWindowManagerHint) 
         
-        if os.getcwd().endswith('dev/launcher'):
-            self.setStyleSheet("QMenu,QMenuBar,QMainWindow { background-color: lightgreen;border: 1px solid black; } QMenu::item:selected { background-color: darkblue;}")
-        else:
-            self.setStyleSheet("QMenu,QMenuBar,QMainWindow { background-color: lightblue;border: 1px solid black; } QMenu::item:selected { background-color: darkblue;}")
+        with open('css.css', 'r') as f:
+            stylesheet = f.read()
 
-        # linux refuses to cooperate on this, so fuck it. Window somehow stays on top anyway, just not when told to.
-        #self.pinOnTop = True
-        #self.onPinToggle(self.pinOnTop)
+        if os.getcwd().endswith('dev/launcher'):
+            self.setStyleSheet(stylesheet + 'QMenu,QMenuBar,QMainWindow { background-color: lightgreen;border: 1px solid black; }')
+        else:
+            self.setStyleSheet(stylesheet)
+
+        if not current_OS == 'linux': # linux refuses to cooperate on this, so fuck it. Window somehow stays on top anyway, just not when told to.
+            self.pinOnTop = True
+            self.onPinToggle(self.pinOnTop)
 
         self.menubar = self.menuBar()
         self.menubar.setNativeMenuBar(False)
-        
 
         self.loadSettings()
         self.generateMenus(self.menubar)
-
-        # self.setFixedSize(self.layout.sizeHint())
 
         # Logbook checker
         self.timer = QTimer()
@@ -85,7 +83,6 @@ class MainWindow(QMainWindow):
             self.updateInProgress = True
 
     def clearUpdateFlag(self):
-        print('qwer')
         self.updateFlag = False
         self.setRemoteUpdateTimer.stop()
         try:
@@ -94,7 +91,6 @@ class MainWindow(QMainWindow):
             print('Problem clearing update flag...')
         print('Relaunching this instance...')
         self.onRelaunch()
-    
 
     def onInitiateUpdate(self):
         print('Initiating remote update of running instances of launcher')
@@ -112,25 +108,15 @@ class MainWindow(QMainWindow):
             self.setRemoteUpdateTimer.stop()
         print('done')
 
+    # not implemented yet.
     def logCheck(self):
         self.qlog = logCheck(self)
         self.qlog.show()
         self.timer.stop()
 
-    def parseMenus(file:str) -> dict:
-        try:
-            with open(file,'r') as file:
-                data = file.read()
-        except:
-            print('well, shit') #ok, make this..better. later.
-            return 
-        
-        
-
     def generateMenus(self, menubar):
 
         self.menubar.setMaximumWidth(900)
-
 
         q = QAction(QIcon("icons/quit.png"), "", self)
         q.triggered.connect(self.onQuit)
@@ -138,7 +124,6 @@ class MainWindow(QMainWindow):
 
         # drag = dragable(QIcon("icons/drag.png"), "", self)
         # drag.hovered.connect(self.onMoveHover)
-
         # menubar.addAction(drag)
 
         icon = QAction(QIcon("icons/pin.png"),"",self)
@@ -188,9 +173,15 @@ class MainWindow(QMainWindow):
 
                     newAction.setToolTip(each['description'] if "description" in each else "no description") 
 
+                    if "checkable" in each and each['checkable'] == True:
+                        newAction.setCheckable(True)
+                        if 'checked' in each:
+                            newAction.setChecked(each['checked'] == True)
+                        else:
+                            newAction.setChecked(False)
 
                     link = each['link']
-                    if "arguments" in each: #let's also check the value eventually...
+                    if "arguments" in each: # doesn't care about the value of arguments..
                         datapack = {}
                         datapack['h_arg'] = each['help_arg'] if "help_arg" in each else ""
                         datapack['m_arg'] = each['mandatory_arg'] if "mandatory_arg" in each else ""
@@ -225,6 +216,8 @@ class MainWindow(QMainWindow):
                                 print(link)
                             newAction.triggered.connect((lambda link: lambda: self.onMenuClick(link))(link)) # wtf
 
+                    # newAction.setCheckable(True)
+                    # then just add a field to the function called, which will be bool - checked state.
                     currentmenu.addAction(newAction)
 
         recursive_read(data['menu'], 0, menubar)
@@ -274,9 +267,7 @@ class MainWindow(QMainWindow):
                 self.onMenuClick("/usr/local/bin/phoebus")
         return
 
-    def onMenuClick(self, text):
-        print("os command:", text)
-        # os.system(text)
+    def onMenuClick(self, text): # text is the command to send to OS
         try:
             if type(text) is str:
                 print(shlex.split(text))

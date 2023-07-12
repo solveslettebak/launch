@@ -1,0 +1,20 @@
+QMenu,QMenuBar,QMainWindow { 
+	background-color: lightblue;
+	border: 1px solid black; 
+} 
+
+QMenu::item:selected { 
+	background-color: darkblue;
+} 
+
+QMenu::indicator {
+	border: 1px solid black;
+} 
+
+QMenu::indicator:unchecked {
+        background-color: lightblue;
+} 
+
+QMenu::indicator:checked {
+        background-color: red;
+} 
