@@ -121,7 +121,7 @@
           "link": "gnome-terminal -- python gitpusher.py"
         },
         {
-          "name": "Layouts git repo",
+          "name": "Layouts git repo / README",
           "link": "firefox https://gitlab.esss.lu.se/accop/phoebus-apps/shared-cs-studio-phoebus-layouts"
         }
       ]
@@ -136,6 +136,10 @@
         {
           "name": "Shift Start/End",
           "link": "gnome-terminal -- /bin/bash /home/operator-mcr/pytools/esslogbook-gui/start-shiftstart.sh"
+        },
+        {
+          "name": "21MeV beam logger",
+          "link": "gnome-terminal -- sh -c 'python /nfs/Linacshare_controlroom/MCR/Johanna/BeamFC4/beamFC4.py;cd /nfs/Linacshare_controlroom/MCR/Johanna/BeamFC4;exec bash'"
         },
         {
           "separator": true
@@ -183,11 +187,11 @@
               "separator": true
             },
             {
-             "name": "ALL at 5:30",
+             "name": "NCL: ALL at 5:30",
              "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py -k ALL 5.30"
             },
             {
-             "name": "ALL, NOW",
+             "name": "NCL: ALL, NOW",
              "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py -k ALL NOW"
             }
           ]
@@ -206,6 +210,15 @@
             },
             {
               "separator": true
+            },
+            {
+             "name": "10 min HotSpot [beta]...",
+             "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/scripts/buncher-cleaner/bunch.py\"",
+             "arguments": "manual",
+             "help_arg": "-h",
+             "mandatory_arg": "-u",
+             "default_args": "-b 1,2,3",
+             "description":"Just select bunchers, and go!"
             },
             {
              "name": "30 min FastClean...",
@@ -256,12 +269,17 @@
           ]
         },
         {
+          "name": "Post Mortem [pre-alpha]",
+          "link": "python /nfs/Linacshare_controlroom/MCR/scripts/PMA/pma.py",
+          "description": "RF post mortem analyzer [pre-alpha]"
+        },
+        {
           "separator": true
         },
         {
           "name": "Auto-ramp",
           "link": "python /nfs/Linacshare_controlroom/MCR/scripts/autoramp/autoramp.py",
-          "description": "[beta] Automatic ramping"
+          "description": "Automatic ramping"
         }
       ]
     },
@@ -337,6 +355,13 @@
           "link": "firefox https://mail.esss.lu.se"
         },
         {
+          "name": "Public Operations Screen",
+          "link": "firefox https://pos.ess.eu/"
+        },
+        {
+          "separator": true
+        },
+        {
           "name": "Archiver (scalars)",
           "icon":"archive.png",
           "link": "firefox http://archiver-linac-01.tn.esss.lu.se:17665/mgmt/ui/index.html"
@@ -348,6 +373,10 @@
         {
           "name": "Archiver Viewer (waveforms)",
           "link": "firefox http://archiver-linac-wf-01.tn.esss.lu.se:17668/retrieval/ui/viewer/archViewer.html"
+        },
+        {
+          "name": "PV search",
+          "link": "firefox https://pos.ess.eu/pvs/"
         },
         {
           "name": "Shifter",
@@ -373,7 +402,10 @@
           "name": "Screenshot",
           "link": "gnome-screenshot -i"
         },
-
+        {
+          "name": "gedit",
+          "link": "gedit"
+        },
         {
           "name": "NVIDIA settings",
           "link": "nvidia-settings"

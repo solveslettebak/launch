@@ -1,3 +1,11 @@
+"""
+Improvements to be made:
+- More control over the git commands and their return, to handle errors
+- Handle a wrong password
+- Some check to verify the correct file is overwritten. Check text similarity etc. Display verification of this before moving files. (new files vs. overwritten files, etc.. and if text similarity is close, somehow suggest overwriting..? might be tricky with indiv. number difference...
+
+"""
+
 import os
 import sys
 
@@ -8,7 +16,9 @@ found = False
 
 print('\n')
 
-print('This will copy files layout_* and window_* to',path_git,'and execute git add, commit and push. You need to supply your credentials.')
+print('This will move files layout_* and window_* from:',path_ph)
+print('to:',path_git)
+print('and execute git add, commit and push. You need to supply your credentials.\n')
 i = input('Proceed? (y/n)')
 if not i.lower() == 'y':
   sys.exit(0)
@@ -29,9 +39,9 @@ print('\n')
 os.chdir(path_git)
 assert os.getcwd() == path_git[:-1]
 message = input('git commit message (or ctrl+c to abort): ')
-if False:
-  os.system('git add .')
-  os.system('git commit -m "'+message+'"')
-  os.system('git push')
+
+os.system('git add -A')
+os.system('git commit -m "'+message+'"')
+os.system('git push')
 
 input('Verify above output messages, and hit enter to exit')
