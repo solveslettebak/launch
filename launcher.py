@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+menu_type = 'JSON' # YAML / JSON
+
 from PyQt5 import QtCore
 from PyQt5.QtGui import QIcon, QFont, QCursor, QPalette
 from PyQt5.QtCore import QSize, Qt, QTimer
@@ -8,9 +10,14 @@ from PyQt5.QtWidgets import (
     QFormLayout, QPushButton, QDialog, QFileDialog, QWidgetAction, QWidget, QGridLayout, QGroupBox, QDialogButtonBox,
     QPlainTextEdit, QMenu
 )
-#import yaml
+
+if menu_type == 'YAML':
+    import yaml
+    import json # for now...
+else:
+    import json
+    
 import sys
-import json
 import shlex
 import os
 from subprocess import Popen# ,CREATE_NEW_CONSOLE
@@ -132,16 +139,18 @@ class MainWindow(QMainWindow):
         icon.triggered.connect(self.onPinToggle)
 
         # Generate dynamic menus
-        #data = yaml.safe_load(open("SLconsole_menus.yaml",'r'))
-        try:
-            data = json.load(open(self.layoutFile))    
-        except json.decoder.JSONDecodeError as e:
-            print(self.layoutFile,': Invalid JSON - aborting')
-            print('Running json.tool...')
-            os.system('python -m json.tool '+self.layoutFile)
-            self.onQuit()
+        if menu_type == 'YAML':
+            data = yaml.safe_load(open("SLconsole_menus.yaml",'r'))
+        else:
+            try:
+                data = json.load(open(self.layoutFile))    
+            except json.decoder.JSONDecodeError as e:
+                print(self.layoutFile,': Invalid JSON - aborting')
+                print('Running json.tool...')
+                os.system('python -m json.tool '+self.layoutFile)
+                self.onQuit()
 
-        # read tree structured menus from .json and produce pyqt menu structure.
+        # read tree structured menus from menu file and produce pyqt menu structure.
         def recursive_read(menu, indent, currentmenu):
             for each in menu:
 
@@ -331,13 +340,17 @@ class MainWindow(QMainWindow):
         return
 
     def onLoadLayout(self):
-        f, _ = QFileDialog.getOpenFileName(filter="*.json")
+        filetype = '*.yaml' if menu_type == 'YAML' else '*.json'
+        f, _ = QFileDialog.getOpenFileName(filter=filetype)
         if len(f) == 0:
             return
         try:
-            str = json.loads(open(f).read())
+            if menu_type == 'YAML':
+                str = yaml.safe_load(open(f).read())
+            else:
+                str = json.loads(open(f).read())
         except ValueError as e:
-            print('Invalid JSON file')
+            print('Invalid menu format file')
             return
         print(self.layoutFile)
         self.layoutFile = f

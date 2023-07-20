@@ -19,8 +19,6 @@ menu:
     link: _updateall
     name: Relaunch all instances
   - separator: 'true'
-  - link: firefox https://confluence.esss.lu.se/display/~solveslettebak/Launcher
-    name: About/help
   - link: firefox https://gitlab.esss.lu.se/accop/pytools/launcher
     name: Git repo
   - separator: 'true'
@@ -30,28 +28,40 @@ menu:
   name: File
 - menu:
   - description: Phlauncher!
-    link: _phauncher
+    link: _rephauncher
     name: Phauncher...
   - separator: true
   - link: /usr/local/bin/phoebus
     name: As last
-  - link: /bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh nav_only
+  - link: /bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh layout_Nav_only.memento
     name: Nav. only
   - separator: true
-  - link: /bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh SL_default
-    name: SL default
-  - link: /bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh MEBT_cond
+  - link: /bin/bash launch.sh layout_Nav_only.memento https://gitlab.esss.lu.se/accop/phoebus-apps/configurations/-/raw/main/ts2.ini
+    name: Nav. only with TS2 Olog
+  - separator: true
+  - link: /bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh layout_beam_production.memento
+    name: Beam production
+  - link: /bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh layout_MEBT_bunchers.memento
     name: Buncher conditioning
-  - link: /bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh DTL_cond
+  - link: /bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh layout_DTL1_4_conditioning.memento
     name: DTL conditioning
-  - link: /bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh Annunciator_standalone
+  - icon: speaker.png
+    link: /bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh layout_annunciator.memento
     name: Annunciator Standalone
+  - separator: true
+  - link: gnome-terminal -- python gitpusher.py
+    name: Push local layouts
+  - link: firefox https://gitlab.esss.lu.se/accop/phoebus-apps/shared-cs-studio-phoebus-layouts
+    name: Layouts git repo / README
   name: Phoebus
 - menu:
   - link: gnome-terminal -- /bin/bash /home/operator-mcr/pytools/esslogbook-gui/start.sh
     name: AFT
   - link: gnome-terminal -- /bin/bash /home/operator-mcr/pytools/esslogbook-gui/start-shiftstart.sh
     name: Shift Start/End
+  - link: gnome-terminal -- sh -c 'python /nfs/Linacshare_controlroom/MCR/Johanna/BeamFC4/beamFC4.py;cd
+      /nfs/Linacshare_controlroom/MCR/Johanna/BeamFC4;exec bash'
+    name: 21MeV beam logger
   - separator: true
   - link: /bin/bash /usr/local/bin/openxal-launcher.sh
     name: Open XAL
@@ -63,51 +73,99 @@ menu:
     link: python /home/operator-mcr/pytools/spectrogram/launcher.py
     name: Spectrogram
   - description: Check acronyms here
-    link: gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/CROps/pyabbrdict/ESSdict.py
-      --tk
+    icon: wtf.png
+    link: python /nfs/Linacshare_controlroom/MCR/CROps/pyabbrdict/ESSdict.py --tk
     name: Acronym finder
   - separator: true
-  - arguments: manual
-    default_args: -k RFQ,DTL1,DTL2,DTL3,DTL4 5.30
-    description: "Start filament heating at predefined time (or now), example: \n\
-      \ fil_heat.py -k RFQ,DTL1 5.30"
-    help_arg: -h
-    icon: filheat.png
-    link: gnome-terminal -- python "/nfs/Linacshare_controlroom/MCR/Solve/filament-heater/fil_start.py"
-    mandatory_arg: -p
-    name: Filament heater...
-  - arguments: manual
-    default_args: -b 1,2,3 -p 0.05,0.1,0.2,0.3,0.4,0.5,0.75,1,2,3,4,5,6,7,8 -d [-10000,10000,2500]
-    description: For cleaning out electrons/multipacting in open loop, on bunchers.
-    help_arg: -h
-    link: gnome-terminal -- python "/nfs/Linacshare_controlroom/MCR/Solve/Buncher_cond/bunch.py"
-    mandatory_arg: ''
-    name: Buncher cleaner...
+  - menu:
+    - arguments: manual
+      default_args: -k RFQ,DTL1,DTL2,DTL3,DTL4 5.30
+      description: "Start filament heating at predefined time (or now), example: \n\
+        \ fil_heat.py -k RFQ,DTL1 5.30"
+      help_arg: -h
+      icon: filheat.png
+      link: gnome-terminal -- python "/nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py"
+      mandatory_arg: -p
+      name: Filament heater...
+    - separator: true
+    - link: gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py
+        -k RFQ,DTL1,DTL2,DTL3,DTL4 5.30
+      name: 'NCL: ALL at 5:30'
+    - link: gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py
+        -k RFQ,DTL1,DTL2,DTL3,DTL4 NOW
+      name: 'NCL: ALL, NOW'
+    name: Filament heater
+  - menu:
+    - arguments: manual
+      default_args: -b 1,2,3 -d [-10000,10000,4000] -p 0.05,0.1,0.2,0.5,0.75,1,1.5,2,2.5,3,4,5,6,7
+      description: Buncher cleaner with all the options
+      help_arg: -h
+      link: gnome-terminal -- python "/nfs/Linacshare_controlroom/MCR/scripts/buncher-cleaner/bunch.py"
+      mandatory_arg: ''
+      name: Cleaner...
+    - separator: true
+    - arguments: manual
+      default_args: -b 1,2,3
+      description: Just select bunchers, and go!
+      help_arg: -h
+      link: gnome-terminal -- python "/nfs/Linacshare_controlroom/MCR/scripts/buncher-cleaner/bunch.py"
+      mandatory_arg: -u
+      name: 10 min HotSpot [beta]...
+    - arguments: manual
+      default_args: -b 1,2,3
+      description: Just select bunchers, and go!
+      help_arg: -h
+      link: gnome-terminal -- python "/nfs/Linacshare_controlroom/MCR/scripts/buncher-cleaner/bunch.py"
+      mandatory_arg: -f
+      name: 30 min FastClean...
+    - arguments: manual
+      default_args: -b 1,2,3
+      description: The standard cleaning routine for those with time on their hands
+      help_arg: -h
+      link: gnome-terminal -- python "/nfs/Linacshare_controlroom/MCR/scripts/buncher-cleaner/bunch.py"
+      mandatory_arg: ''
+      name: LongClean...
+    name: Buncher cleaner
   - menu:
     - arguments: manual
       default_args: RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 AUX
-      descriotion: "Commandline application. \nSelect which klystrons and bunchers\
+      description: "Commandline application. \nSelect which klystrons and bunchers\
         \ to bring to which end state."
       help_arg: -h
-      link: gnome-terminal -- python "/nfs/Linacshare_controlroom/MCR/Solve/RF_shutdown/shutdown.py"
+      link: gnome-terminal -- python "/nfs/Linacshare_controlroom/MCR/scripts/RF_shutdown/shutdown.py"
       mandatory_arg: -p
       name: Shutdown...
     - separator: true
     - description: All bunchers and klystrons to FIL state
-      link: gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/Solve/RF_shutdown/shutdown.py
+      icon: RF.png
+      link: gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/RF_shutdown/shutdown.py
         RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 FIL
-      name: ALL to FIL
+      name: 'NCL: ALL to FIL'
     - description: All bunchers and klystrons to AUX state
-      link: gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/Solve/RF_shutdown/shutdown.py
+      link: gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/RF_shutdown/shutdown.py
         RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 AUX
-      name: ALL to AUX
-    name: RF shutdown [beta]
+      name: 'NCL: ALL to AUX'
+    name: RF shutdown
+  - description: RF post mortem analyzer [pre-alpha]
+    link: python /nfs/Linacshare_controlroom/MCR/scripts/PMA/pma.py
+    name: Post Mortem [pre-alpha]
+  - description: Multipaction cleaning of RFQ
+    link: gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/RFQ_cleaner/RFQ.py
+    name: RFQ cleaner
+  - separator: true
+  - description: Automatic ramping
+    link: python /nfs/Linacshare_controlroom/MCR/scripts/autoramp/autoramp.py
+    name: Auto-ramp
   name: OP apps
 - menu:
-  - link: firefox
+  - icon: firefox.png
+    link: firefox
     name: Firefox
   - separator: true
-  - link: firefox https://jupyterhub.tn.esss.lu.se/
+  - link: firefox https://olog.esss.lu.se/
+    name: Olog
+  - icon: jupyter.png
+    link: firefox https://jupyterhub.tn.esss.lu.se/
     name: Jupyter
   - link: firefox https://confluence.esss.lu.se/display/AO/Control+Room+Operations+Group+Home+Page
     name: Confluence OP
@@ -123,7 +181,8 @@ menu:
   - link: firefox http://isrc-rfpm-ref.tn.esss.lu.se/
     name: ISrc RFPM REF
   - separator: true
-  - link: firefox https://gitlab.esss.lu.se/accop/
+  - icon: gitlab.png
+    link: firefox https://gitlab.esss.lu.se/accop/
     name: GitLab
   - link: firefox https://ce-deploy.esss.lu.se
     name: CE-deploy
@@ -133,28 +192,61 @@ menu:
     name: Naming service
   - link: firefox https://mail.esss.lu.se
     name: Web-Mail
-  - link: firefox http://archiver-linac-01.tn.esss.lu.se:17665/mgmt/ui/index.html
+  - link: firefox https://pos.ess.eu/
+    name: Public Operations Screen
+  - separator: true
+  - icon: archive.png
+    link: firefox http://archiver-linac-01.tn.esss.lu.se:17665/mgmt/ui/index.html
     name: Archiver (scalars)
   - link: firefox http://archiver-linac-wf-01.tn.esss.lu.se:17665/mgmt/ui/index.html
     name: Archiver (waveforms)
+  - link: firefox http://archiver-linac-wf-01.tn.esss.lu.se:17668/retrieval/ui/viewer/archViewer.html
+    name: Archiver Viewer (waveforms)
+  - link: firefox https://pos.ess.eu/pvs/
+    name: PV search
   - link: firefox https://shifter.esss.lu.se/
     name: Shifter
   name: Weblinks
 - menu:
-  - link: /bin/gnome-calculator
+  - icon: calc.png
+    link: /bin/gnome-calculator
     name: Calculator
-  - link: xkill
+  - description: Point on any window to kill its creator. Use with caution.
+    icon: crosshair.png
+    link: xkill
     name: x-kill
   - link: gnome-screenshot -i
     name: Screenshot
+  - link: gedit
+    name: gedit
   - link: nvidia-settings
     name: NVIDIA settings
+  - separator: true
+  - arguments: manual
+    link: gnome-terminal -- /nfs/Linacshare_controlroom/MCR/monitor.sh
+    name: PVmon (simple)
+  - link: python /nfs/Linacshare_controlroom/MCR/scripts/PVmon/main.py
+    name: PVmon (shiny)
+  - description: Advanced reminder technology
+    link: gnome-terminal -- sh -c 'python /nfs/Linacshare_controlroom/MCR/Bilal/reminder.py;echo
+      Press any key to exit;read'
+    name: Reminder
   name: Tools
 - menu:
+  - link: firefox https://secure.port.se/Alphaquest/app_ess/pcmain.cfm?verkid=!%230%20%20%0A
+    name: KLARA
+  - icon: weather.png
+    link: firefox https://telegraph.tn.esss.lu.se/public-dashboards/c682f7caf6e4402ab9e1431bbac051c1?orgId=5
+    name: Weather station
+  - link: firefox https://confluence.esss.lu.se/display/AO/On+call
+    name: On-call
+  - separator: true
+  - link: firefox https://confluence.esss.lu.se/display/CER/PPE+on+ESS+Site?preview=/389345968/411750652/ESS%20map%20coloured%20safety%20areas%202022-06-21.jpg
+    name: Site map
   - link: firefox https://confluence.esss.lu.se/display/AO/Emergency+Procedures
     name: OP ER procedures
-  - link: firefox https://telegraph.tn.esss.lu.se/d/7VQNIo14k/weather-monitoring-public?orgId=5
-    name: Weather station
+  - link: firefox https://confluence.esss.lu.se/display/AO/KLARA+for+Ops
+    name: How to use Klara
   name: ER
 - menu:
   - link: firefox https://olog.esss.lu.se/Olog/help/CommonmarkCheatsheet
@@ -168,12 +260,12 @@ menu:
     name: Physics for technical staff
   name: Docs
 - separator: true
-- arguments: manual
-  link: gnome-terminal -- /nfs/Linacshare_controlroom/MCR/monitor.sh
+- link: python /nfs/Linacshare_controlroom/MCR/scripts/PVmon/main.py
   name: PVmon
 - link: gnome-terminal
   name: Shell
-- link: _phauncher
+- description: Phlauncher!
+  link: _rephauncher
   name: Phauncher...
 services:
 - link: _phlayout
