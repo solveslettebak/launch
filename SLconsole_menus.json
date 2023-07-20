@@ -188,11 +188,11 @@
             },
             {
              "name": "NCL: ALL at 5:30",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py -k ALL 5.30"
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py -k RFQ,DTL1,DTL2,DTL3,DTL4 5.30"
             },
             {
              "name": "NCL: ALL, NOW",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py -k ALL NOW"
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py -k RFQ,DTL1,DTL2,DTL3,DTL4 NOW"
             }
           ]
         },
@@ -272,6 +272,11 @@
           "name": "Post Mortem [pre-alpha]",
           "link": "python /nfs/Linacshare_controlroom/MCR/scripts/PMA/pma.py",
           "description": "RF post mortem analyzer [pre-alpha]"
+        },
+        {
+          "name": "RFQ cleaner",
+          "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/RFQ_cleaner/RFQ.py",
+          "description": "Multipaction cleaning of RFQ"
         },
         {
           "separator": true
