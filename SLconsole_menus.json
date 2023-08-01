@@ -25,6 +25,15 @@
           "separator": "true"
         },
         {
+          "checkable": true,
+          "checked": true,
+          "name": "autoramp ctrl+F12",
+          "link": "_autoramp_shortcut"
+        },
+        {
+          "separator": "true"
+        },
+        {
           "name": "Edit menus",
           "link": "gedit SLconsole_menus.json"
         },

@@ -182,13 +182,6 @@ class MainWindow(QMainWindow):
 
                     newAction.setToolTip(each['description'] if "description" in each else "no description") 
 
-                    if "checkable" in each and each['checkable'] == True:
-                        newAction.setCheckable(True)
-                        if 'checked' in each:
-                            newAction.setChecked(each['checked'] == True)
-                        else:
-                            newAction.setChecked(False)
-
                     link = each['link']
                     if "arguments" in each: # doesn't care about the value of arguments..
                         datapack = {}
@@ -219,11 +212,21 @@ class MainWindow(QMainWindow):
                             newAction.triggered.connect(self.onRelaunch)
                         elif link == '_updateall':
                             newAction.triggered.connect(self.onInitiateUpdate)
+                        elif link == '_autoramp_shortcut':
+                            newAction.toggled.connect(self.autoramp_shortcut) # toggled. This assumes a checkbox.
                         else:
                             if "cwd" in each:
                                 link = {"cwd":each['cwd'], "link":each['link']}
                                 print(link)
                             newAction.triggered.connect((lambda link: lambda: self.onMenuClick(link))(link)) # wtf
+
+                    if "checkable" in each and each['checkable'] == True:
+                        newAction.setCheckable(True)
+                        if 'checked' in each:
+                            newAction.setChecked(each['checked'] == True)
+                        else:
+                            newAction.setChecked(False)
+
 
                     # newAction.setCheckable(True)
                     # then just add a field to the function called, which will be bool - checked state.
@@ -235,6 +238,10 @@ class MainWindow(QMainWindow):
         searchContainer = QWidgetAction(self)
         searchContainer.setDefaultWidget(searchBar)
         menubar.addAction(searchContainer)
+
+    def autoramp_shortcut(self):
+        print('hello')
+        print(self.sender().isChecked())
 
     # Shows dialog box for input of parameters to a commandline program, and executes it.
     def onMenuClickCommandline(self, d):
