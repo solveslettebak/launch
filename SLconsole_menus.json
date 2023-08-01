@@ -196,8 +196,8 @@
               "separator": true
             },
             {
-             "name": "NCL: ALL at 5:30",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py -k RFQ,DTL1,DTL2,DTL3,DTL4 5.30"
+             "name": "NCL: ALL at 6:30",
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py -k RFQ,DTL1,DTL2,DTL3,DTL4 6.30"
             },
             {
              "name": "NCL: ALL, NOW",
@@ -283,9 +283,19 @@
           "description": "RF post mortem analyzer [pre-alpha]"
         },
         {
-          "name": "RFQ cleaner",
-          "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/RFQ_cleaner/RFQ.py",
-          "description": "Multipaction cleaning of RFQ"
+          "name":"RFQ cleaner",
+          "menu": [
+            {
+             "name": "Continue from last",
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/RFQ_cleaner/RFQ.py",
+             "description":"Multipaction cleaning of RFQ\nStart wherever previous run stopped [default]"
+            },
+            {
+             "name": "Start from bottom",
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/RFQ_cleaner/RFQ.py -f",
+             "description":"Multipaction cleaning of RFQ\nForce fresh start"
+            }
+          ]
         },
         {
           "separator": true
