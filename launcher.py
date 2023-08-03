@@ -4,7 +4,7 @@ menu_type = 'JSON' # YAML / JSON
 
 from PyQt5 import QtCore
 from PyQt5.QtGui import QIcon, QFont, QCursor, QPalette
-from PyQt5.QtCore import QSize, Qt, QTimer
+from PyQt5.QtCore import QSize, Qt, QTimer, QThread, pyqtSignal, QObject
 from PyQt5.QtWidgets import (
     QAction, QApplication, QCheckBox, QLabel, QMainWindow, QStatusBar, QToolBar, QLineEdit, QSpinBox, QVBoxLayout,
     QFormLayout, QPushButton, QDialog, QFileDialog, QWidgetAction, QWidget, QGridLayout, QGroupBox, QDialogButtonBox,
@@ -30,7 +30,72 @@ from rePhauncherDialog import rePhauncherDialog
 from logCheck import logCheck
 from common import settingsPath
 
+useShortCuts = True
+try:
+    from Xlib.display import Display
+    from Xlib import X
+    from Xlib.ext import record
+    from Xlib.protocol import rq
+    import pyperclip
+    from threading import *
+
+    import pyxhook
+except ModuleNotFoundError:
+    print('pyxhook module not found. Ignoring keyboard shortcut functionality.')
+    useShortCuts = False
+
 current_OS = sys.platform.lower()
+
+# Evil snooping-on-the-keyboard class for sinister purposes
+class KeyboardListener:
+    def __init__(self):
+        self.hookman = pyxhook.HookManager()
+        self.hookman.KeyDown = self.kbevent
+        self.hookman.KeyUp = self.kbevent
+        self.hookman.HookKeyboard()
+        self.hookman.start()
+
+        self.shortcuts = {} # tuple:function 
+        self.function_arguments = {} # function:string 
+        self.combos = {'Ctrl':False, 'Alt':False, 'Shift':False,} 
+
+        self.registerShortcut(('Ctrl','F12'), self.example_handler) # example handler. Remove/overwrite..
+
+    # Handles keypresses. Keeps track of function key states, and calls registered functions when it detects a shortcut pressed.
+    def kbevent(self,event):
+        keydown = event.MessageName == 'key down'
+
+        if event.Key.startswith('Control'):
+            self.combos['Ctrl'] = keydown
+
+        if event.Key.startswith('Alt'):
+            self.combos['Alt'] = keydown
+
+        if event.Key.startswith('Shift'):
+            self.combos['Shift'] = keydown
+
+        for value in self.shortcuts.keys():
+            for key in value:
+                if key in ['Ctrl','Alt','Shift']: 
+                    if (not self.combos[key]) or list(self.combos.values()).count(True) != 1: # now it excludes combos of ctrl+alt..etc. only 1 allowed. Fix later. Also doesn't work with just F12. Much debugging here.
+                        break
+                if key == event.Key and keydown:
+                    fn = self.shortcuts[value]
+                    print(self.function_arguments[fn])
+                    fn(self.function_arguments[fn])
+                
+    def example_handler(self):
+        print('\n\nwheeee\n\n')
+
+    # shortcut: tuple of names for the keys. ex: ('Ctrl','F12')
+    # callback: function to execute
+    # args: To be changed, but now: a string value to pass to the menu click handler.
+    def registerShortcut(self,shortcut,callback, args): # should change to a **kwargs here, and make that the way i handle all menu clicks, instead of the horrible double lambda BS
+        self.shortcuts[shortcut] = callback
+        self.function_arguments[callback] = args
+
+    def stoplistening(self):
+        self.hookman.cancel()
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -47,7 +112,7 @@ class MainWindow(QMainWindow):
             stylesheet = f.read()
 
         if os.getcwd().endswith('dev/launcher'):
-            self.setStyleSheet(stylesheet + 'QMenu,QMenuBar,QMainWindow { background-color: lightgreen;border: 1px solid black; }')
+            self.setStyleSheet(stylesheet + 'QMenu,QMenuBar,QMainWindow { background-color: lightgreen;border: 1px solid black; }') # hack to turn it green when run from my dev-location.. 
         else:
             self.setStyleSheet(stylesheet)
 
@@ -58,6 +123,11 @@ class MainWindow(QMainWindow):
         self.menubar = self.menuBar()
         self.menubar.setNativeMenuBar(False)
 
+        if useShortCuts:
+            print('start')
+            self.keyboardlistener = KeyboardListener()
+
+
         self.loadSettings()
         self.generateMenus(self.menubar)
 
@@ -66,12 +136,15 @@ class MainWindow(QMainWindow):
         self.timer.start(1000)
         #self.timer.timeout.connect(self.logCheck)
 
+        # Setup for remote update check.
         self.remoteUpdateTimer = QTimer()
         self.remoteUpdateTimer.start(4*1000)
         self.remoteUpdateTimer.timeout.connect(self.remoteUpdateCheck)
         self.updateInProgress = False
         self.updateFlag = False
         
+#            self.setupShortCuts()
+
 
     def remoteUpdateCheck(self):
         if self.updateFlag: # If this instance initiates the remote update, then we don't listen to that signal. 
@@ -129,6 +202,7 @@ class MainWindow(QMainWindow):
         q.triggered.connect(self.onQuit)
         menubar.addAction(q)
 
+        # TODO: one day... make this work.
         # drag = dragable(QIcon("icons/drag.png"), "", self)
         # drag.hovered.connect(self.onMoveHover)
         # menubar.addAction(drag)
@@ -180,6 +254,13 @@ class MainWindow(QMainWindow):
                     else:                    
                         newAction = QAction(each['name'],self)
 
+                    if useShortCuts:
+                        if "shortcut" in each:
+                            link = each['link']
+                            #self.keyboardlistener.registerShortcut(('Ctrl','F12'), (lambda link: lambda: self.onMenuClick(link))(link))
+                            #self.keyboardlistener.registerShortcut(tuple(i for i in each['shortcut'].split(' ')), (lambda link: lambda: self.onMenuClick(link))(link))
+                            self.keyboardlistener.registerShortcut(tuple(i for i in each['shortcut'].split(' ')), self.onMenuClick, link)
+
                     newAction.setToolTip(each['description'] if "description" in each else "no description") 
 
                     link = each['link']
@@ -194,9 +275,11 @@ class MainWindow(QMainWindow):
 
                         newAction.triggered.connect((lambda datapack: lambda: self.onMenuClickCommandline(datapack))(datapack)) # not winning any awards with this code...
                     else:
-                        if link == '_phauncher':
-                            newAction.triggered.connect(self.onPhauncher)
-                        elif link == '_rephauncher':
+#                        if link == '_phauncher':
+#                            newAction.triggered.connect(self.onPhauncher)
+
+                        # Hard-coded internal functions.
+                        if link == '_rephauncher':
                             newAction.triggered.connect(self.onRePhauncher)
                         elif link == '_quit':
                             newAction.triggered.connect(self.onQuit)
@@ -215,9 +298,8 @@ class MainWindow(QMainWindow):
                         elif link == '_autoramp_shortcut':
                             newAction.toggled.connect(self.autoramp_shortcut) # toggled. This assumes a checkbox.
                         else:
-                            if "cwd" in each:
+                            if "cwd" in each: # if menu item specifies a different working directory. Kind of a hack, needs to be handled nicer.
                                 link = {"cwd":each['cwd'], "link":each['link']}
-                                print(link)
                             newAction.triggered.connect((lambda link: lambda: self.onMenuClick(link))(link)) # wtf
 
                     if "checkable" in each and each['checkable'] == True:
@@ -265,14 +347,14 @@ class MainWindow(QMainWindow):
     def onRelaunch(self):
         os.execv(__file__, sys.argv)
 
-    def onPhauncher(self):
-        phauncher = phauncherDialog(self.pos())
-        if phauncher.exec_() == 1:
-            if phauncher.helpRequest:
-                self.onMenuClick("firefox https://confluence.esss.lu.se/display/~solveslettebak/Phauncher+help")
-            else:
-                self.onMenuClick("/usr/local/bin/phoebus")
-        return
+#    def onPhauncher(self):
+#        phauncher = phauncherDialog(self.pos())
+#        if phauncher.exec_() == 1:
+#            if phauncher.helpRequest:
+#                self.onMenuClick("firefox https://confluence.esss.lu.se/display/~solveslettebak/Phauncher+help")
+#            else:
+#                self.onMenuClick("/usr/local/bin/phoebus")
+#        return
 
     def onRePhauncher(self):
         phauncher = rePhauncherDialog(self.pos())
@@ -314,6 +396,8 @@ class MainWindow(QMainWindow):
         self.qlog = quickLog(self)
         self.qlog.show()
 
+    # --- mouse moving stuff. Haven't figured out how to move the window from dragging the "move" icon yet.. work in progress.
+
     def mouseMoveEvent(self, event):
         if Qt.LeftButton and self.moveFlag:
             self.move(event.globalPos() - self.movePosition)
@@ -332,12 +416,12 @@ class MainWindow(QMainWindow):
         self.changeSetting('xpos',str(self.pos().x()))
         self.changeSetting('ypos',str(self.pos().y()))
         event.accept()
-    #
-    # def onMoveHover(self):
-    #     self.moveHover = True
-    #     print('qwerq')
+
+    # // --- 
+
 
     def onQuit(self):
+        self.keyboardlistener.stoplistening()
         QApplication.quit()
         sys.exit()
 
@@ -359,7 +443,6 @@ class MainWindow(QMainWindow):
         except ValueError as e:
             print('Invalid menu format file')
             return
-        print(self.layoutFile)
         self.layoutFile = f
         self.onReload()
         return
@@ -379,7 +462,11 @@ class MainWindow(QMainWindow):
         self.show()
         return
 
+
 app = QApplication(sys.argv)
 w = MainWindow()
+app.aboutToQuit.connect(w.closeEvent)
 w.show()
 app.exec()
+print('Cancelling...')
+

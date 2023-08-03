@@ -303,7 +303,8 @@
         {
           "name": "Auto-ramp",
           "link": "python /nfs/Linacshare_controlroom/MCR/scripts/autoramp/autoramp.py",
-          "description": "Automatic ramping"
+          "description": "Automatic ramping",
+          "shortcut": "Ctrl F12"
         }
       ]
     },
