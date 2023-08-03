@@ -59,7 +59,7 @@ class KeyboardListener:
         self.function_arguments = {} # function:string 
         self.combos = {'Ctrl':False, 'Alt':False, 'Shift':False,} 
 
-        self.registerShortcut(('Ctrl','F12'), self.example_handler) # example handler. Remove/overwrite..
+        self.registerShortcut(('Ctrl','F12'), self.example_handler, '') # example handler. Remove/overwrite..
 
     # Handles keypresses. Keeps track of function key states, and calls registered functions when it detects a shortcut pressed.
     def kbevent(self,event):

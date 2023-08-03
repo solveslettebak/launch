@@ -297,7 +297,7 @@
           "separator": true
         },
         {
-          "name": "Auto-ramp",
+          "name": "Auto-ramp [Ctrl-F12]",
           "link": "python /nfs/Linacshare_controlroom/MCR/scripts/autoramp/autoramp.py",
           "description": "Automatic ramping",
           "shortcut": "Ctrl F12"
