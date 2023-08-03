@@ -138,10 +138,6 @@
           "link": "gnome-terminal -- /bin/bash /home/operator-mcr/pytools/esslogbook-gui/start-shiftstart.sh"
         },
         {
-          "name": "21MeV beam logger",
-          "link": "gnome-terminal -- sh -c 'python /nfs/Linacshare_controlroom/MCR/Johanna/BeamFC4/beamFC4.py;cd /nfs/Linacshare_controlroom/MCR/Johanna/BeamFC4;exec bash'"
-        },
-        {
           "separator": true
         },
         {
@@ -440,7 +436,20 @@
         {
           "name": "Reminder",
           "link": "gnome-terminal -- sh -c 'python /nfs/Linacshare_controlroom/MCR/Bilal/reminder.py;echo Press any key to exit;read'",
-          "description": "Advanced reminder technology"
+          "description": "Advanced cognitive time-domain reinforcement technology"
+        },
+        {
+          "separator": true
+        },
+        {
+          "name": "Wallscreen West",
+          "link": "/usr/NX/bin/nxplayer /nfs/Linacshare_controlroom/MCR/CROps/WallscreenWest.nxs",
+          "description": "NoMachine to MCR wallscreen window side"
+        },
+        {
+          "name": "Wallscreen East",
+          "link": "/usr/NX/bin/nxplayer /nfs/Linacshare_controlroom/MCR/CROps/WallscreenEast.nxs",
+          "description": "NoMachine to MCR wallscreen target side"
         }
       ]
     },
