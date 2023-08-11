@@ -10,3 +10,5 @@ shared-cs-studio-phoebus-layouts
 .nfs*
 *.swp
 hs_err*
+test.py
+log_maker.py
