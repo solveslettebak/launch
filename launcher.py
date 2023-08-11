@@ -21,6 +21,8 @@ import sys
 import shlex
 import os
 from subprocess import Popen# ,CREATE_NEW_CONSOLE
+sys.path.insert(0, '/nfs/Linacshare_controlroom/MCR/Johanna/logbook/esslogbook/')
+from esslogbook import logbook
 
 from argumentDialog import argumentDialog
 from quickLog import quickLog
@@ -29,6 +31,7 @@ from settingsDialog import settingsDialog
 from rePhauncherDialog import rePhauncherDialog
 from logCheck import logCheck
 from common import settingsPath
+from log_checker_test import LogCheckerWindow
 
 useShortCuts = True
 try:
@@ -55,6 +58,7 @@ class KeyboardListener:
         self.combos = {'Ctrl':False, 'Alt':False, 'Shift':False,} 
 
         self.registerShortcut(('F9',), self.example_handler, '') # example handler. Remove/overwrite.. Note: first argument must be tuple, so remember the comma: ('F12',)
+        self.registerShortcut(('Ctrl','F12'), self.example_handler, '') # example handler. Remove/overwrite..
 
     # Handles keypresses. Keeps track of function key states, and calls registered functions when it detects a shortcut pressed.
     def kbevent(self,event):
@@ -112,7 +116,7 @@ class MainWindow(QMainWindow):
         with open('css.css', 'r') as f:
             stylesheet = f.read()
 
-        if os.getcwd().endswith('dev/launcher'):
+        if os.getcwd().endswith('Johanna/launcher') or os.getcwd().endswith('dev/launcher'):
             self.setStyleSheet(stylesheet + 'QMenu,QMenuBar,QMainWindow { background-color: lightgreen;border: 1px solid black; }') # hack to turn it green when run from my dev-location.. 
         else:
             self.setStyleSheet(stylesheet)
@@ -127,12 +131,22 @@ class MainWindow(QMainWindow):
         if useShortCuts:
             print('start')
             self.keyboardlistener = KeyboardListener()
-
-
+	
         self.loadSettings()
         self.generateMenus(self.menubar)
+	
+	#Logbook checker
+        test_logbook_checker=True
+        if test_logbook_checker==True:
+                self.oplogbook = logbook.EssLogbook(server='https://olog-es-lab.cslab.esss.lu.se',nameLogbook='Operations',username="some_username")        	
+        else:
+                self.oplogbook = logbook.EssLogbook(server='https://olog.esss.lu.se',nameLogbook='RF,Operations,Operations-instructions',username="some_username")
+        
+        self.findLastEntry()
 
-        # Logbook checker
+        self.logcheck_window=LogCheckerWindow(parent=self)
+        self.logcheck_window_init=0
+
         self.timer = QTimer()
         self.timer.start(1000)
         self.timer.timeout.connect(self.logCheck)
@@ -143,9 +157,46 @@ class MainWindow(QMainWindow):
         self.remoteUpdateTimer.timeout.connect(self.remoteUpdateCheck)
         self.updateInProgress = False
         self.updateFlag = False
-        
-#            self.setupShortCuts()
 
+    def findLastEntry(self):
+        search_result = self.oplogbook.search(start="80h")
+  
+        try:
+                self.last_entry_id=search_result[-1].id 
+                #self.last_entry_id=search_result[-3].id #uncomment when in test mode
+                          
+        except IndexError:
+                self.last_entry_id=0
+        print('Last entry')
+        print(self.last_entry_id)
+    
+    def logCheck(self):
+        search_result=self.oplogbook.search(start="1h")
+                
+        try:
+                latest_entry_id=search_result[-1].id
+
+        except IndexError:
+                latest_entry_id=self.last_entry_id        
+
+        if latest_entry_id > self.last_entry_id:
+                print('new entry!')
+                self.last_entry_id=latest_entry_id
+                print(self.last_entry_id)
+                self.logCheckWindowLogic()
+        else:
+                
+                print('no news...')
+    
+    def logCheckWindowLogic(self):
+        if self.logcheck_window_init==0:
+                self.logcheck_window_init=1
+                self.logcheck_window.display()
+        else:
+                self.logcheck_window.update_display()
+        
+        self.logcheck_window.show()    
+        
 
     def remoteUpdateCheck(self):
         if self.updateFlag: # If this instance initiates the remote update, then we don't listen to that signal. 
@@ -188,12 +239,6 @@ class MainWindow(QMainWindow):
             updateFlag = False
             self.setRemoteUpdateTimer.stop()
         print('done')
-
-    # not implemented yet.
-    def logCheck(self):
-        self.qlog = logCheck(self)
-        self.qlog.show()
-        self.timer.stop()
 
     def generateMenus(self, menubar):
 
