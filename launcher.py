@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import (
 
 if menu_type == 'YAML':
     import yaml
-    import json # for now...
+    import json # for settings. Change it all to YAML later.
 else:
     import json
     
@@ -25,20 +25,14 @@ from subprocess import Popen# ,CREATE_NEW_CONSOLE
 from argumentDialog import argumentDialog
 from quickLog import quickLog
 from settingsDialog import settingsDialog
-from phauncherDialog import phauncherDialog
+#from phauncherDialog import phauncherDialog
 from rePhauncherDialog import rePhauncherDialog
 from logCheck import logCheck
 from common import settingsPath
 
 useShortCuts = True
 try:
-    from Xlib.display import Display
-    from Xlib import X
-    from Xlib.ext import record
-    from Xlib.protocol import rq
-    import pyperclip
-    from threading import *
-
+    #import pyperclip
     import pyxhook
 except ModuleNotFoundError:
     print('pyxhook module not found. Ignoring keyboard shortcut functionality.')
@@ -55,14 +49,16 @@ class KeyboardListener:
         self.hookman.HookKeyboard()
         self.hookman.start()
 
-        self.shortcuts = {} # tuple:function 
-        self.function_arguments = {} # function:string 
+        self.shortcuts = {} # Maps key combinations to functions. tuple of string : function - ex: ('Alt','F1') : <function>
+        self.function_arguments = {} # Keeps arguments for each function. function : string  - ex: <function> : "python /path/application.py"
+
         self.combos = {'Ctrl':False, 'Alt':False, 'Shift':False,} 
 
-        self.registerShortcut(('Ctrl','F12'), self.example_handler) # example handler. Remove/overwrite..
+        self.registerShortcut(('F9',), self.example_handler, '') # example handler. Remove/overwrite.. Note: first argument must be tuple, so remember the comma: ('F12',)
 
     # Handles keypresses. Keeps track of function key states, and calls registered functions when it detects a shortcut pressed.
     def kbevent(self,event):
+
         keydown = event.MessageName == 'key down'
 
         if event.Key.startswith('Control'):
@@ -77,14 +73,19 @@ class KeyboardListener:
         for value in self.shortcuts.keys():
             for key in value:
                 if key in ['Ctrl','Alt','Shift']: 
-                    if (not self.combos[key]) or list(self.combos.values()).count(True) != 1: # now it excludes combos of ctrl+alt..etc. only 1 allowed. Fix later. Also doesn't work with just F12. Much debugging here.
+                    if not self.combos[key]:
                         break
                 if key == event.Key and keydown:
+                    for i in self.combos.keys():
+                        #print('i',i,':',self.combos[i],' ',(i not in value))
+                        if self.combos[i] and (i not in value):
+                            #print('\n\nasdf\n\n')
+                            return
                     fn = self.shortcuts[value]
-                    print(self.function_arguments[fn])
-                    fn(self.function_arguments[fn])
+                    arg = self.function_arguments[fn]
+                    fn(arg)
                 
-    def example_handler(self):
+    def example_handler(self, arg):
         print('\n\nwheeee\n\n')
 
     # shortcut: tuple of names for the keys. ex: ('Ctrl','F12')
@@ -134,7 +135,7 @@ class MainWindow(QMainWindow):
         # Logbook checker
         self.timer = QTimer()
         self.timer.start(1000)
-        #self.timer.timeout.connect(self.logCheck)
+        self.timer.timeout.connect(self.logCheck)
 
         # Setup for remote update check.
         self.remoteUpdateTimer = QTimer()
@@ -259,6 +260,7 @@ class MainWindow(QMainWindow):
                             link = each['link']
                             #self.keyboardlistener.registerShortcut(('Ctrl','F12'), (lambda link: lambda: self.onMenuClick(link))(link))
                             #self.keyboardlistener.registerShortcut(tuple(i for i in each['shortcut'].split(' ')), (lambda link: lambda: self.onMenuClick(link))(link))
+                            
                             self.keyboardlistener.registerShortcut(tuple(i for i in each['shortcut'].split(' ')), self.onMenuClick, link)
 
                     newAction.setToolTip(each['description'] if "description" in each else "no description") 
@@ -346,15 +348,6 @@ class MainWindow(QMainWindow):
 
     def onRelaunch(self):
         os.execv(__file__, sys.argv)
-
-#    def onPhauncher(self):
-#        phauncher = phauncherDialog(self.pos())
-#        if phauncher.exec_() == 1:
-#            if phauncher.helpRequest:
-#                self.onMenuClick("firefox https://confluence.esss.lu.se/display/~solveslettebak/Phauncher+help")
-#            else:
-#                self.onMenuClick("/usr/local/bin/phoebus")
-#        return
 
     def onRePhauncher(self):
         phauncher = rePhauncherDialog(self.pos())
@@ -465,8 +458,8 @@ class MainWindow(QMainWindow):
 
 app = QApplication(sys.argv)
 w = MainWindow()
-app.aboutToQuit.connect(w.closeEvent)
+#app.aboutToQuit.connect(w.closeEvent)
 w.show()
 app.exec()
-print('Cancelling...')
+
 
