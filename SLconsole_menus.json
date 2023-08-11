@@ -18,17 +18,25 @@
           "link": "_loadlayout"
         },
         {
-          "name": "Settings",
+          "name": "Settings...",
           "link": "_settings"
         },
         {
-          "separator": "true"
-        },
-        {
-          "checkable": true,
-          "checked": true,
-          "name": "autoramp ctrl+F12",
-          "link": "_autoramp_shortcut"
+          "name":"Quick settings",
+          "menu": [
+            {
+             "name":"Use shortcuts",
+             "link": "_autoramp_shortcut",
+             "checkable": true,
+             "checked": true
+            },
+            {
+             "name": "Enable logbook watcher",
+             "link": "_autoramp_shortcut",
+             "checkable": true,
+             "checked": false
+            }
+          ]
         },
         {
           "separator": "true"
@@ -194,6 +202,10 @@
             {
              "name": "NCL: ALL at 6:30",
              "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py -k RFQ,DTL1,DTL2,DTL3,DTL4 6.30"
+            },
+            {
+             "name": "NCL: ALL at 7:30",
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py -k RFQ,DTL1,DTL2,DTL3,DTL4 7.30"
             },
             {
              "name": "NCL: ALL, NOW",
