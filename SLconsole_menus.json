@@ -32,7 +32,7 @@
             },
             {
              "name": "Enable logbook watcher",
-             "link": "_autoramp_shortcut",
+             "link": "_logchecker",
              "checkable": true,
              "checked": false
             }

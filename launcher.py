@@ -135,21 +135,7 @@ class MainWindow(QMainWindow):
         self.loadSettings()
         self.generateMenus(self.menubar)
 	
-	#Logbook checker
-        test_logbook_checker=True
-        if test_logbook_checker==True:
-                self.oplogbook = logbook.EssLogbook(server='https://olog-es-lab.cslab.esss.lu.se',nameLogbook='Operations',username="some_username")        	
-        else:
-                self.oplogbook = logbook.EssLogbook(server='https://olog.esss.lu.se',nameLogbook='RF,Operations,Operations-instructions',username="some_username")
-        
-        self.findLastEntry()
 
-        self.logcheck_window=LogCheckerWindow(parent=self)
-        self.logcheck_window_init=0
-
-        self.timer = QTimer()
-        self.timer.start(1000)
-        self.timer.timeout.connect(self.logCheck)
 
         # Setup for remote update check.
         self.remoteUpdateTimer = QTimer()
@@ -344,6 +330,8 @@ class MainWindow(QMainWindow):
                             newAction.triggered.connect(self.onInitiateUpdate)
                         elif link == '_autoramp_shortcut':
                             newAction.toggled.connect(self.autoramp_shortcut) # toggled. This assumes a checkbox.
+                        elif link == '_logchecker':
+                            newAction.toggled.connect(self.logcheck_toggle) # toggled. This assumes a checkbox.
                         else:
                             if "cwd" in each: # if menu item specifies a different working directory. Kind of a hack, needs to be handled nicer.
                                 link = {"cwd":each['cwd'], "link":each['link']}
@@ -371,6 +359,24 @@ class MainWindow(QMainWindow):
     def autoramp_shortcut(self):
         print('hello')
         print(self.sender().isChecked())
+
+    def logcheck_toggle(self):
+        if not hasattr(self, 'timer'):
+            test_logbook_checker=True
+            if test_logbook_checker==True:
+                self.oplogbook = logbook.EssLogbook(server='https://olog-es-lab.cslab.esss.lu.se',nameLogbook='Operations',username="some_username")        	
+            else:
+                self.oplogbook = logbook.EssLogbook(server='https://olog.esss.lu.se',nameLogbook='RF,Operations,Operations-instructions',username="some_username")
+        
+            self.findLastEntry()
+            self.logcheck_window=LogCheckerWindow(parent=self)
+            self.logcheck_window_init=0
+            self.timer = QTimer()
+        if self.sender().isChecked():
+            self.timer.start(1000)
+            self.timer.timeout.connect(self.logCheck)
+        else:
+            self.timer.stop()
 
     # Shows dialog box for input of parameters to a commandline program, and executes it.
     def onMenuClickCommandline(self, d):
