@@ -362,7 +362,7 @@ class MainWindow(QMainWindow):
 
     def logcheck_toggle(self):
         if not hasattr(self, 'timer'):
-            test_logbook_checker=True
+            test_logbook_checker=False
             if test_logbook_checker==True:
                 self.oplogbook = logbook.EssLogbook(server='https://olog-es-lab.cslab.esss.lu.se',nameLogbook='Operations',username="some_username")        	
             else:

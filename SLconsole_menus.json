@@ -31,10 +31,10 @@
              "checked": true
             },
             {
-             "name": "Enable logbook watcher",
+             "name": "Logbook watcher",
              "link": "_logchecker",
              "checkable": true,
-             "checked": false
+             "checked": true
             }
           ]
         },
