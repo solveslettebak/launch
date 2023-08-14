@@ -20,18 +20,18 @@ else:
 import sys
 import shlex
 import os
+import warnings
 from subprocess import Popen# ,CREATE_NEW_CONSOLE
-sys.path.insert(0, '/nfs/Linacshare_controlroom/MCR/Johanna/logbook/esslogbook/')
+sys.path.insert(0, '/nfs/Linacshare_controlroom/MCR/Johanna/logbook/esslogbook/') # TODO: fix this. launcher cannot require esslogbook. 1. use system installation, not Johanna-installation, and 2. handle it gracefully if it is not installed.
+
 from esslogbook import logbook
 
-from argumentDialog import argumentDialog
-from quickLog import quickLog
-from settingsDialog import settingsDialog
-#from phauncherDialog import phauncherDialog
-from rePhauncherDialog import rePhauncherDialog
-from logCheck import logCheck
-from common import settingsPath
-from log_checker_test import LogCheckerWindow
+from modules.argumentDialog import argumentDialog
+from modules.quickLog import quickLog
+from modules.settingsDialog import settingsDialog
+from modules.rePhauncherDialog import rePhauncherDialog
+from modules.common import settingsPath
+from modules.log_checker_test import LogCheckerWindow # TODO: this isn't a test. rename
 
 useShortCuts = True
 try:
@@ -41,66 +41,12 @@ except ModuleNotFoundError:
     print('pyxhook module not found. Ignoring keyboard shortcut functionality.')
     useShortCuts = False
 
+if useShortCuts:
+    from modules.KeyboardListener import KeyboardListener
+
 current_OS = sys.platform.lower()
 
-# Evil snooping-on-the-keyboard class for sinister purposes
-class KeyboardListener:
-    def __init__(self):
-        self.hookman = pyxhook.HookManager()
-        self.hookman.KeyDown = self.kbevent
-        self.hookman.KeyUp = self.kbevent
-        self.hookman.HookKeyboard()
-        self.hookman.start()
 
-        self.shortcuts = {} # Maps key combinations to functions. tuple of string : function - ex: ('Alt','F1') : <function>
-        self.function_arguments = {} # Keeps arguments for each function. function : string  - ex: <function> : "python /path/application.py"
-
-        self.combos = {'Ctrl':False, 'Alt':False, 'Shift':False,} 
-
-        self.registerShortcut(('F9',), self.example_handler, '') # example handler. Remove/overwrite.. Note: first argument must be tuple, so remember the comma: ('F12',)
-        self.registerShortcut(('Ctrl','F12'), self.example_handler, '') # example handler. Remove/overwrite..
-
-    # Handles keypresses. Keeps track of function key states, and calls registered functions when it detects a shortcut pressed.
-    def kbevent(self,event):
-
-        keydown = event.MessageName == 'key down'
-
-        if event.Key.startswith('Control'):
-            self.combos['Ctrl'] = keydown
-
-        if event.Key.startswith('Alt'):
-            self.combos['Alt'] = keydown
-
-        if event.Key.startswith('Shift'):
-            self.combos['Shift'] = keydown
-
-        for value in self.shortcuts.keys():
-            for key in value:
-                if key in ['Ctrl','Alt','Shift']: 
-                    if not self.combos[key]:
-                        break
-                if key == event.Key and keydown:
-                    for i in self.combos.keys():
-                        #print('i',i,':',self.combos[i],' ',(i not in value))
-                        if self.combos[i] and (i not in value):
-                            #print('\n\nasdf\n\n')
-                            return
-                    fn = self.shortcuts[value]
-                    arg = self.function_arguments[fn]
-                    fn(arg)
-                
-    def example_handler(self, arg):
-        print('\n\nwheeee\n\n')
-
-    # shortcut: tuple of names for the keys. ex: ('Ctrl','F12')
-    # callback: function to execute
-    # args: To be changed, but now: a string value to pass to the menu click handler.
-    def registerShortcut(self,shortcut,callback, args): # should change to a **kwargs here, and make that the way i handle all menu clicks, instead of the horrible double lambda BS
-        self.shortcuts[shortcut] = callback
-        self.function_arguments[callback] = args
-
-    def stoplistening(self):
-        self.hookman.cancel()
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -129,7 +75,6 @@ class MainWindow(QMainWindow):
         self.menubar.setNativeMenuBar(False)
 
         if useShortCuts:
-            print('start')
             self.keyboardlistener = KeyboardListener()
 	
         self.loadSettings()
@@ -144,8 +89,11 @@ class MainWindow(QMainWindow):
         self.updateInProgress = False
         self.updateFlag = False
 
+
+# --- Logbook check stuff. TODO: To be moved to separate class/file
+
     def findLastEntry(self):
-        search_result = self.oplogbook.search(start="80h")
+        search_result = self.oplogbook.search(start="80h") # TODO: This needs a thread.
   
         try:
                 self.last_entry_id=search_result[-1].id 
@@ -170,9 +118,6 @@ class MainWindow(QMainWindow):
                 self.last_entry_id=latest_entry_id
                 print(self.last_entry_id)
                 self.logCheckWindowLogic()
-        else:
-                
-                print('no news...')
     
     def logCheckWindowLogic(self):
         if self.logcheck_window_init==0:
@@ -183,6 +128,9 @@ class MainWindow(QMainWindow):
         
         self.logcheck_window.show()    
         
+
+# --- Remote update of application stuff. TODO: Move to separate class/file
+
 
     def remoteUpdateCheck(self):
         if self.updateFlag: # If this instance initiates the remote update, then we don't listen to that signal. 
@@ -225,6 +173,10 @@ class MainWindow(QMainWindow):
             updateFlag = False
             self.setRemoteUpdateTimer.stop()
         print('done')
+
+
+# --- 
+
 
     def generateMenus(self, menubar):
 
@@ -351,17 +303,19 @@ class MainWindow(QMainWindow):
 
         recursive_read(data['menu'], 0, menubar)
 
-        searchBar = QLabel("asdf")
-        searchContainer = QWidgetAction(self)
-        searchContainer.setDefaultWidget(searchBar)
-        menubar.addAction(searchContainer)
+#        searchBar = QLabel("asdf")
+#        searchContainer = QWidgetAction(self)
+#        searchContainer.setDefaultWidget(searchBar)
+#        menubar.addAction(searchContainer)
 
+    # TODO: Implement. This is called when launcher loads, so start keyboard monitoring from here, not in __init__ - also, this should be shortcuts in general, not autoramp.
     def autoramp_shortcut(self):
         print('hello')
         print(self.sender().isChecked())
 
     def logcheck_toggle(self):
-        if not hasattr(self, 'timer'):
+        if not hasattr(self, 'timer'): # first time initialization:
+            warnings.filterwarnings("ignore") # remove when that warning isn't thrown all the time. TODO: also figure out how to filter it properly.
             test_logbook_checker=False
             if test_logbook_checker==True:
                 self.oplogbook = logbook.EssLogbook(server='https://olog-es-lab.cslab.esss.lu.se',nameLogbook='Operations',username="some_username")        	
@@ -373,7 +327,7 @@ class MainWindow(QMainWindow):
             self.logcheck_window_init=0
             self.timer = QTimer()
         if self.sender().isChecked():
-            self.timer.start(1000)
+            self.timer.start(1500)
             self.timer.timeout.connect(self.logCheck)
         else:
             self.timer.stop()
@@ -431,7 +385,7 @@ class MainWindow(QMainWindow):
             print('Settings file not found, creating it with default values')
             open(settingsPath,'w+').write(open('default_settings.json','r').read())
         data = json.load(open(settingsPath))
-        self.layoutFile = data["defaultLayoutFile"]
+        self.layoutFile = 'menus/' + data["defaultLayoutFile"]
         self.fontSize = int(data["fontsize"])
         self.move(int(data['xpos']),int(data['ypos']))
         self.menubar.setFont(QFont('Arial',self.fontSize))
@@ -465,7 +419,8 @@ class MainWindow(QMainWindow):
 
 
     def onQuit(self):
-        self.keyboardlistener.stoplistening()
+        if useShortCuts:
+            self.keyboardlistener.stoplistening()
         QApplication.quit()
         sys.exit()
 
@@ -476,7 +431,7 @@ class MainWindow(QMainWindow):
 
     def onLoadLayout(self):
         filetype = '*.yaml' if menu_type == 'YAML' else '*.json'
-        f, _ = QFileDialog.getOpenFileName(filter=filetype)
+        f, _ = QFileDialog.getOpenFileName('menus/', filter=filetype)
         if len(f) == 0:
             return
         try:

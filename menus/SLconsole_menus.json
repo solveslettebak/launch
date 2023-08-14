@@ -135,7 +135,7 @@
         },
         {
           "name": "Push local layouts",
-          "link": "gnome-terminal -- python gitpusher.py"
+          "link": "gnome-terminal -- python tools/gitpusher.py"
         },
         {
           "name": "Layouts git repo / README",

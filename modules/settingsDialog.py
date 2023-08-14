@@ -2,7 +2,7 @@ import json
 
 from PyQt5.QtWidgets import QDialog, QGroupBox, QFormLayout, QLineEdit, QLabel, QSpinBox, QDialogButtonBox, QVBoxLayout
 
-from common import settingsPath
+from modules.common import settingsPath
 
 
 class settingsDialog(QDialog):
