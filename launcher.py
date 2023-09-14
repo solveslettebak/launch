@@ -431,7 +431,7 @@ class MainWindow(QMainWindow):
 
     def onLoadLayout(self):
         filetype = '*.yaml' if menu_type == 'YAML' else '*.json'
-        f, _ = QFileDialog.getOpenFileName('menus/', filter=filetype)
+        f, _ = QFileDialog.getOpenFileName(directory='menus', filter=filetype)
         if len(f) == 0:
             return
         try:
