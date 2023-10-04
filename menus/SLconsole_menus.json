@@ -43,7 +43,7 @@
         },
         {
           "name": "Edit menus",
-          "link": "gedit SLconsole_menus.json"
+          "link": "gedit menus/SLconsole_menus.json"
         },
         {
           "name": "Todo-list",
@@ -114,8 +114,8 @@
           "separator": true
         },
         {
-          "name": "Beam production",
-          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh layout_beam_production.memento"
+          "name": "SL default",
+          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch_server.sh layout_post_SRR3.memento"
         },
         {
           "name": "Buncher conditioning",
@@ -193,23 +193,30 @@
              "arguments": "manual",
              "help_arg": "-h",
              "mandatory_arg": "-p",
-             "default_args": "-k RFQ,DTL1,DTL2,DTL3,DTL4 5.30",
-             "description":"Start filament heating at predefined time (or now), example: \n fil_heat.py -k RFQ,DTL1 5.30"
+             "default_args": "DTL5,MBL8k1,MBL8k2,MBL8k3,MBL8k4 6.00",
+             "description":"Start filament heating at predefined time (or now), example: \n fil_heat.py RFQ,DTL1 5.30"
             },
             {
               "separator": true
             },
             {
-             "name": "NCL: ALL at 6:30",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py -k RFQ,DTL1,DTL2,DTL3,DTL4 6.30"
+             "name": "Mon-Fri: MBL-080 2,3,4",
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py MBL8k2,MBL8k3,MBL8k4 -p"
             },
             {
-             "name": "NCL: ALL at 7:30",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py -k RFQ,DTL1,DTL2,DTL3,DTL4 7.30"
+             "name": "Mon-Fri: MBL-080 2,3,4 + DTL5",
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py DTL5,MBL8k2,MBL8k3,MBL8k4 -p"
             },
             {
-             "name": "NCL: ALL, NOW",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py -k RFQ,DTL1,DTL2,DTL3,DTL4 NOW"
+              "separator": true
+            },
+            {
+             "name": "Weekend: MBL-080 2,3,4",
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py MBL8k2,MBL8k3,MBL8k4 7.00 -p"
+            },
+            {
+             "name": "Weekend: MBL-080 2,3,4 + DTL5",
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py DTL5,MBL8k2,MBL8k3,MBL8k4 7.00 -p"
             }
           ]
         },

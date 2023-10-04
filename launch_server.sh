@@ -11,7 +11,7 @@ cp /usr/local/share/cs-studio/layouts/${1} /home/operator-mcr/.phoebus/memento
 
 if [ "$#" -eq 1 ]
 then
-  phoebus
+  phoebus -server 1234
 else
-  phoebus -settings ${2}
+  phoebus -server 1234 -settings ${2}
 fi

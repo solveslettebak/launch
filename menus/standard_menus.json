@@ -201,6 +201,11 @@
           "separator": true
         },
         {
+          "name": "Post Mortem [pre-alpha]",
+          "link": "python /nfs/Linacshare_controlroom/MCR/scripts/PMA/pma.py",
+          "description": "RF post mortem analyzer [pre-alpha]"
+        },
+        {
           "name": "Auto-ramp",
           "link": "python /nfs/Linacshare_controlroom/MCR/scripts/autoramp/autoramp.py",
           "description": "[beta] Automatic ramping"
