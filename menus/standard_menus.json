@@ -1,4 +1,14 @@
 {
+  "services": [
+    {
+      "name": "Phoebus layout manager",
+      "link": "_phlayout"
+    },
+    {
+      "name": "Phoebus layout manager",
+      "link": "_phlayout"
+    }
+  ],
   "menu": [
     {
       "name": "File",
@@ -8,8 +18,36 @@
           "link": "_loadlayout"
         },
         {
-          "name": "Settings",
+          "name": "Settings...",
           "link": "_settings"
+        },
+        {
+          "name":"Quick settings",
+          "menu": [
+            {
+             "name":"Use shortcuts",
+             "link": "_autoramp_shortcut",
+             "checkable": true,
+             "checked": true
+            },
+            {
+             "name": "Logbook watcher",
+             "link": "_logchecker",
+             "checkable": true,
+             "checked": true
+            }
+          ]
+        },
+        {
+          "separator": "true"
+        },
+        {
+          "name": "Edit menus",
+          "link": "gedit menus/SLconsole_menus.json"
+        },
+        {
+          "name": "Todo-list",
+          "link": "gedit /nfs/Linacshare_controlroom/MCR/launcher/todo.txt"
         },
         {
           "separator": "true"
@@ -24,6 +62,18 @@
           "description": "Simply restarts the launcher."
         },
         {
+          "name": "Relaunch all instances",
+          "link": "_updateall",
+          "description": "Sets an update flag for all running instances of Launcher to see."
+        },
+        {
+          "separator": "true"
+        },
+        {
+          "name": "Git repo",
+          "link": "firefox https://gitlab.esss.lu.se/accop/pytools/launcher"
+        },
+        {
           "separator": "true"
         },
         {
@@ -34,6 +84,7 @@
       ]
     },
     {
+
       "name": "Phoebus",
       "menu": [
         {
@@ -63,8 +114,8 @@
           "separator": true
         },
         {
-          "name": "Beam production",
-          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh layout_beam_production.memento"
+          "name": "SL default",
+          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch_server.sh layout_post_SRR3.memento"
         },
         {
           "name": "Buncher conditioning",
@@ -73,12 +124,36 @@
         {
           "name": "DTL conditioning",
           "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh layout_DTL1_4_conditioning.memento"
+        },
+        {
+          "name": "Annunciator Standalone",
+          "icon": "speaker.png",
+          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch.sh layout_annunciator.memento"
+        },
+        {
+          "separator": true
+        },
+        {
+          "name": "Push local layouts",
+          "link": "gnome-terminal -- python tools/gitpusher.py"
+        },
+        {
+          "name": "Layouts git repo / README",
+          "link": "firefox https://gitlab.esss.lu.se/accop/phoebus-apps/shared-cs-studio-phoebus-layouts"
         }
       ]
     },
     {
       "name": "OP apps",
       "menu": [
+        {
+          "name": "AFT",
+          "link": "gnome-terminal -- /bin/bash /home/operator-mcr/pytools/esslogbook-gui/start.sh"
+        },
+        {
+          "name": "Shift Start/End",
+          "link": "gnome-terminal -- /bin/bash /home/operator-mcr/pytools/esslogbook-gui/start-shiftstart.sh"
+        },
         {
           "separator": true
         },
@@ -118,19 +193,30 @@
              "arguments": "manual",
              "help_arg": "-h",
              "mandatory_arg": "-p",
-             "default_args": "-k RFQ,DTL1,DTL2,DTL3,DTL4 5.30",
-             "description":"Start filament heating at predefined time (or now), example: \n fil_heat.py -k RFQ,DTL1 5.30"
+             "default_args": "DTL5,MBL8k1,MBL8k2,MBL8k3,MBL8k4 6.00",
+             "description":"Start filament heating at predefined time (or now), example: \n fil_heat.py RFQ,DTL1 5.30"
             },
             {
               "separator": true
             },
             {
-             "name": "ALL at 5:30",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py -k ALL 5.30"
+             "name": "Mon-Fri: MBL-080 2,3,4",
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py MBL8k2,MBL8k3,MBL8k4 6.00 -p"
             },
             {
-             "name": "ALL, NOW",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py -k ALL NOW"
+             "name": "Mon-Fri: MBL-080 2,3,4 + DTL5",
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py DTL5,MBL8k2,MBL8k3,MBL8k4 6.00 -p"
+            },
+            {
+              "separator": true
+            },
+            {
+             "name": "Weekend: MBL-080 2,3,4",
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py MBL8k2,MBL8k3,MBL8k4 7.00 -p"
+            },
+            {
+             "name": "Weekend: MBL-080 2,3,4 + DTL5",
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py DTL5,MBL8k2,MBL8k3,MBL8k4 7.00 -p"
             }
           ]
         },
@@ -148,6 +234,15 @@
             },
             {
               "separator": true
+            },
+            {
+             "name": "10 min HotSpot [beta]...",
+             "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/scripts/buncher-cleaner/bunch.py\"",
+             "arguments": "manual",
+             "help_arg": "-h",
+             "mandatory_arg": "-u",
+             "default_args": "-b 1,2,3",
+             "description":"Just select bunchers, and go!"
             },
             {
              "name": "30 min FastClean...",
@@ -198,17 +293,33 @@
           ]
         },
         {
-          "separator": true
-        },
-        {
           "name": "Post Mortem [pre-alpha]",
           "link": "python /nfs/Linacshare_controlroom/MCR/scripts/PMA/pma.py",
           "description": "RF post mortem analyzer [pre-alpha]"
         },
         {
-          "name": "Auto-ramp",
+          "name":"RFQ cleaner",
+          "menu": [
+            {
+             "name": "Continue from last",
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/RFQ_cleaner/RFQ.py",
+             "description":"Multipaction cleaning of RFQ\nStart wherever previous run stopped [default]"
+            },
+            {
+             "name": "Start from bottom",
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/RFQ_cleaner/RFQ.py -f",
+             "description":"Multipaction cleaning of RFQ\nForce fresh start"
+            }
+          ]
+        },
+        {
+          "separator": true
+        },
+        {
+          "name": "Auto-ramp [Ctrl-F12]",
           "link": "python /nfs/Linacshare_controlroom/MCR/scripts/autoramp/autoramp.py",
-          "description": "[beta] Automatic ramping"
+          "description": "Automatic ramping",
+          "shortcut": "Ctrl F12"
         }
       ]
     },
@@ -224,6 +335,13 @@
           "separator": true
         },
         {
+          "name": "Cyolo",
+          "link": "firefox https://users.cyolo.ess.eu/"
+        },
+        {
+          "separator": true
+        },
+        {
           "name": "Olog",
           "link": "firefox https://olog.esss.lu.se/"
         },
@@ -231,6 +349,18 @@
           "name": "Jupyter",
           "icon": "jupyter.png",
           "link": "firefox https://jupyterhub.tn.esss.lu.se/"
+        },
+        {
+          "name": "Confluence OP",
+          "link": "firefox https://confluence.esss.lu.se/display/AO/Control+Room+Operations+Group+Home+Page"
+        },
+        {
+          "name": "BETS",
+          "link": "firefox https://confluence.esss.lu.se/pages/viewpage.action?pageId=435990027"
+        },
+        {
+          "name": "CR Handbook",
+          "link": "firefox https://confluence.esss.lu.se/display/AO/Handbook+for+Control+Room+Operations+Group"
         },
         {
           "name": "Site map",
@@ -272,6 +402,13 @@
           "link": "firefox https://mail.esss.lu.se"
         },
         {
+          "name": "Public Operations Screen",
+          "link": "firefox https://pos.ess.eu/"
+        },
+        {
+          "separator": true
+        },
+        {
           "name": "Archiver (scalars)",
           "icon":"archive.png",
           "link": "firefox http://archiver-linac-01.tn.esss.lu.se:17665/mgmt/ui/index.html"
@@ -285,6 +422,10 @@
           "link": "firefox http://archiver-linac-wf-01.tn.esss.lu.se:17668/retrieval/ui/viewer/archViewer.html"
         },
         {
+          "name": "PV search",
+          "link": "firefox https://pos.ess.eu/pvs/"
+        },
+        {
           "name": "Shifter",
           "link": "firefox https://shifter.esss.lu.se/"
         }
@@ -294,13 +435,27 @@
       "name": "Tools",
       "menu": [
         {
+          "name": "Remmina - remote desktop",
+          "link": "remmina"
+        },
+        {
           "name": "Calculator",
           "icon":"calc.png",
           "link": "/bin/gnome-calculator"
         },
         {
+          "name": "x-kill",
+          "link": "xkill",
+          "icon": "crosshair.png",
+          "description": "Point on any window to kill its creator. Use with caution."
+        },
+        {
           "name": "Screenshot",
           "link": "gnome-screenshot -i"
+        },
+        {
+          "name": "gedit",
+          "link": "gedit"
         },
         {
           "name": "NVIDIA settings",
@@ -310,13 +465,69 @@
           "separator": true
         },
         {
-          "name": "PV-monitor",
+          "name": "PVmon (simple)",
+          "arguments": "manual",
+          "link": "gnome-terminal -- /nfs/Linacshare_controlroom/MCR/monitor.sh"
+        },
+        {
+          "name": "PVmon (shiny)",
           "link": "python /nfs/Linacshare_controlroom/MCR/scripts/PVmon/main.py"
         },
         {
           "name": "Reminder",
           "link": "gnome-terminal -- sh -c 'python /nfs/Linacshare_controlroom/MCR/Bilal/reminder.py;echo Press any key to exit;read'",
-          "description": "Advanced reminder technology"
+          "description": "Advanced cognitive time-domain reinforcement technology"
+        },
+        {
+          "separator": true
+        },
+        {
+          "name": "NoMachine",
+          "link": "/usr/NX/bin/nxplayer",
+          "description": "NoMachine"
+        },
+        {
+          "name": "Wallscreen West",
+          "link": "/usr/NX/bin/nxplayer /nfs/Linacshare_controlroom/MCR/CROps/WallscreenWest.nxs",
+          "description": "NoMachine to MCR wallscreen window side"
+        },
+        {
+          "name": "Wallscreen East",
+          "link": "/usr/NX/bin/nxplayer /nfs/Linacshare_controlroom/MCR/CROps/WallscreenEast.nxs",
+          "description": "NoMachine to MCR wallscreen target side"
+        }
+      ]
+    },
+    {
+      "name": "ER",
+      "menu": [
+        {
+          "name": "KLARA",
+          "link": "firefox https://secure.port.se/Alphaquest/app_ess/pcmain.cfm?verkid=!%230%20%20%0A"
+        },
+        {
+          "name": "Weather station",
+          "icon": "weather.png",
+          "link": "firefox https://telegraph.tn.esss.lu.se/public-dashboards/c682f7caf6e4402ab9e1431bbac051c1?orgId=5"
+        },
+        {
+          "name": "On-call",
+          "link": "firefox https://confluence.esss.lu.se/display/AO/On+call"
+        },
+        {
+          "separator": true
+        },
+        {
+          "name": "Site map",
+          "link": "firefox https://confluence.esss.lu.se/display/CER/PPE+on+ESS+Site?preview=/389345968/411750652/ESS%20map%20coloured%20safety%20areas%202022-06-21.jpg"
+        },
+        {
+          "name": "OP ER procedures",
+          "link": "firefox https://confluence.esss.lu.se/display/AO/Emergency+Procedures"
+        },
+        {
+          "name": "How to use Klara",
+          "link": "firefox https://confluence.esss.lu.se/display/AO/KLARA+for+Ops"
         }
       ]
     },

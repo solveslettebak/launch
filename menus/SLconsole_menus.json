@@ -176,7 +176,8 @@
         {
           "name": "Acronym finder",
           "icon":"wtf.png",
-          "link": "python /nfs/Linacshare_controlroom/MCR/CROps/pyabbrdict/ESSdict.py --tk",
+          "cwd":"/nfs/Linacshare_controlroom/MCR/scripts/acronymfinder2/",
+          "link": "python /nfs/Linacshare_controlroom/MCR/scripts/acronymfinder2/gui.py",
           "description":"Check acronyms here"
         },
         {
@@ -201,11 +202,11 @@
             },
             {
              "name": "Mon-Fri: MBL-080 2,3,4",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py MBL8k2,MBL8k3,MBL8k4 -p"
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py MBL8k2,MBL8k3,MBL8k4 6.00 -p"
             },
             {
              "name": "Mon-Fri: MBL-080 2,3,4 + DTL5",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py DTL5,MBL8k2,MBL8k3,MBL8k4 -p"
+             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py DTL5,MBL8k2,MBL8k3,MBL8k4 6.00 -p"
             },
             {
               "separator": true
@@ -293,7 +294,7 @@
           ]
         },
         {
-          "name": "Post Mortem [pre-alpha]",
+          "name": "Post Mortem Analyzer [beta]",
           "link": "python /nfs/Linacshare_controlroom/MCR/scripts/PMA/pma.py",
           "description": "RF post mortem analyzer [pre-alpha]"
         },
@@ -330,6 +331,13 @@
           "name": "Firefox",
           "icon":"firefox.png",
           "link": "firefox"
+        },
+        {
+          "separator": true
+        },
+        {
+          "name": "Cyolo",
+          "link": "firefox https://users.cyolo.ess.eu/"
         },
         {
           "separator": true
@@ -428,6 +436,10 @@
       "name": "Tools",
       "menu": [
         {
+          "name": "Remmina - remote desktop",
+          "link": "remmina"
+        },
+        {
           "name": "Calculator",
           "icon":"calc.png",
           "link": "/bin/gnome-calculator"
@@ -469,6 +481,11 @@
         },
         {
           "separator": true
+        },
+        {
+          "name": "NoMachine",
+          "link": "/usr/NX/bin/nxplayer",
+          "description": "NoMachine"
         },
         {
           "name": "Wallscreen West",
