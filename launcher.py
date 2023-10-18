@@ -384,7 +384,11 @@ class MainWindow(QMainWindow):
         if not os.path.isfile(settingsPath):
             print('Settings file not found, creating it with default values')
             open(settingsPath,'w+').write(open('default_settings.json','r').read())
-        data = json.load(open(settingsPath))
+        try:
+            data = json.load(open(settingsPath))
+        except JSONDecodeError:
+            print('Could not read JSON settings file. Loading default settings instead.')
+            data = json.load(open('default_settings.json','r').read())
         self.layoutFile = 'menus/' + data["defaultLayoutFile"]
         self.fontSize = int(data["fontsize"])
         self.move(int(data['xpos']),int(data['ypos']))
