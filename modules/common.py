@@ -1,1 +1,3 @@
-settingsPath = '/home/operator-mcr/settings.json'
+import os
+settingsPath = os.path.expanduser('~/settings.json')
+
