@@ -22,16 +22,12 @@ import shlex
 import os
 import warnings
 from subprocess import Popen# ,CREATE_NEW_CONSOLE
-sys.path.insert(0, '/nfs/Linacshare_controlroom/MCR/Johanna/logbook/esslogbook/') # TODO: fix this. launcher cannot require esslogbook. 1. use system installation, not Johanna-installation, and 2. handle it gracefully if it is not installed.
-
-from esslogbook import logbook
 
 from modules.argumentDialog import argumentDialog
 from modules.quickLog import quickLog
 from modules.settingsDialog import settingsDialog
 from modules.rePhauncherDialog import rePhauncherDialog
 from modules.common import settingsPath
-from modules.log_checker_test import LogCheckerWindow # TODO: this isn't a test. rename
 
 useShortCuts = True
 try:
@@ -88,46 +84,6 @@ class MainWindow(QMainWindow):
         self.remoteUpdateTimer.timeout.connect(self.remoteUpdateCheck)
         self.updateInProgress = False
         self.updateFlag = False
-
-
-# --- Logbook check stuff. TODO: To be moved to separate class/file
-
-    def findLastEntry(self):
-        search_result = self.oplogbook.search(start="80h") # TODO: This needs a thread.
-  
-        try:
-                self.last_entry_id=search_result[-1].id 
-                #self.last_entry_id=search_result[-3].id #uncomment when in test mode
-                          
-        except IndexError:
-                self.last_entry_id=0
-        print('Last entry')
-        print(self.last_entry_id)
-    
-    def logCheck(self):
-        search_result=self.oplogbook.search(start="1h")
-                
-        try:
-                latest_entry_id=search_result[-1].id
-
-        except IndexError:
-                latest_entry_id=self.last_entry_id        
-
-        if latest_entry_id > self.last_entry_id:
-                print('new entry!')
-                self.last_entry_id=latest_entry_id
-                print(self.last_entry_id)
-                self.logCheckWindowLogic()
-    
-    def logCheckWindowLogic(self):
-        if self.logcheck_window_init==0:
-                self.logcheck_window_init=1
-                self.logcheck_window.display()
-        else:
-                self.logcheck_window.update_display()
-        
-        self.logcheck_window.show()    
-        
 
 # --- Remote update of application stuff. TODO: Move to separate class/file
 
@@ -312,25 +268,6 @@ class MainWindow(QMainWindow):
     def autoramp_shortcut(self):
         print('hello')
         print(self.sender().isChecked())
-
-    def logcheck_toggle(self):
-        if not hasattr(self, 'timer'): # first time initialization:
-            warnings.filterwarnings("ignore") # remove when that warning isn't thrown all the time. TODO: also figure out how to filter it properly.
-            test_logbook_checker=False
-            if test_logbook_checker==True:
-                self.oplogbook = logbook.EssLogbook(server='https://olog-es-lab.cslab.esss.lu.se',nameLogbook='Operations',username="some_username")        	
-            else:
-                self.oplogbook = logbook.EssLogbook(server='https://olog.esss.lu.se',nameLogbook='RF,Operations,Operations-instructions',username="some_username")
-        
-            self.findLastEntry()
-            self.logcheck_window=LogCheckerWindow(parent=self)
-            self.logcheck_window_init=0
-            self.timer = QTimer()
-        if self.sender().isChecked():
-            self.timer.start(1500)
-            self.timer.timeout.connect(self.logCheck)
-        else:
-            self.timer.stop()
 
     # Shows dialog box for input of parameters to a commandline program, and executes it.
     def onMenuClickCommandline(self, d):
