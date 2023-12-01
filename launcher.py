@@ -238,8 +238,6 @@ class MainWindow(QMainWindow):
                             newAction.triggered.connect(self.onInitiateUpdate)
                         elif link == '_autoramp_shortcut':
                             newAction.toggled.connect(self.autoramp_shortcut) # toggled. This assumes a checkbox.
-                        elif link == '_logchecker':
-                            newAction.toggled.connect(self.logcheck_toggle) # toggled. This assumes a checkbox.
                         else:
                             if "cwd" in each: # if menu item specifies a different working directory. Kind of a hack, needs to be handled nicer.
                                 link = {"cwd":each['cwd'], "link":each['link']}
