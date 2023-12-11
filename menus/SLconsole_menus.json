@@ -340,7 +340,8 @@
                 {
                     "name": "Auto-ramp [Ctrl-F12]",
                     "link": "python /nfs/Linacshare_controlroom/MCR/scripts/autoramp/autoramp.py",
-                    "description": "Automatic ramping"
+                    "description": "Automatic ramping",
+                    "shortcut": "Ctrl F12"
                 },
                 {
                     "name": "RF scope screenshot - single",
