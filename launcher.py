@@ -22,6 +22,9 @@ import shlex
 import os
 import warnings
 from subprocess import Popen# ,CREATE_NEW_CONSOLE
+from datetime import datetime
+import traceback
+import logging
 
 from modules.argumentDialog import argumentDialog
 from modules.quickLog import quickLog
@@ -34,7 +37,7 @@ try:
     #import pyperclip
     import pyxhook
 except ModuleNotFoundError:
-    print('pyxhook module not found. Ignoring keyboard shortcut functionality.')
+    logging.info('pyxhook module not found. Ignoring keyboard shortcut functionality.')
     useShortCuts = False
 
 if useShortCuts:
@@ -42,6 +45,75 @@ if useShortCuts:
 
 current_OS = sys.platform.lower()
 
+realpath = os.path.realpath(__file__)
+SCRIPT_PATH = realpath[:realpath.rfind('/')+1]
+
+class OutputWindow(QWidget):
+    def __init__(self, out_standard, out_error, pos):
+        super().__init__()
+        self.resize(800,400)
+        self.move(pos.x(), pos.y() + 30)
+        self.setWindowTitle('stderr + stdout')
+        layout = QGridLayout()
+        self.setLayout(layout)
+        self.teOut = QPlainTextEdit()
+        layout.addWidget(self.teOut, 0, 0)
+        self.clearBtn = QPushButton("Clear")
+        self.clearBtn.clicked.connect(self.clear)
+        layout.addWidget(self.clearBtn, 1, 0)
+
+        f = open('output.log','r')
+        self.text = f.readlines()
+        f.close()
+        if len(self.text) > 100:
+            self.teOut.insertPlainText('See output.log for full log\n\n')
+        for line in self.text[-100:]:
+            self.teOut.insertPlainText(line)
+
+        out_standard.register_callback(self.callback)
+        out_error.register_callback(self.callback)
+
+    def __del__(self):
+        pass
+
+    def clear(self):
+        self.teOut.clear()
+
+    def callback(self, text):
+        self.teOut.insertPlainText(text)
+
+class MyStream(object):
+    def __init__(self):
+        self.reg_cb = None
+
+    def write(self, text):
+        if text in [' ','',None]:
+            return
+        if text == '\n':
+            f = open('output.log', 'a')
+            f.write('\n')
+            f.close()
+            if self.reg_cb != None:
+                self.reg_cb('\n')
+            return
+
+        time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        f = open('output.log', 'a')
+        text_out = time_str + ' : ' + text
+        f.write(text_out)
+        f.close()
+
+        if self.reg_cb != None:
+            self.reg_cb(text_out)
+
+    def register_callback(self, cb):
+        self.reg_cb = cb
+
+    def flush(self):
+        pass
+
+#sys.stdout = MyStream()
+#sys.stderr = MyStream()
 
 
 class MainWindow(QMainWindow):
@@ -75,8 +147,6 @@ class MainWindow(QMainWindow):
 	
         self.loadSettings()
         self.generateMenus(self.menubar)
-	
-
 
         # Setup for remote update check.
         self.remoteUpdateTimer = QTimer()
@@ -238,6 +308,8 @@ class MainWindow(QMainWindow):
                             newAction.triggered.connect(self.onInitiateUpdate)
                         elif link == '_autoramp_shortcut':
                             newAction.toggled.connect(self.autoramp_shortcut) # toggled. This assumes a checkbox.
+                        elif link == '_output':
+                            newAction.triggered.connect(self.showOutput)
                         else:
                             if "cwd" in each: # if menu item specifies a different working directory. Kind of a hack, needs to be handled nicer.
                                 link = {"cwd":each['cwd'], "link":each['link']}
@@ -264,8 +336,7 @@ class MainWindow(QMainWindow):
 
     # TODO: Implement. This is called when launcher loads, so start keyboard monitoring from here, not in __init__ - also, this should be shortcuts in general, not autoramp.
     def autoramp_shortcut(self):
-        print('hello')
-        print(self.sender().isChecked())
+        pass
 
     # Shows dialog box for input of parameters to a commandline program, and executes it.
     def onMenuClickCommandline(self, d):
@@ -286,6 +357,11 @@ class MainWindow(QMainWindow):
             
             Popen(splitlist) #, creationflags=CREATE_NEW_CONSOLE)
 
+    def showOutput(self):
+        self.out_win = OutputWindow(sys.stdout, sys.stderr, self.pos())
+        self.out_win.show()
+        
+
     def onRelaunch(self):
         os.execv(__file__, sys.argv)
 
@@ -301,11 +377,12 @@ class MainWindow(QMainWindow):
     def onMenuClick(self, text): # text is the command to send to OS
         try:
             if type(text) is str:
-                print(shlex.split(text))
+                logging.info(text)
                 splitlist = shlex.split(text) # splits by spaces, but keeps quoted text unsplit. (on linux, maybe use posix=False option, to keep quotes)
                 Popen(splitlist, preexec_fn=os.setpgrp) #,creationflags=CREATE_NEW_CONSOLE)
             else:
                 splitlist = shlex.split(text['link'])
+                logging.info(text['link'])
                 Popen(splitlist, preexec_fn=os.setpgrp, cwd=text['cwd'])
         except FileNotFoundError as e:
             print('File not found')
@@ -348,7 +425,6 @@ class MainWindow(QMainWindow):
             event.accept()
 
     def mouseReleaseEvent(self, event):
-        print('mouse released')
         self.moveFlag = False
         self.changeSetting('xpos',str(self.pos().x()))
         self.changeSetting('ypos',str(self.pos().y()))
@@ -401,10 +477,32 @@ class MainWindow(QMainWindow):
         return
 
 
-app = QApplication(sys.argv)
-w = MainWindow()
-#app.aboutToQuit.connect(w.closeEvent)
-w.show()
-app.exec()
+def handle_exception(exc_type, exc_value, exc_traceback):
+    s = ''.join(traceback.format_exception(exc_type, exc_value, exc_traceback))
+    logging.exception('unhandled exception: %s',s)
+#    QMessageBox.critical(None, 'PVmon: Shit happened','Unhandled exception: '+str(exc_value)+'\n\nSee app.log')
 
+
+
+if __name__ == "__main__":
+
+    sys.excepthook = handle_exception
+
+    logging.basicConfig(
+        level=logging.DEBUG,
+        #format = '%(asctime)s - %(levelname)s - %(message)s',
+        format = '%(levelname)s - %(message)s',
+        handlers = [
+            #logging.FileHandler(SCRIPT_PATH + 'app.log'),
+            logging.StreamHandler()
+        ]
+    )
+    logging.info('Application started')
+
+    app = QApplication(sys.argv)
+    w = MainWindow()
+    w.show()
+    app.exec()
+
+    
 
