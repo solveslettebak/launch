@@ -1,576 +1,565 @@
 {
-  "services": [
-    {
-      "name": "Phoebus layout manager",
-      "link": "_phlayout"
-    },
-    {
-      "name": "Phoebus layout manager",
-      "link": "_phlayout"
-    }
-  ],
-  "menu": [
-    {
-      "name": "File",
-      "menu": [
+    "menu": [
         {
-          "name": "Load layout...",
-          "link": "_loadlayout",
-          "description": "Load new menu file layout"
+            "name": "File",
+            "menu": [
+                {
+                    "name": "Load layout...",
+                    "link": "_loadlayout",
+                    "description": "Load new menu file layout"
+                },
+                {
+                    "name": "Settings...",
+                    "link": "_settings",
+                    "description": "Change settings"
+                },
+                {
+                    "name": "Quick settings",
+                    "menu": [
+                        {
+                            "name": "Use shortcuts",
+                            "link": "_autoramp_shortcut",
+                            "description": "If environment allows, enable use of keyboard shortcuts",
+                            "checkable": true,
+                            "checked": true
+                        }
+                    ]
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "Reload menus",
+                    "link": "_reload",
+                    "description": "If changes were made to menu file, use this to reload the file"
+                },
+                {
+                    "name": "Relaunch this instance",
+                    "link": "_relaunch",
+                    "description": "Simply restarts the launcher."
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "Git repo",
+                    "link": "firefox https://gitlab.esss.lu.se/accop/pytools/launcher",
+                    "description": "Launcher gitlab repository link. Opens in firefox."
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "Quit",
+                    "link": "_quit",
+                    "description": "quit",
+                    "icon": "quit.png"
+                }
+            ]
         },
         {
-          "name": "Settings...",
-          "link": "_settings",
-          "description": "Change settings"
+            "name": "Phoebus",
+            "menu": [
+                {
+                    "name": "Phauncher...",
+                    "link": "_rephauncher",
+                    "description": "Tool to compose custom phoebus layouts, and then launch them"
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "As last",
+                    "link": "/usr/local/bin/phoebus",
+                    "description": "Simply starts phoebus."
+                },
+                {
+                    "name": "Nav. only",
+                    "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch_server.sh layout_Nav_only.memento",
+                    "description": "Starts navigator only, in server mode."
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "Nav. only with TS2 Olog",
+                    "link": "/bin/bash launch.sh layout_Nav_only.memento https://gitlab.esss.lu.se/accop/phoebus-apps/configurations/-/raw/main/ts2.ini",
+                    "description": "Starts navigator with TS2 .ini file, to allow access to TS2 logbook"
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "SL default",
+                    "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch_server.sh layout_post_SRR3.memento",
+                    "description": "SL default layout"
+                },
+                {
+                    "name": "Buncher conditioning",
+                    "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch_server.sh layout_MEBT_bunchers.memento",
+                    "description": "Buncher conditioning default layout"
+                },
+                {
+                    "name": "DTL conditioning",
+                    "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch_server.sh layout_DTL1_4_conditioning.memento",
+                    "description": "DTL conditioning layout"
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "Layouts git repo / README",
+                    "link": "firefox https://gitlab.esss.lu.se/accop/phoebus-apps/shared-cs-studio-phoebus-layouts",
+                    "description": "Git repo for phoebus layouts. Check README in repo for details"
+                }
+            ]
         },
         {
-          "name":"Quick settings",
-          "menu": [
-            {
-             "name":"Use shortcuts",
-             "link": "_autoramp_shortcut",
-             "checkable": true,
-             "checked": true,
-             "description": "If environment allows, enable use of keyboard shortcuts"
-            },
-            {
-             "name": "Logbook watcher",
-             "link": "_logchecker",
-             "checkable": true,
-             "checked": false,
-             "description": "Toggle on/off the logbook checking feature"
-            }
-          ]
+            "name": "OP apps",
+            "menu": [
+                {
+                    "name": "Logbook Watcher",
+                    "link": "python /nfs/Linacshare_controlroom/MCR/scripts/logchecker/gui.py",
+                    "description": "Get notifications regarding new olog entries",
+                    "cwd": "/nfs/Linacshare_controlroom/MCR/scripts/logchecker/"
+                },
+                {
+                    "name": "AFT",
+                    "link": "gnome-terminal -- /bin/bash /home/operator-mcr/pytools/esslogbook-gui/start.sh",
+                    "description": "Accelerator Fault Tracking tool"
+                },
+                {
+                    "name": "DATabrowser GUI",
+                    "link": "python /nfs/Linacshare_controlroom/MCR/scripts/databrowsergui/gui.py",
+                    "description": "Databrowser launcher",
+                    "icon": "plot.png",
+                    "cwd": "/nfs/Linacshare_controlroom/MCR/scripts/databrowsergui/"
+                },
+                {
+                    "name": "Shift Start/End",
+                    "link": "gnome-terminal -- /bin/bash /home/operator-mcr/pytools/esslogbook-gui/start-shiftstart.sh",
+                    "description": "Run shift start or end entry generator"
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "Open XAL",
+                    "link": "/bin/bash /usr/local/bin/openxal-launcher.sh",
+                    "description": "Open XAL"
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "Spectrogram",
+                    "link": "python /home/operator-mcr/pytools/spectrogram/launcher.py",
+                    "description": "Waveform visualizer"
+                },
+                {
+                    "name": "Acronym finder",
+                    "link": "python /nfs/Linacshare_controlroom/MCR/scripts/acronymfinder2/gui.py",
+                    "description": "Check acronyms here",
+                    "icon": "AF.png",
+                    "cwd": "/nfs/Linacshare_controlroom/MCR/scripts/acronymfinder2/"
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "Filament heater",
+                    "menu": [
+                        {
+                            "name": "Filament heater...",
+                            "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py\"",
+                            "description": "Start filament heating at predefined time (or now), example: \n fil_heat.py RFQ,DTL1 5.30",
+                            "icon": "filheat.png",
+                            "arguments": "manual",
+                            "help_arg": "-h",
+                            "mandatory_arg": "-p",
+                            "default_args": "DTL5,MBL8k1,MBL8k2,MBL8k3,MBL8k4 6.00"
+                        },
+                        {
+                            "separator": true
+                        },
+                        {
+                            "name": "Mon-Fri: DTL5",
+                            "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py DTL5 6.00 -p",
+                            "description": "Quick link for a specific filament heater setting. Run Filament heater... for help, or to customize"
+                        },
+                        {
+                            "name": "Weekend: DTL5",
+                            "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py DTL5 7.00 -p",
+                            "description": "Quick link for a specific filament heater setting. Run Filament heater... for help, or to customize"
+                        }
+                    ]
+                },
+                {
+                    "name": "Buncher cleaner",
+                    "menu": [
+                        {
+                            "name": "Cleaner...",
+                            "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/scripts/buncher-cleaner/bunch.py\"",
+                            "description": "Buncher cleaner with all the options",
+                            "arguments": "manual",
+                            "help_arg": "-h",
+                            "default_args": "-b 1,2,3 -d [-10000,10000,4000] -p 0.05,0.1,0.2,0.5,0.75,1,1.5,2,2.5,3,4,5,6,7"
+                        },
+                        {
+                            "separator": true
+                        },
+                        {
+                            "name": "10 min HotSpot [beta]...",
+                            "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/scripts/buncher-cleaner/bunch.py\"",
+                            "description": "Just select bunchers, and go!",
+                            "arguments": "manual",
+                            "help_arg": "-h",
+                            "mandatory_arg": "-u",
+                            "default_args": "-b 1,2,3"
+                        },
+                        {
+                            "name": "30 min FastClean...",
+                            "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/scripts/buncher-cleaner/bunch.py\"",
+                            "description": "Just select bunchers, and go!",
+                            "arguments": "manual",
+                            "help_arg": "-h",
+                            "mandatory_arg": "-f",
+                            "default_args": "-b 1,2,3"
+                        },
+                        {
+                            "name": "LongClean...",
+                            "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/scripts/buncher-cleaner/bunch.py\"",
+                            "description": "The standard cleaning routine for those with time on their hands",
+                            "arguments": "manual",
+                            "help_arg": "-h",
+                            "default_args": "-b 1,2,3"
+                        }
+                    ]
+                },
+                {
+                    "name": "RF shutdown",
+                    "menu": [
+                        {
+                            "name": "Shutdown...",
+                            "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/scripts/RF_shutdown/shutdown.py\"",
+                            "description": "Commandline application. \nSelect which klystrons and bunchers to bring to which end state.",
+                            "arguments": "manual",
+                            "help_arg": "-h",
+                            "mandatory_arg": "-p",
+                            "default_args": "RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 AUX"
+                        },
+                        {
+                            "separator": true
+                        },
+                        {
+                            "name": "NCL: ALL to FIL",
+                            "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/RF_shutdown/shutdown.py RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 FIL",
+                            "description": "All bunchers and klystrons to FIL state",
+                            "icon": "RF.png"
+                        },
+                        {
+                            "name": "NCL: ALL to AUX",
+                            "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/RF_shutdown/shutdown.py RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 AUX",
+                            "description": "All bunchers and klystrons to AUX state"
+                        }
+                    ]
+                },
+                {
+                    "name": "Post Mortem Analyzer [beta]",
+                    "link": "python /nfs/Linacshare_controlroom/MCR/scripts/PMA/pma.py",
+                    "description": "RF post mortem analyzer [pre-alpha]"
+                },
+                {
+                    "name": "RFQ cleaner",
+                    "menu": [
+                        {
+                            "name": "Continue from last",
+                            "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/RFQ_cleaner/RFQ.py",
+                            "description": "Multipaction cleaning of RFQ\nStart wherever previous run stopped [default]"
+                        },
+                        {
+                            "name": "Start from bottom",
+                            "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/RFQ_cleaner/RFQ.py -f",
+                            "description": "Multipaction cleaning of RFQ\nForce fresh start"
+                        }
+                    ]
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "Auto-ramp [Ctrl-F12]",
+                    "link": "python /nfs/Linacshare_controlroom/MCR/scripts/autoramp/autoramp.py",
+                    "description": "Automatic ramping",
+                    "shortcut": "Ctrl F12"
+                },
+                {
+                    "name": "RF scope screenshot - single",
+                    "link": "gnome-terminal -- /bin/bash /nfs/Linacshare_controlroom/MCR/Solve/scripts/pyvisa/run.sh",
+                    "description": "Screenshot from oscilloscope",
+                    "cwd": "/nfs/Linacshare_controlroom/MCR/Solve/scripts/pyvisa/"
+                },
+                {
+                    "name": "RF scope screenshot - continuous",
+                    "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/Solve/scripts/pyvisa/scrshot.py",
+                    "description": "Hourly screenshot"
+                }
+            ]
         },
         {
-          "separator": "true"
+            "name": "Weblinks",
+            "menu": [
+                {
+                    "name": "Firefox",
+                    "link": "firefox",
+                    "description": "Firefox",
+                    "icon": "firefox.png"
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "Cyolo",
+                    "link": "firefox https://users.cyolo.ess.eu/",
+                    "description": "Cyolo application launcher"
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "Olog",
+                    "link": "firefox https://olog.esss.lu.se/",
+                    "description": "Olog"
+                },
+                {
+                    "name": "Jupyter",
+                    "link": "firefox https://jupyterhub.tn.esss.lu.se/",
+                    "description": "Jupyter",
+                    "icon": "jupyter.png"
+                },
+                {
+                    "name": "OP Confluence",
+                    "menu": [
+                        {
+                            "name": "Frontpage",
+                            "link": "firefox https://confluence.esss.lu.se/display/AO/Control+Room+Operations+Group+Home+Page",
+                            "description": "Confluence page for OP group"
+                        },
+                        {
+                            "name": "BETS",
+                            "link": "firefox https://confluence.esss.lu.se/pages/viewpage.action?pageId=435990027",
+                            "description": "BETS call list (call log in same place)"
+                        },
+                        {
+                            "name": "CR Handbook",
+                            "link": "firefox https://confluence.esss.lu.se/display/AO/Handbook+for+Control+Room+Operations+Group",
+                            "description": "Control Room Handbook. All procedures needed to run an accelerator, blindfolded."
+                        },
+                        {
+                            "separator": true
+                        },
+                        {
+                            "name": "WOO weekly plan",
+                            "link": "firefox https://confluence.esss.lu.se/display/WCP/Weekly+Plan+2023",
+                            "description": "WOO weekly plan"
+                        },
+                        {
+                            "name": "OP Morning meetings",
+                            "link": "firefox https://confluence.esss.lu.se/display/AO/2023+Morning+Meetings",
+                            "description": "OP morning meetings"
+                        }
+                    ]
+                },
+                {
+                    "name": "Site map",
+                    "link": "firefox https://confluence.esss.lu.se/display/CER/PPE+on+ESS+Site?preview=/389345968/411750652/ESS%20map%20coloured%20safety%20areas%202022-06-21.jpg",
+                    "description": "The closest thing we have to a site map"
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "ISrc RFPM FW",
+                    "link": "firefox http://isrc-rfpm-fw.tn.esss.lu.se/",
+                    "description": "Ion source RF probes, power forward"
+                },
+                {
+                    "name": "ISrc RFPM REF",
+                    "link": "firefox http://isrc-rfpm-ref.tn.esss.lu.se/",
+                    "description": "Ion source RF probes, power reflected"
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "GitLab",
+                    "link": "firefox https://gitlab.esss.lu.se/accop/",
+                    "description": "Gitlab/accop",
+                    "icon": "gitlab.png"
+                },
+                {
+                    "name": "CE-deploy",
+                    "link": "firefox https://ce-deploy.esss.lu.se",
+                    "description": "Check status of IOCs (and for those with access: restart)"
+                },
+                {
+                    "name": "CSentry",
+                    "link": "firefox https://csentry.esss.lu.se/"
+                },
+                {
+                    "name": "Jira NSOI",
+                    "link": "firefox https://jira.esss.lu.se/projects/NSOI",
+                    "description": "Jira board for Neutron Source Operation Issues"
+                },
+                {
+                    "name": "Naming service",
+                    "link": "firefox https://naming.esss.lu.se",
+                    "description": "Naming service"
+                },
+                {
+                    "name": "Web-Mail",
+                    "link": "firefox https://mail.esss.lu.se",
+                    "description": "https://mail.esss.lu.se"
+                },
+                {
+                    "name": "Public Operations Screen",
+                    "link": "firefox https://pos.ess.eu/",
+                    "description": "https://pos.ess.eu"
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "Archiver (scalars)",
+                    "link": "firefox http://archiver-linac-01.tn.esss.lu.se:17665/mgmt/ui/index.html",
+                    "description": "Archiver web interface for scalar values",
+                    "icon": "archive.png"
+                },
+                {
+                    "name": "Archiver (waveforms)",
+                    "link": "firefox http://archiver-linac-wf-01.tn.esss.lu.se:17665/mgmt/ui/index.html",
+                    "description": "Archiver web interface for waveforms"
+                },
+                {
+                    "name": "Archiver Viewer (waveforms)",
+                    "link": "firefox http://archiver-linac-wf-01.tn.esss.lu.se:17668/retrieval/ui/viewer/archViewer.html",
+                    "description": "Archiver web interface for waveforms: Viewer"
+                },
+                {
+                    "name": "PV search",
+                    "link": "firefox https://pos.ess.eu/pvs/",
+                    "description": "To find PV names"
+                },
+                {
+                    "name": "Shifter",
+                    "link": "firefox https://shifter.esss.lu.se/",
+                    "description": "Shifter"
+                }
+            ]
         },
         {
-          "name": "Edit menus",
-          "link": "gedit menus/standard_menus.json",
-          "description": "Opens a text editor with menu .json file"
+            "name": "Tools",
+            "menu": [
+                {
+                    "name": "Remmina - remote desktop",
+                    "link": "remmina",
+                    "description": "Remote desktop manager"
+                },
+                {
+                    "name": "Calculator",
+                    "link": "/bin/gnome-calculator",
+                    "description": "Calculator",
+                    "icon": "calc.png"
+                },
+                {
+                    "name": "x-kill",
+                    "link": "xkill",
+                    "description": "Point on any window to kill its creator. Use with caution.",
+                    "icon": "crosshair.png"
+                },
+                {
+                    "name": "Screenshot",
+                    "link": "gnome-screenshot -i",
+                    "description": "Screenshot"
+                },
+                {
+                    "name": "gedit",
+                    "link": "gedit",
+                    "description": "gedit"
+                },
+                {
+                    "name": "NVIDIA settings",
+                    "link": "nvidia-settings",
+                    "description": "NVIDIA screen settings"
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "PV-monitor",
+                    "link": "python /nfs/Linacshare_controlroom/MCR/scripts/PVmon/main.py",
+                    "description": "PV monitor"
+                },
+                {
+                    "name": "Reminder",
+                    "link": "gnome-terminal -- sh -c 'python /nfs/Linacshare_controlroom/MCR/Bilal/reminder.py;echo Press any key to exit;read'",
+                    "description": "Advanced cognitive time-domain reinforcement technology"
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "NoMachine",
+                    "link": "/usr/NX/bin/nxplayer",
+                    "description": "NoMachine"
+                }
+            ]
         },
         {
-          "separator": "true"
+            "name": "Docs",
+            "menu": [
+                {
+                    "name": "Olog markdown reference",
+                    "link": "firefox https://olog.esss.lu.se/Olog/help/CommonmarkCheatsheet",
+                    "description": "Explanation of how to use olog's markdown for logbook entry formatting"
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "RF block diagrams",
+                    "link": "firefox https://chess.esss.lu.se/enovia/link/21308.51166.25345.1735",
+                    "description": "Chess: RF block diagrams"
+                },
+                {
+                    "name": "Tech. description NCL",
+                    "link": "firefox https://chess.esss.lu.se/enovia/link/ESS-0159957/21308.51166.27638.56110/valid",
+                    "description": "Chess: technical description of the NCL"
+                },
+                {
+                    "name": "Physics for technical staff",
+                    "link": "firefox https://chess.esss.lu.se/enovia/link/ESS-1941204/21308.51166.25088.35432/valid",
+                    "description": "Chess: Physics for technical staff"
+                }
+            ]
         },
         {
-          "name": "Reload menus",
-          "link": "_reload",
-          "description": "If changes were made to menu file, use this to reload the file"
+            "separator": true
         },
         {
-          "name": "Relaunch this instance",
-          "link": "_relaunch",
-          "description": "Simply restarts the launcher."
+            "name": "Phone",
+            "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/phone/gui.py",
+            "description": "Phonebook"
         },
         {
-          "name": "Relaunch all instances",
-          "link": "_updateall",
-          "description": "Sets an update flag for all running instances of Launcher. Causes them to restart within a few seconds."
+            "name": "PVmon",
+            "link": "python /nfs/Linacshare_controlroom/MCR/scripts/PVmon/main.py",
+            "description": "PV monitor"
         },
         {
-          "separator": "true"
-        },
-        {
-          "name": "Git repo",
-          "link": "firefox https://gitlab.esss.lu.se/accop/pytools/launcher",
-          "description": "Launcher gitlab repository link. Opens in firefox."
-        },
-        {
-          "separator": "true"
-        },
-        {
-          "name": "Quit",
-          "link": "_quit",
-          "icon": "quit.png",
-          "description": "quit"
+            "name": "Shell",
+            "link": "gnome-terminal",
+            "description": "Starts a linux shell"
         }
-      ]
-    },
-    {
-
-      "name": "Phoebus",
-      "menu": [
-        {
-          "name": "Phauncher...",
-          "link": "_rephauncher",
-          "description":"Tool to compose custom phoebus layouts, and then launch them"
-        },
-        {
-          "separator": true
-        },
-        {
-          "name": "As last",
-          "link": "/usr/local/bin/phoebus",
-          "description": "Simply starts phoebus."
-        },
-        {
-          "name": "Nav. only",
-          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch_server.sh layout_Nav_only.memento",
-          "description": "Starts navigator only, in server mode."
-        },
-        {
-          "separator": true
-        },
-        {
-          "name": "Nav. only with TS2 Olog",
-          "link": "/bin/bash launch.sh layout_Nav_only.memento https://gitlab.esss.lu.se/accop/phoebus-apps/configurations/-/raw/main/ts2.ini",
-          "description": "Starts navigator with TS2 .ini file, to allow access to TS2 logbook"
-        },
-        {
-          "separator": true
-        },
-        {
-          "name": "SL default",
-          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch_server.sh layout_post_SRR3.memento",
-          "description": "SL default layout"
-        },
-        {
-          "name": "Buncher conditioning",
-          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch_server.sh layout_MEBT_bunchers.memento",
-          "description": "Buncher conditioning default layout"
-        },
-        {
-          "name": "DTL conditioning",
-          "link": "/bin/bash /nfs/Linacshare_controlroom/MCR/launcher/launch_server.sh layout_DTL1_4_conditioning.memento",
-          "description": "DTL conditioning layout"
-        },
-        {
-          "separator": true
-        },
-        {
-          "name": "Push local layouts",
-          "link": "gnome-terminal -- python tools/gitpusher.py",
-          "description": "Attempts to push any local phoebus layouts. Please see git repo for details"
-        },
-        {
-          "name": "Layouts git repo / README",
-          "link": "firefox https://gitlab.esss.lu.se/accop/phoebus-apps/shared-cs-studio-phoebus-layouts",
-          "description": "Git repo for phoebus layouts. Check README in repo for details"
-        }
-      ]
-    },
-    {
-      "name": "OP apps",
-      "menu": [
-        {
-          "name": "AFT",
-          "link": "gnome-terminal -- /bin/bash /home/operator-mcr/pytools/esslogbook-gui/start.sh",
-          "description": "Accelerator Fault Tracking tool"
-        },
-        {
-          "name": "Shift Start/End",
-          "link": "gnome-terminal -- /bin/bash /home/operator-mcr/pytools/esslogbook-gui/start-shiftstart.sh",
-          "description": "Run shift start or end entry generator"
-        },
-        {
-          "separator": true
-        },
-        {
-          "name": "Open XAL",
-          "link": "/bin/bash /usr/local/bin/openxal-launcher.sh",
-          "description": "Open XAL"
-        },
-        {
-          "separator": true
-        },
-        {
-          "name": "Spectrogram",
-          "link": "python /home/operator-mcr/pytools/spectrogram/launcher.py",
-          "description":"Waveform visualizer"
-        },
-        {
-          "name": "Acronym finder",
-          "icon":"wtf.png",
-          "cwd":"/nfs/Linacshare_controlroom/MCR/scripts/acronymfinder2/",
-          "link": "python /nfs/Linacshare_controlroom/MCR/scripts/acronymfinder2/gui.py",
-          "description":"Check acronyms here"
-        },
-        {
-          "separator": true
-        },        
-
-        {
-          "name":"Filament heater",
-          "menu": [
-            {
-             "name": "Filament heater...",
-             "icon": "filheat.png",
-             "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py\"",
-             "arguments": "manual",
-             "help_arg": "-h",
-             "mandatory_arg": "-p",
-             "default_args": "DTL5,MBL8k1,MBL8k2,MBL8k3,MBL8k4 6.00",
-             "description":"Start filament heating at predefined time (or now), example: \n fil_heat.py RFQ,DTL1 5.30"
-            },
-            {
-              "separator": true
-            },
-            {
-             "name": "Mon-Fri: MBL-080 2,3,4",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py MBL8k2,MBL8k3,MBL8k4 6.00 -p",
-             "description":"Quick link for a specific filament heater setting. Run Filament heater... for help, or to customize"
-            },
-            {
-             "name": "Mon-Fri: MBL-080 2,3,4 + DTL5",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py DTL5,MBL8k2,MBL8k3,MBL8k4 6.00 -p",
-             "description":"Quick link for a specific filament heater setting. Run Filament heater... for help, or to customize"
-            },
-            {
-              "separator": true
-            },
-            {
-             "name": "Weekend: MBL-080 2,3,4",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py MBL8k2,MBL8k3,MBL8k4 7.00 -p",
-             "description":"Quick link for a specific filament heater setting. Run Filament heater... for help, or to customize"
-            },
-            {
-             "name": "Weekend: MBL-080 2,3,4 + DTL5",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/filament-heater/fil_start.py DTL5,MBL8k2,MBL8k3,MBL8k4 7.00 -p",
-             "description":"Quick link for a specific filament heater setting. Run Filament heater... for help, or to customize"
-            }
-          ]
-        },
-        {
-          "name":"Buncher cleaner",
-          "menu": [
-            {
-             "name": "Cleaner...",
-             "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/scripts/buncher-cleaner/bunch.py\"",
-             "arguments": "manual",
-             "help_arg": "-h",
-             "mandatory_arg": "",
-             "default_args": "-b 1,2,3 -d [-10000,10000,4000] -p 0.05,0.1,0.2,0.5,0.75,1,1.5,2,2.5,3,4,5,6,7",
-             "description":"Buncher cleaner with all the options"
-            },
-            {
-              "separator": true
-            },
-            {
-             "name": "10 min HotSpot [beta]...",
-             "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/scripts/buncher-cleaner/bunch.py\"",
-             "arguments": "manual",
-             "help_arg": "-h",
-             "mandatory_arg": "-u",
-             "default_args": "-b 1,2,3",
-             "description":"Just select bunchers, and go!"
-            },
-            {
-             "name": "30 min FastClean...",
-             "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/scripts/buncher-cleaner/bunch.py\"",
-             "arguments": "manual",
-             "help_arg": "-h",
-             "mandatory_arg": "-f",
-             "default_args": "-b 1,2,3",
-             "description":"Just select bunchers, and go!"
-            },
-            {
-             "name": "LongClean...",
-             "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/scripts/buncher-cleaner/bunch.py\"",
-             "arguments": "manual",
-             "help_arg": "-h",
-             "mandatory_arg": "",
-             "default_args": "-b 1,2,3",
-             "description":"The standard cleaning routine for those with time on their hands"
-            }
-          ]
-        },
-        {
-          "name":"RF shutdown",
-          "menu": [
-            {
-             "name": "Shutdown...",
-             "link": "gnome-terminal -- python \"/nfs/Linacshare_controlroom/MCR/scripts/RF_shutdown/shutdown.py\"",
-             "arguments": "manual",
-             "help_arg": "-h",
-             "mandatory_arg": "-p",
-             "default_args": "RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 AUX",
-             "description":"Commandline application. \nSelect which klystrons and bunchers to bring to which end state."
-            },
-            {
-              "separator": true
-            },
-            {
-             "name": "NCL: ALL to FIL",
-             "icon":"RF.png",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/RF_shutdown/shutdown.py RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 FIL",
-             "description":"All bunchers and klystrons to FIL state"
-            },
-            {
-             "name": "NCL: ALL to AUX",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/RF_shutdown/shutdown.py RFQ,DTL1,DTL2,DTL3,DTL4,B1,B2,B3 AUX",
-             "description":"All bunchers and klystrons to AUX state"
-            }
-          ]
-        },
-        {
-          "name": "Post Mortem Analyzer [beta]",
-          "link": "python /nfs/Linacshare_controlroom/MCR/scripts/PMA/pma.py",
-          "description": "RF post mortem analyzer [pre-alpha]"
-        },
-        {
-          "name":"RFQ cleaner",
-          "menu": [
-            {
-             "name": "Continue from last",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/RFQ_cleaner/RFQ.py",
-             "description":"Multipaction cleaning of RFQ\nStart wherever previous run stopped [default]"
-            },
-            {
-             "name": "Start from bottom",
-             "link": "gnome-terminal -- python /nfs/Linacshare_controlroom/MCR/scripts/RFQ_cleaner/RFQ.py -f",
-             "description":"Multipaction cleaning of RFQ\nForce fresh start"
-            }
-          ]
-        },
-        {
-          "separator": true
-        },
-        {
-          "name": "Auto-ramp [Ctrl-F12]",
-          "link": "python /nfs/Linacshare_controlroom/MCR/scripts/autoramp/autoramp.py",
-          "description": "Automatic ramping",
-          "shortcut": "Ctrl F12"
-        }
-      ]
-    },
-    {
-      "name": "Weblinks",
-      "menu": [
-        {
-          "name": "Firefox",
-          "icon":"firefox.png",
-          "link": "firefox",
-          "description": "Firefox"
-        },
-        {
-          "separator": true
-        },
-        {
-          "name": "Cyolo",
-          "link": "firefox https://users.cyolo.ess.eu/",
-          "description": "Cyolo application launcher"
-        },
-        {
-          "separator": true
-        },
-        {
-          "name": "Olog",
-          "link": "firefox https://olog.esss.lu.se/",
-          "description": "Olog"
-        },
-        {
-          "name": "Jupyter",
-          "icon": "jupyter.png",
-          "link": "firefox https://jupyterhub.tn.esss.lu.se/",
-          "description": "Jupyter"
-        },
-        {
-          "name": "Confluence OP",
-          "link": "firefox https://confluence.esss.lu.se/display/AO/Control+Room+Operations+Group+Home+Page",
-          "description": "Confluence page for OP group"
-        },
-        {
-          "name": "BETS",
-          "link": "firefox https://confluence.esss.lu.se/pages/viewpage.action?pageId=435990027",
-          "description": "BETS call list (call log in same place)"
-        },
-        {
-          "name": "CR Handbook",
-          "link": "firefox https://confluence.esss.lu.se/display/AO/Handbook+for+Control+Room+Operations+Group",
-          "description": "Control Room Handbook. All procedures needed to run an accelerator, blindfolded."
-        },
-        {
-          "name": "Site map",
-          "link": "firefox https://confluence.esss.lu.se/display/CER/PPE+on+ESS+Site?preview=/389345968/411750652/ESS%20map%20coloured%20safety%20areas%202022-06-21.jpg",
-          "description": "The closest thing we have to a site map"
-        },
-        {
-          "separator": true
-        },
-        {
-          "name": "ISrc RFPM FW",
-          "link": "firefox http://isrc-rfpm-fw.tn.esss.lu.se/",
-          "description": "Ion source RF probes, power forward"
-        },
-        {
-          "name": "ISrc RFPM REF",
-          "link": "firefox http://isrc-rfpm-ref.tn.esss.lu.se/",
-          "description": "Ion source RF probes, power reflected"
-        },
-        {
-          "separator": true
-        },
-        {
-          "name": "GitLab",
-          "icon":"gitlab.png",
-          "link": "firefox https://gitlab.esss.lu.se/accop/",
-          "description": "Gitlab/accop"
-        },
-        {
-          "name": "CE-deploy",
-          "link": "firefox https://ce-deploy.esss.lu.se",
-          "description": "Check status of IOCs (and for those with access: restart)"
-        },
-        {
-          "name": "Jira NSOI",
-          "link": "firefox https://jira.esss.lu.se/projects/NSOI",
-          "description": "Jira board for Neutron Source Operation Issues"
-        },
-        {
-          "name": "Naming service",
-          "link": "firefox https://naming.esss.lu.se",
-          "description": "Naming service"
-        },
-        {
-          "name": "Web-Mail",
-          "link": "firefox https://mail.esss.lu.se",
-          "description": "https://mail.esss.lu.se"
-        },
-        {
-          "name": "Public Operations Screen",
-          "link": "firefox https://pos.ess.eu/",
-          "description": "https://pos.ess.eu"
-        },
-        {
-          "separator": true
-        },
-        {
-          "name": "Archiver (scalars)",
-          "icon":"archive.png",
-          "link": "firefox http://archiver-linac-01.tn.esss.lu.se:17665/mgmt/ui/index.html",
-          "description": "Archiver web interface for scalar values"
-        },
-        {
-          "name": "Archiver (waveforms)",
-          "link": "firefox http://archiver-linac-wf-01.tn.esss.lu.se:17665/mgmt/ui/index.html",
-          "description": "Archiver web interface for waveforms"
-        },
-        {
-          "name": "Archiver Viewer (waveforms)",
-          "link": "firefox http://archiver-linac-wf-01.tn.esss.lu.se:17668/retrieval/ui/viewer/archViewer.html",
-          "description": "Archiver web interface for waveforms: Viewer"
-        },
-        {
-          "name": "PV search",
-          "link": "firefox https://pos.ess.eu/pvs/",
-          "description": "To find PV names"
-        },
-        {
-          "name": "Shifter",
-          "link": "firefox https://shifter.esss.lu.se/",
-          "description": "Shifter"
-        }
-      ]
-    },
-    {
-      "name": "Tools",
-      "menu": [
-        {
-          "name": "Remmina - remote desktop",
-          "link": "remmina",
-          "description": "Remote desktop manager"
-        },
-        {
-          "name": "Calculator",
-          "icon":"calc.png",
-          "link": "/bin/gnome-calculator",
-          "description": "Calculator"
-        },
-        {
-          "name": "x-kill",
-          "link": "xkill",
-          "icon": "crosshair.png",
-          "description": "Point on any window to kill its creator. Use with caution."
-        },
-        {
-          "name": "Screenshot",
-          "link": "gnome-screenshot -i",
-          "description": "Screenshot"
-        },
-        {
-          "name": "gedit",
-          "link": "gedit",
-          "description": "gedit"
-        },
-        {
-          "name": "NVIDIA settings",
-          "link": "nvidia-settings",
-          "description": "NVIDIA screen settings"
-        },
-        {
-          "separator": true
-        },
-        {
-          "name": "PV-monitor",
-          "link": "python /nfs/Linacshare_controlroom/MCR/scripts/PVmon/main.py",
-          "description": "PV monitor"
-        },
-        {
-          "name": "Reminder",
-          "link": "gnome-terminal -- sh -c 'python /nfs/Linacshare_controlroom/MCR/Bilal/reminder.py;echo Press any key to exit;read'",
-          "description": "Advanced cognitive time-domain reinforcement technology"
-        },
-        {
-          "separator": true
-        },
-        {
-          "name": "NoMachine",
-          "link": "/usr/NX/bin/nxplayer",
-          "description": "NoMachine"
-        },
-        {
-          "name": "Wallscreen West",
-          "link": "/usr/NX/bin/nxplayer /nfs/Linacshare_controlroom/MCR/CROps/WallscreenWest.nxs",
-          "description": "NoMachine to MCR wallscreen window side"
-        },
-        {
-          "name": "Wallscreen East",
-          "link": "/usr/NX/bin/nxplayer /nfs/Linacshare_controlroom/MCR/CROps/WallscreenEast.nxs",
-          "description": "NoMachine to MCR wallscreen target side"
-        }
-      ]
-    },
-    {
-      "name": "Docs",
-      "menu": [
-        {
-          "name": "Olog markdown reference",
-          "link": "firefox https://olog.esss.lu.se/Olog/help/CommonmarkCheatsheet",
-          "description": "Explanation of how to use olog's markdown for logbook entry formatting"
-        },
-        {
-          "separator": true
-        },
-        {
-          "name": "RF block diagrams",
-          "link": "firefox https://chess.esss.lu.se/enovia/link/21308.51166.25345.1735",
-          "description": "Chess: RF block diagrams"
-        },
-        {
-          "name": "Tech. description NCL",
-          "link": "firefox https://chess.esss.lu.se/enovia/link/ESS-0159957/21308.51166.27638.56110/valid",
-          "description": "Chess: technical description of the NCL"
-        },
-        {
-          "name": "Physics for technical staff",
-          "link": "firefox https://chess.esss.lu.se/enovia/link/ESS-1941204/21308.51166.25088.35432/valid",
-          "description": "Chess: Physics for technical staff"
-        }
-      ]
-    },
-    {
-      "separator":true
-    },
-    {
-      "name": "PVmon",
-      "link": "python /nfs/Linacshare_controlroom/MCR/scripts/PVmon/main.py",
-      "description": "PV monitor"
-    },
-    {
-      "name": "Shell",
-      "link": "gnome-terminal",
-      "description": "Starts a linux shell"
-    }
-  ]
+    ]
 }

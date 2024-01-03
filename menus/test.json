@@ -562,7 +562,7 @@
                 },
                 {
                     "name": "Reminder",
-                    "link": "gnome-terminal -- sh -c 'python /nfs/Linacshare_controlroom/MCR/Bilal/reminder_MCR/reminder.py;echo Press any key to exit;read'",
+                    "link": "gnome-terminal -- sh -c 'python /nfs/Linacshare_controlroom/MCR/Bilal/reminder.py;echo Press any key to exit;read'",
                     "description": "Advanced cognitive time-domain reinforcement technology"
                 },
                 {
