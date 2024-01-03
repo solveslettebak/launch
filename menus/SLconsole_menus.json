@@ -34,8 +34,8 @@
                     "description": "Opens a text editor with menu .json file"
                 },
                 {
-                    "name": "Menu editor GUI [beta]",
-                    "link": "python /nfs/Linacshare_controlroom/MCR/Solve/scripts/menubuilder/main.py SLconsole_menus.json",
+                    "name": "Menu editor GUI",
+                    "link": "python /nfs/Linacshare_controlroom/MCR/launcher/menubuilder.py SLconsole_menus.json",
                     "description": "GUI for menu editing",
                     "cwd": "/nfs/Linacshare_controlroom/MCR/launcher/menus/"
                 },
