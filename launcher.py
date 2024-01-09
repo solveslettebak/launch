@@ -25,6 +25,7 @@ from subprocess import Popen# ,CREATE_NEW_CONSOLE
 from datetime import datetime
 import traceback
 import logging
+from functools import partial
 
 from modules.argumentDialog import argumentDialog
 from modules.quickLog import quickLog
@@ -313,7 +314,8 @@ class MainWindow(QMainWindow):
                         else:
                             if "cwd" in each: # if menu item specifies a different working directory. Kind of a hack, needs to be handled nicer.
                                 link = {"cwd":each['cwd'], "link":each['link']}
-                            newAction.triggered.connect((lambda link: lambda: self.onMenuClick(link))(link)) # wtf
+#                            newAction.triggered.connect((lambda link: lambda: self.onMenuClick(link))(link)) # wtf
+                            newAction.triggered.connect(partial(self.onMenuClick, link)) 
 
                     if "checkable" in each and each['checkable'] == True:
                         newAction.setCheckable(True)
@@ -385,7 +387,7 @@ class MainWindow(QMainWindow):
                 logging.info(text['link'])
                 Popen(splitlist, preexec_fn=os.setpgrp, cwd=text['cwd'])
         except FileNotFoundError as e:
-            print('File not found')
+            print('File not found',str(e))
 
     def changeSetting(self, field, value):
         data = json.load(open(settingsPath))

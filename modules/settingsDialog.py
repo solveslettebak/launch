@@ -1,4 +1,5 @@
 import json
+import os
 
 from PyQt5.QtWidgets import QDialog, QGroupBox, QFormLayout, QLineEdit, QLabel, QSpinBox, QDialogButtonBox, QVBoxLayout
 
@@ -23,6 +24,14 @@ class settingsDialog(QDialog):
         self.fontsizeSpinbox.setMaximum(20)
         self.fontsizeSpinbox.setMinimum(6)
         layout.addRow(QLabel("Font size:"),self.fontsizeSpinbox)
+
+        self.condavenv = QLineEdit(self.data['venv'] if 'venv' in self.data else '')
+        self.condavenv.setFixedWidth(70)
+        current_venv = os.environ.get('CONDA_DEFAULT_ENV')
+        if not current_venv:
+            current_venv = '???'
+        layout.addRow(QLabel("Venv: ("+current_venv+")"), self.condavenv)
+
         self.formGroupBox.setLayout(layout)
 
         okbutton = QDialogButtonBox.Ok
@@ -39,5 +48,6 @@ class settingsDialog(QDialog):
     def onClickOK(self):
         self.data["fontsize"] = str(self.fontsizeSpinbox.value())
         self.data["defaultLayoutFile"] = self.menufileinput.text()
+        self.data['venv'] = self.condavenv.text()
         json.dump(self.data,open(settingsPath,"w"))
         self.accept()
