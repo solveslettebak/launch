@@ -12,7 +12,8 @@ exit_code=$?
 if [ $exit_code -eq 0 ]; then
     conda activate $output
 else
-    echo "No venv setting found"
+    echo "No venv setting found. Trying pytools"
+    conda activate pytools
 fi
 
 cd ..
