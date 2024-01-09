@@ -14,11 +14,6 @@
                     "description": "Change settings"
                 },
                 {
-                    "name": "output",
-                    "link": "_output",
-                    "description": "Change settings"
-                },
-                {
                     "name": "Quick settings",
                     "menu": [
                         {
