@@ -2,13 +2,13 @@
 
 menu_type = 'JSON' # YAML / JSON
 
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QIcon, QFont, QCursor, QPalette
 from PyQt5.QtCore import QSize, Qt, QTimer, QThread, pyqtSignal, QObject
 from PyQt5.QtWidgets import (
     QAction, QApplication, QCheckBox, QLabel, QMainWindow, QStatusBar, QToolBar, QLineEdit, QSpinBox, QVBoxLayout,
     QFormLayout, QPushButton, QDialog, QFileDialog, QWidgetAction, QWidget, QGridLayout, QGroupBox, QDialogButtonBox,
-    QPlainTextEdit, QMenu
+    QPlainTextEdit, QMenu, QMenuBar
 )
 
 if menu_type == 'YAML':
@@ -33,15 +33,16 @@ from modules.settingsDialog import settingsDialog
 from modules.rePhauncherDialog import rePhauncherDialog
 from modules.common import settingsPath
 
-useShortCuts = True
+
 try:
     #import pyperclip
     import pyxhook
 except ModuleNotFoundError:
     logging.info('pyxhook module not found. Ignoring keyboard shortcut functionality.')
     useShortCuts = False
-
-if useShortCuts:
+else:
+#if useShortCuts:
+    useShortCuts = True
     from modules.KeyboardListener import KeyboardListener
 
 current_OS = sys.platform.lower()
@@ -116,6 +117,45 @@ class MyStream(object):
 #sys.stdout = MyStream()
 #sys.stderr = MyStream()
 
+# TODO: reimplement a QAction as "dragable", and then only trigger this stuff if mouse is over that class.
+class movableMenuBar(QMenuBar):
+    def __init__(self):
+        super().__init__()
+        self.draggable = False
+        self.offset = None
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.RightButton:
+            self.draggable = False
+        if event.button() == Qt.LeftButton:
+            if (self.isOverMenuItem(event.pos()) == False) and (QtWidgets.qApp.activePopupWidget() is None):
+                self.draggable = True
+                self.offset = event.pos()
+            else:
+                self.draggable = False
+                self.offset = None
+                super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if self.draggable:
+            window = self.window()
+            if window is not None:
+                window.move(event.globalPos() - self.offset)
+        super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        #print('released')
+        if event.button() == Qt.LeftButton:
+
+            self.draggable = False
+            self.offset = None
+        super().mouseReleaseEvent(event)
+
+    def isOverMenuItem(self, pos):
+        action = self.actionAt(pos)
+        #print(isinstance(action, QAction))
+        return isinstance(action, QAction)
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -140,7 +180,9 @@ class MainWindow(QMainWindow):
             self.pinOnTop = True
             self.onPinToggle(self.pinOnTop)
 
-        self.menubar = self.menuBar()
+        #self.menubar = self.menuBar()
+        self.menubar = movableMenuBar()
+        self.setMenuBar(self.menubar)
         self.menubar.setNativeMenuBar(False)
 
         if useShortCuts:
@@ -207,16 +249,17 @@ class MainWindow(QMainWindow):
 
     def generateMenus(self, menubar):
 
-        self.menubar.setMaximumWidth(900)
+        #self.menubar.setMaximumWidth(900) # commented out after fixing drag-and-drop of the window. Should no longer be needed. Remove entirely in some future update.
 
         q = QAction(QIcon("icons/quit.png"), "", self)
         q.triggered.connect(self.onQuit)
         menubar.addAction(q)
 
-        # TODO: one day... make this work.
-        # drag = dragable(QIcon("icons/drag.png"), "", self)
+        # TODO: one day... make this work. 
+        #drag = dragable(QIcon("icons/drag.png"), "", self)
+        #drag = QAction(QIcon("icons/drag.png"), "", self)
         # drag.hovered.connect(self.onMoveHover)
-        # menubar.addAction(drag)
+        #menubar.addAction(drag)
 
         icon = QAction(QIcon("icons/pin.png"),"",self)
         icon.setCheckable(True)
