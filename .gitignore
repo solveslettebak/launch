@@ -12,3 +12,4 @@ shared-cs-studio-phoebus-layouts
 hs_err*
 test.py
 log_maker.py
+output.log

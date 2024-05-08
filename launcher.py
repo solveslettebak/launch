@@ -2,13 +2,17 @@
 
 menu_type = 'JSON' # YAML / JSON
 
+# When true, stdout and stderr from launcher (not launched applications) are caught and redirected to output.log.
+# TODO: allow both options, not just either option.
+REDIRECT_OUTPUT = True
+
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QIcon, QFont, QCursor, QPalette
 from PyQt5.QtCore import QSize, Qt, QTimer, QThread, pyqtSignal, QObject
 from PyQt5.QtWidgets import (
     QAction, QApplication, QCheckBox, QLabel, QMainWindow, QStatusBar, QToolBar, QLineEdit, QSpinBox, QVBoxLayout,
     QFormLayout, QPushButton, QDialog, QFileDialog, QWidgetAction, QWidget, QGridLayout, QGroupBox, QDialogButtonBox,
-    QPlainTextEdit, QMenu, QMenuBar
+    QPlainTextEdit, QMenu, QMenuBar, QMessageBox
 )
 
 if menu_type == 'YAML':
@@ -32,16 +36,20 @@ from modules.quickLog import quickLog
 from modules.settingsDialog import settingsDialog
 from modules.rePhauncherDialog import rePhauncherDialog
 from modules.common import settingsPath
+from modules.movableMenuBar import movableMenuBar
+
+if REDIRECT_OUTPUT:
+    from modules.outputWindow import OutputWindow, MyStream
+    sys.stdout = MyStream(sys.stdout)
+    sys.stderr = MyStream(sys.stderr)
 
 
 try:
-    #import pyperclip
     import pyxhook
 except ModuleNotFoundError:
     logging.info('pyxhook module not found. Ignoring keyboard shortcut functionality.')
     useShortCuts = False
 else:
-#if useShortCuts:
     useShortCuts = True
     from modules.KeyboardListener import KeyboardListener
 
@@ -49,112 +57,6 @@ current_OS = sys.platform.lower()
 
 realpath = os.path.realpath(__file__)
 SCRIPT_PATH = realpath[:realpath.rfind('/')+1]
-
-class OutputWindow(QWidget):
-    def __init__(self, out_standard, out_error, pos):
-        super().__init__()
-        self.resize(800,400)
-        self.move(pos.x(), pos.y() + 30)
-        self.setWindowTitle('stderr + stdout')
-        layout = QGridLayout()
-        self.setLayout(layout)
-        self.teOut = QPlainTextEdit()
-        layout.addWidget(self.teOut, 0, 0)
-        self.clearBtn = QPushButton("Clear")
-        self.clearBtn.clicked.connect(self.clear)
-        layout.addWidget(self.clearBtn, 1, 0)
-
-        f = open('output.log','r')
-        self.text = f.readlines()
-        f.close()
-        if len(self.text) > 100:
-            self.teOut.insertPlainText('See output.log for full log\n\n')
-        for line in self.text[-100:]:
-            self.teOut.insertPlainText(line)
-
-        out_standard.register_callback(self.callback)
-        out_error.register_callback(self.callback)
-
-    def __del__(self):
-        pass
-
-    def clear(self):
-        self.teOut.clear()
-
-    def callback(self, text):
-        self.teOut.insertPlainText(text)
-
-class MyStream(object):
-    def __init__(self):
-        self.reg_cb = None
-
-    def write(self, text):
-        if text in [' ','',None]:
-            return
-        if text == '\n':
-            f = open('output.log', 'a')
-            f.write('\n')
-            f.close()
-            if self.reg_cb != None:
-                self.reg_cb('\n')
-            return
-
-        time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        f = open('output.log', 'a')
-        text_out = time_str + ' : ' + text
-        f.write(text_out)
-        f.close()
-
-        if self.reg_cb != None:
-            self.reg_cb(text_out)
-
-    def register_callback(self, cb):
-        self.reg_cb = cb
-
-    def flush(self):
-        pass
-
-#sys.stdout = MyStream()
-#sys.stderr = MyStream()
-
-# TODO: reimplement a QAction as "dragable", and then only trigger this stuff if mouse is over that class.
-class movableMenuBar(QMenuBar):
-    def __init__(self):
-        super().__init__()
-        self.draggable = False
-        self.offset = None
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.RightButton:
-            self.draggable = False
-        if event.button() == Qt.LeftButton:
-            if (self.isOverMenuItem(event.pos()) == False) and (QtWidgets.qApp.activePopupWidget() is None):
-                self.draggable = True
-                self.offset = event.pos()
-            else:
-                self.draggable = False
-                self.offset = None
-                super().mousePressEvent(event)
-
-    def mouseMoveEvent(self, event):
-        if self.draggable:
-            window = self.window()
-            if window is not None:
-                window.move(event.globalPos() - self.offset)
-        super().mouseMoveEvent(event)
-
-    def mouseReleaseEvent(self, event):
-        #print('released')
-        if event.button() == Qt.LeftButton:
-
-            self.draggable = False
-            self.offset = None
-        super().mouseReleaseEvent(event)
-
-    def isOverMenuItem(self, pos):
-        action = self.actionAt(pos)
-        #print(isinstance(action, QAction))
-        return isinstance(action, QAction)
 
 
 class MainWindow(QMainWindow):
@@ -199,7 +101,7 @@ class MainWindow(QMainWindow):
         self.updateFlag = False
 
 # --- Remote update of application stuff. TODO: Move to separate class/file
-
+# This stuff allows one instance of launcher to set a "relaunch flag" in a file in the launcher directory, in order to restart all running instances of launcher. It's pretty ugly, but.. it works.
 
     def remoteUpdateCheck(self):
         if self.updateFlag: # If this instance initiates the remote update, then we don't listen to that signal. 
@@ -249,16 +151,12 @@ class MainWindow(QMainWindow):
 
     def generateMenus(self, menubar):
 
-        #self.menubar.setMaximumWidth(900) # commented out after fixing drag-and-drop of the window. Should no longer be needed. Remove entirely in some future update.
-
         q = QAction(QIcon("icons/quit.png"), "", self)
         q.triggered.connect(self.onQuit)
         menubar.addAction(q)
 
         # TODO: one day... make this work. 
-        #drag = dragable(QIcon("icons/drag.png"), "", self)
         #drag = QAction(QIcon("icons/drag.png"), "", self)
-        # drag.hovered.connect(self.onMoveHover)
         #menubar.addAction(drag)
 
         icon = QAction(QIcon("icons/pin.png"),"",self)
@@ -280,6 +178,7 @@ class MainWindow(QMainWindow):
 
         # read tree structured menus from menu file and produce pyqt menu structure.
         def recursive_read(menu, indent, currentmenu):
+
             for each in menu:
 
                 # submenu
@@ -290,75 +189,33 @@ class MainWindow(QMainWindow):
                     newmenu.setFont(QFont('Arial',self.fontSize - 2))
                     recursive_read(each['menu'], indent + 1, newmenu)
 
-                # link/menu-item
+                # regular menu-item
                 else:
+
+                    # Separators
                     if 'separator' in each:
-                        if indent == 0:
+                        if indent == 0: # means the menu item is on the top-bar itself, not a sub-menu
                             currentmenu.addAction(QAction("-",self))
                         else:
                             currentmenu.addSeparator()
-                        continue
+                        continue # no other checks needed for separators, so continue to next item.
 
-                    assert 'name' in each and 'link' in each
+                    # Required fields
+                    assert ('name' in each) and ('link' in each)
 
-                    # new terminal option? todo.. handle more arguments in same way as "datapack" for commandline
-
+                    # Create new QAction for the menu. With an icon if specified in the menu file.
                     if "icon" in each:
                         newAction = QAction(QIcon('icons/'+each["icon"]), each["name"], self)
                     else:                    
                         newAction = QAction(each['name'],self)
 
-                    if useShortCuts:
-                        if "shortcut" in each:
-                            link = each['link']
-                            #self.keyboardlistener.registerShortcut(('Ctrl','F12'), (lambda link: lambda: self.onMenuClick(link))(link))
-                            #self.keyboardlistener.registerShortcut(tuple(i for i in each['shortcut'].split(' ')), (lambda link: lambda: self.onMenuClick(link))(link))
-                            
-                            self.keyboardlistener.registerShortcut(tuple(i for i in each['shortcut'].split(' ')), self.onMenuClick, link)
+                    # Keyboard shortcut
+                    if ("shortcut" in each) and useShortCuts:
+                        link = each['link']
+                        self.keyboardlistener.registerShortcut(tuple(i for i in each['shortcut'].split(' ')), self.onMenuClick, link)
 
+                    # Description
                     newAction.setToolTip(each['description'] if "description" in each else "no description") 
-
-                    link = each['link']
-                    if "arguments" in each: # doesn't care about the value of arguments..
-                        datapack = {}
-                        datapack['h_arg'] = each['help_arg'] if "help_arg" in each else ""
-                        datapack['m_arg'] = each['mandatory_arg'] if "mandatory_arg" in each else ""
-                        datapack['descr'] = each['description'] if "description" in each else "You no get help! You figure out!"
-                        datapack['default'] = each['default_args'] if "default_args" in each else ""
-                        datapack['name'] = each['name']
-                        datapack['link'] = link
-
-                        newAction.triggered.connect((lambda datapack: lambda: self.onMenuClickCommandline(datapack))(datapack)) # not winning any awards with this code...
-                    else:
-#                        if link == '_phauncher':
-#                            newAction.triggered.connect(self.onPhauncher)
-
-                        # Hard-coded internal functions.
-                        if link == '_rephauncher':
-                            newAction.triggered.connect(self.onRePhauncher)
-                        elif link == '_quit':
-                            newAction.triggered.connect(self.onQuit)
-                        elif link == '_reload':
-                            newAction.triggered.connect(self.onReload)
-                        elif link == '_settings':
-                            newAction.triggered.connect(self.onSettings)
-                        elif link == '_loadlayout':
-                            newAction.triggered.connect(self.onLoadLayout)
-                        elif link == '_quicklog':
-                            newAction.triggered.connect(self.onQuickLog)
-                        elif link == '_relaunch':
-                            newAction.triggered.connect(self.onRelaunch)
-                        elif link == '_updateall':
-                            newAction.triggered.connect(self.onInitiateUpdate)
-                        elif link == '_autoramp_shortcut':
-                            newAction.toggled.connect(self.autoramp_shortcut) # toggled. This assumes a checkbox.
-                        elif link == '_output':
-                            newAction.triggered.connect(self.showOutput)
-                        else:
-                            if "cwd" in each: # if menu item specifies a different working directory. Kind of a hack, needs to be handled nicer.
-                                link = {"cwd":each['cwd'], "link":each['link']}
-#                            newAction.triggered.connect((lambda link: lambda: self.onMenuClick(link))(link)) # wtf
-                            newAction.triggered.connect(partial(self.onMenuClick, link)) 
 
                     if "checkable" in each and each['checkable'] == True:
                         newAction.setCheckable(True)
@@ -367,9 +224,54 @@ class MainWindow(QMainWindow):
                         else:
                             newAction.setChecked(False)
 
+                    # Command line arguments (all this can be improved by using functools partial, but... this stuff works.)
+                    if "arguments" in each: # doesn't care about the value of arguments..
+                        datapack = {}
+                        datapack['h_arg'] = each['help_arg'] if "help_arg" in each else ""
+                        datapack['m_arg'] = each['mandatory_arg'] if "mandatory_arg" in each else ""
+                        datapack['descr'] = each['description'] if "description" in each else "You no get help! You figure out!"
+                        datapack['default'] = each['default_args'] if "default_args" in each else ""
+                        datapack['name'] = each['name']
+                        datapack['link'] = each['link']
 
-                    # newAction.setCheckable(True)
-                    # then just add a field to the function called, which will be bool - checked state.
+                        newAction.triggered.connect((lambda datapack: lambda: self.onMenuClickCommandline(datapack))(datapack)) # not winning any awards with this code...
+                        currentmenu.addAction(newAction)
+                        continue # and we're done. On to the next menu item.
+
+                    link = each['link']
+
+                    # Hard-coded internal functions.
+                    if link == '_rephauncher':
+                        newAction.triggered.connect(self.onRePhauncher) # there used to be a phauncher. It got updated -> rePhauncher.
+                    elif link == '_quit':
+                        newAction.triggered.connect(self.onQuit)
+                    elif link == '_reload':
+                        newAction.triggered.connect(self.onReload)
+                    elif link == '_settings':
+                        newAction.triggered.connect(self.onSettings)
+                    elif link == '_loadlayout':
+                        newAction.triggered.connect(self.onLoadLayout)
+                    elif link == '_quicklog':
+                        newAction.triggered.connect(self.onQuickLog)
+                    elif link == '_relaunch':
+                        newAction.triggered.connect(self.onRelaunch)
+                    elif link == '_updateall':
+                        newAction.triggered.connect(self.onInitiateUpdate)
+                    elif link == '_autoramp_shortcut':
+                        newAction.toggled.connect(self.autoramp_shortcut) # toggled. This assumes a checkbox.
+                    elif link == '_output':
+                        newAction.triggered.connect(self.showOutput)
+                    elif link == '_test':
+                        newAction.triggered.connect(self.codeTest)
+                    else:
+
+                        # Still here? Then we have a regular menu link on our hands.
+
+                        if "cwd" in each: # if menu item specifies a different working directory, add it to the data sent to onMenuClick
+                            link = {"cwd":each['cwd'], "link":each['link']}
+                        newAction.triggered.connect(partial(self.onMenuClick, link)) 
+
+                    # At last, add the new item to the menu.
                     currentmenu.addAction(newAction)
 
         recursive_read(data['menu'], 0, menubar)
@@ -382,6 +284,11 @@ class MainWindow(QMainWindow):
     # TODO: Implement. This is called when launcher loads, so start keyboard monitoring from here, not in __init__ - also, this should be shortcuts in general, not autoramp.
     def autoramp_shortcut(self):
         pass
+
+    # Triggered by internal function "_test". For development use only.
+    def codeTest(self):
+        print('Testing..')
+        raise Exception("test")
 
     # Shows dialog box for input of parameters to a commandline program, and executes it.
     def onMenuClickCommandline(self, d):
@@ -406,7 +313,6 @@ class MainWindow(QMainWindow):
         self.out_win = OutputWindow(sys.stdout, sys.stderr, self.pos())
         self.out_win.show()
         
-
     def onRelaunch(self):
         os.execv(__file__, sys.argv)
 
@@ -455,29 +361,6 @@ class MainWindow(QMainWindow):
         self.qlog = quickLog(self)
         self.qlog.show()
 
-    # --- mouse moving stuff. Haven't figured out how to move the window from dragging the "move" icon yet.. work in progress.
-
-    def mouseMoveEvent(self, event):
-        if Qt.LeftButton and self.moveFlag:
-            self.move(event.globalPos() - self.movePosition)
-            event.accept()
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self.moveFlag = True
-            self.movePosition = event.globalPos() - self.pos()
-            # self.setCursor(QCursor(Qt.OpenHandCursor))
-            event.accept()
-
-    def mouseReleaseEvent(self, event):
-        self.moveFlag = False
-        self.changeSetting('xpos',str(self.pos().x()))
-        self.changeSetting('ypos',str(self.pos().y()))
-        event.accept()
-
-    # // --- 
-
-
     def onQuit(self):
         if useShortCuts:
             self.keyboardlistener.stoplistening()
@@ -525,7 +408,10 @@ class MainWindow(QMainWindow):
 def handle_exception(exc_type, exc_value, exc_traceback):
     s = ''.join(traceback.format_exception(exc_type, exc_value, exc_traceback))
     logging.exception('unhandled exception: %s',s)
-#    QMessageBox.critical(None, 'PVmon: Shit happened','Unhandled exception: '+str(exc_value)+'\n\nSee app.log')
+    msg = 'Unhandled exception: '+str(exc_value)+'\n\n'
+    if REDIRECT_OUTPUT:
+        msg += 'See File -> Output, or ~/launcher_output.log'
+    QMessageBox.critical(None, 'Launcher: Shit happened',msg)
 
 
 
