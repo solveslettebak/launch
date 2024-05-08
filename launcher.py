@@ -410,7 +410,7 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     logging.exception('unhandled exception: %s',s)
     msg = 'Unhandled exception: '+str(exc_value)+'\n\n'
     if REDIRECT_OUTPUT:
-        msg += 'See File -> Output, or output.log'
+        msg += 'See File -> Output, or ~/launcher_output.log'
     QMessageBox.critical(None, 'Launcher: Shit happened',msg)
 
 

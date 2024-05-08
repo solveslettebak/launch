@@ -8,6 +8,14 @@ from PyQt5.QtWidgets import (
 )
 
 from datetime import datetime
+import os
+
+LOG_FILENAME = os.path.expanduser('~/launcher_output.log')
+
+if not os.path.exists(LOG_FILENAME):
+    f = open(LOG_FILENAME,'x')
+    f.close()
+
 
 class OutputWindow(QWidget):
     def __init__(self, out_standard, out_error, pos):
@@ -23,7 +31,7 @@ class OutputWindow(QWidget):
         self.clearBtn.clicked.connect(self.clear)
         layout.addWidget(self.clearBtn, 1, 0)
 
-        f = open('output.log','r')
+        f = open(LOG_FILENAME,'r')
         self.text = f.readlines()
         f.close()
         if len(self.text) > 100:
@@ -53,7 +61,7 @@ class MyStream(object):
         if text in [' ','',None]:
             return
         if text == '\n':
-            f = open('output.log', 'a')
+            f = open(LOG_FILENAME, 'a')
             f.write('\n')
             f.close()
             if self.reg_cb != None:
@@ -61,7 +69,7 @@ class MyStream(object):
             return
 
         time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        f = open('output.log', 'a')
+        f = open(LOG_FILENAME, 'a')
         text_out = time_str + ' : ' + text
         f.write(text_out)
         f.close()
