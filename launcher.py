@@ -349,7 +349,7 @@ class MainWindow(QMainWindow):
             open(settingsPath,'w+').write(open('default_settings.json','r').read())
         try:
             data = json.load(open(settingsPath))
-        except JSONDecodeError:
+        except json.decoder.JSONDecodeError:
             print('Could not read JSON settings file. Loading default settings instead.')
             data = json.load(open('default_settings.json','r').read())
         self.layoutFile = 'menus/' + data["defaultLayoutFile"]
