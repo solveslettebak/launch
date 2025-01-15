@@ -1,0 +1,126 @@
+{
+    "menu": [
+        {
+            "name": "[o]",
+            "menu": [
+                {
+                    "name": "Load layout...",
+                    "link": "_loadlayout",
+                    "description": "Load new menu file layout"
+                },
+                {
+                    "name": "KB controls",
+                    "link": "control keyboard"
+                },
+                {
+                    "name": "test",
+                    "link": "_test"
+                },				
+                {
+                    "name": "search",
+                    "link": "_search",
+					"shortcut": "Ctrl F12"
+                },
+                {
+                    "name": "Plugtest",
+					"link": "_plugin",
+					"plugin": true,
+					"plugin_name": "plug_test",
+					"run_on_start": true,
+					"checkable": true,
+					"checked": true
+                },					
+                {
+                    "name": "Rockets",
+					"link": "_plugin",
+					"plugin": true,
+					"plugin_name": "rocketdata",
+					"run_on_start": true,
+					"checkable": true,
+					"checked": true,
+					"submenu_name": "rocket_launches"
+                },			
+                {
+                    "name": "rocket_launches",
+                    "menu": [
+                        {
+                            "name": "asdf",
+                            "link": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Settings...",
+                    "link": "_settings",
+                    "description": "Change settings"
+                },
+                {
+                    "name": "Quick settings",
+                    "menu": [
+                        {
+                            "name": "Use shortcuts",
+                            "link": "_autoramp_shortcut",
+                            "description": "If environment allows, enable use of keyboard shortcuts",
+                            "checkable": true,
+                            "checked": true
+                        }
+                    ]
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "Menu editor GUI",
+                    "link": "python menubuilder.py",
+                    "description": "GUI for menu editing"
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "Reload menus",
+                    "link": "_reload",
+                    "description": "If changes were made to menu file, use this to reload the file"
+                },
+                {
+                    "name": "Relaunch this instance",
+                    "link": "_relaunch",
+                    "description": "Simply restarts the launcher."
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "Git repo",
+                    "link": "firefox https://gitlab.esss.lu.se/accop/pytools/launcher",
+                    "description": "Launcher gitlab repository link. Opens in firefox."
+                },
+                {
+                    "separator": true
+                },
+                {
+                    "name": "Quit",
+                    "link": "_quit",
+                    "description": "quit",
+                    "icon": "quit.png"
+                },
+                {
+                    "name": "Links",
+                    "menu": [
+                        {
+                            "name": "XKCD",
+                            "link": "chrome.exe http://xkcd.com",
+                            "description": "XKCD",
+                            "cwd": "C:\\Program Files\\Google\\Chrome\\Application"
+                        },
+                        {
+                            "name": "Euro spaceflight",
+                            "link": "chrome.exe https://europeanspaceflight.com/",
+                            "cwd": "C:\\Program Files\\Google\\Chrome\\Application"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
