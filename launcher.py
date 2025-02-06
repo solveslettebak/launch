@@ -168,7 +168,10 @@ class PluginHandler:
     
 
     def __init__(self):
+        # For storing all plugins, whether running/connected or not
         self.plugins = {}
+        
+        # Temporarily stores incoming connections until they are verified
         self.sockets = []
         
         self.server = QTcpServer()
@@ -177,22 +180,11 @@ class PluginHandler:
         
     def handle_new_connection(self):
     
-        # first check if we are expecting any incoming connection
+        # TODO: first check if we are expecting any incoming connection. For security etc..
     
-        # client_socket = self.server.nextPendingConnection()
-        client_socket = self.server.nextPendingConnection()
-        
-        # self.plugin_connection = PluginConnection(client_socket)
-        # self.plugin_connection.message_received.connect(self.display_message)
-        
+        client_socket = self.server.nextPendingConnection()  
         print("New connection received from port",client_socket.peerPort())
-        # self.plugins[ID]['connected'] = True
-        # self.plugins[ID]['conn'] = self.plugin_connection
-        
-        # newconnection = {'socket':client_socket, 'conn':plugin_connection}
-        
-        self.sockets.append(client_socket)
-        
+        self.sockets.append(client_socket) 
         client_socket.readyRead.connect(lambda: self.read_from_client(client_socket))
         
     def pong(self,ID):
@@ -264,13 +256,9 @@ class PluginHandler:
     def log(self, message):
         print('launcher log:',message)
         
-    def runPlugin(self, name):
-        pass
-        
     def ping(ID=None):
         if ID is None:
             return
-        
         
     def addPlugin(self, data):
         plug = {}
@@ -284,14 +272,10 @@ class PluginHandler:
    
         self.start(plug['ID'])
   
-        # use self.running instead.. TODO
-        print('process:','running' if plug['process'].poll() is None else 'unknown')
-        
-        # self.plugin_connection = None
-        self.log("Waiting for plugin connection...")
-        
+        print('Process:','running' if self.running(plug['ID']) else 'unknown')
 
-        
+        self.log("Waiting for plugin connection...")
+
     def start(self, ID):
         try:
             if current_OS == 'windows':
@@ -305,7 +289,6 @@ class PluginHandler:
 
         
     def running(self, ID):
-        print('running:',ID)
         return self.plugins[ID]['process'].poll() is None
     
     def run(self, name):

@@ -20,16 +20,17 @@ import time
 from pprint import pprint
 from functools import partial
 from copy import deepcopy
+from subprocess import call
 
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QPushButton, QTextEdit, QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QDialog, QMessageBox
 )
 from PyQt5.QtGui import QFont
-
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer, Qt
 from PyQt5.QtNetwork import QTcpSocket
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QTextEdit, QVBoxLayout, QWidget, QHBoxLayout
 
+BROWSER_PATH = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
 
 def convert_to_localtime(iso_string, format_string="%Y-%m-%d %H:%M:%S"):
     """
@@ -133,7 +134,7 @@ class RocketLaunchApp(QMainWindow):
         self.setWindowTitle('Rocket Launch Viewer')
         # self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)        
         
-        self.resize(600,300)
+        self.resize(650,270)
 
         self.layout = QVBoxLayout()
         
@@ -216,6 +217,7 @@ class RocketLaunchApp(QMainWindow):
         self.display_data()
             
     def onLinkPress(self, URL):
+        call([BROWSER_PATH,URL])
         print(URL)
         
     def notify(self):
