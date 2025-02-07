@@ -10,20 +10,23 @@ def loop(caller):
     COUNT = COUNT - 1
 
     caller.ping()
+    caller.setMenu(menu_ID=0, name='veni vidi vici: ' + str(COUNT), link='asdf')
     
     return COUNT
 
 def init():
     print('Initializing')
+    
+# TODO:
+def quit():
+    print('Time to die...')
 
 # plugin_mod verifies this with correct ID and command before passing on here.
 def msg_handler(command, **kw):
     print(command)
 
-print('Plug test is running')
-
 # this call is blocking.
-pm.start(sys.argv[1], init, loop, msg_handler)
+pm.start(sys.argv[1], init, loop, quit, msg_handler)
 
 startcount = pm.loadSetting('startcount')
 if startcount == None:

@@ -21,6 +21,8 @@ from pprint import pprint
 from functools import partial
 from copy import deepcopy
 from subprocess import call
+import plugin_mod as pm
+
 
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QPushButton, QTextEdit, QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QDialog, QMessageBox
@@ -58,60 +60,71 @@ def convert_to_localtime(iso_string, format_string="%Y-%m-%d %H:%M:%S"):
         return f"Invalid input format: {e}"
 
 class RocketLaunchApp(QMainWindow):
-    def __init__(self, ID):
+    def __init__(self, plug):
         super().__init__()
         
-        if ID is None:
-            self.standalone = True
-        else:
-            self.standalone = False
+        self.plug = plug
+        
+        self.plug.message_received.connect(self.msg_received)
+        self.plug.focus.connect(self.focus)
+        
+        self.standalone = pm.STANDALONE
             
-        self.ID = ID
+        self.ID = plug.ID
         self.firstUpdate = True
         
         self.initUI()
         
 
-
-        if self.standalone == False:
-            # TCP Client
-            self.socket = QTcpSocket()
-            self.socket.connected.connect(self.on_connected)
-            self.socket.readyRead.connect(self.read_message)
-            self.socket.errorOccurred.connect(self.on_error)
-            self.socket.connectToHost("127.0.0.1", 12345)
-
-            self.log("Connecting to launcher...")
-            # self.send_message()
-            
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_data)
         self.timer.start(5 * 60 * 1000)  # milliseconds
+        
+    def msg_received(self, msg):
+        print('Received command:',msg)
+        
+    def focus(self):
+        self.show()
+        self.raise_()
+        self.activateWindow()
 
-    def on_connected(self):
-        self.log("Connected to launcher!")
-        self.handshake()
-        # self.send_message()
-
-    def read_message(self):
-        while self.socket.bytesAvailable():
-            message = self.socket.readAll().data().decode()
-            self.log(f"Launcher: {message}")
-            self.show()
-            self.raise_()
-            self.activateWindow()
-
-    def send_message(self): 
-        if self.socket.state() == QTcpSocket.ConnectedState:
-            self.socket.write("Hello from Plugin!\n".encode())
-        else:
-            self.log("Not connected to launcher.")
-            
-    def handshake(self):
-        self.socket.write(json.dumps({'command':'handshake', 'ID':self.ID}).encode())
-
-    def on_error(self, error):
-        self.log(f"Error: {error}")
+#        if self.standalone == False:
+#            # TCP Client
+#            self.socket = QTcpSocket()
+#            self.socket.connected.connect(self.on_connected)
+#            self.socket.readyRead.connect(self.read_message)
+#            self.socket.errorOccurred.connect(self.on_error)
+#            self.socket.connectToHost("127.0.0.1", 12345)
+#
+#            self.log("Connecting to launcher...")
+#            # self.send_message()
+#            
+#
+#
+#    def on_connected(self):
+#        self.log("Connected to launcher!")
+#        self.handshake()
+#        # self.send_message()
+#
+#    def read_message(self):
+#        while self.socket.bytesAvailable():
+#            message = self.socket.readAll().data().decode()
+#            self.log(f"Launcher: {message}")
+#            self.show()
+#            self.raise_()
+#            self.activateWindow()
+#
+#    def send_message(self): 
+#        if self.socket.state() == QTcpSocket.ConnectedState:
+#            self.socket.write("Hello from Plugin!\n".encode())
+#        else:
+#            self.log("Not connected to launcher.")
+#            
+#    def handshake(self):
+#        self.socket.write(json.dumps({'command':'handshake', 'ID':self.ID}).encode())
+#
+#    def on_error(self, error):
+#        self.log(f"Error: {error}")
 
     def log(self, message):
         print('rocket:',message)
@@ -119,6 +132,9 @@ class RocketLaunchApp(QMainWindow):
     
     def ping(self):
         self.socket.write(json.dumps({'command':'ping', 'ID':self.ID}).encode())
+        
+        
+        
         
     def show_test(self):
         self.show()
@@ -254,16 +270,13 @@ class RocketLaunchApp(QMainWindow):
 
 
 if __name__ == '__main__':
-    print(sys.argv)
-    #plugin = PluginClient(sys.argv)
 
     app = QApplication(sys.argv)
     
-    if len(sys.argv)>=2:
-        ID = sys.argv[1]
-    else:
-        ID = None
+    print('Rocketdata: Running standalone:',pm.STANDALONE)
     
-    ex = RocketLaunchApp(ID)
+    plug = pm.start_pyqt(pm.ID)
+    
+    ex = RocketLaunchApp(plug)
     ex.show()
     sys.exit(app.exec_())

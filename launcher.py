@@ -113,11 +113,19 @@ def parse_multiple_json(data):
 
 class PluginDisplay(QDialog):
     def __init__(self,mainwin,plugins):
+        def c():
+            if self.count is False:
+                self.count = 0
+                return 0
+            else:
+                self.count += 1
+                return self.count
+            
         super().__init__()
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
         self.resize(400,200)
         # self.move(mainwin.pos().x()+500,mainwin.pos().y()+40)
-        self.setWindowTitle("QuickLog")
+        self.setWindowTitle("Plugin overview")
         # self.setWindowFlag(Qt.FramelessWindowHint)
         # self.setAttribute(Qt.WA_TranslucentBackground)
         # self.setStyleSheet("background-color: lightblue;border: 1px solid black;")
@@ -130,18 +138,21 @@ class PluginDisplay(QDialog):
         
         buttonWidth = 70
         
-        textMsg = [0,0,0,0,0,0,0,0,0]
+        self.textMsg = []
         
         for i,plugin in enumerate(plugins.values()):
             print(plugin)
+            self.textMsg.append(None)
             
             buttonPing = QPushButton("Ping")
             buttonFocus = QPushButton("Focus")
             buttonKill = QPushButton("Kill")
-            textMsg[i] = QLineEdit()
+            self.textMsg[i] = QLineEdit()
             buttonSend = QPushButton("Send")
             
-            buttonSend.clicked.connect(partial(mainwin.send_command, textMsg[i].text(), plugin['ID']))
+            # every day we stray further from God...
+            buttonSend.clicked.connect(partial(lambda t, id: mainwin.send_command(t(), id), self.textMsg[i].text, plugin['ID']))
+            
             buttonFocus.clicked.connect(partial(mainwin.send_command, "focus", plugin['ID']))
             
             buttonPing.setFixedWidth(buttonWidth)
@@ -153,15 +164,17 @@ class PluginDisplay(QDialog):
             proc_status_lineedit = QLineEdit()
             proc_status_lineedit.setText(proc_status)
             
-            layout.addWidget(QLabel(plugin['name']), i, 0)
-            layout.addWidget(QLabel(str(plugin['handshake'])), i, 1)
-            layout.addWidget(QLabel(" "), i, 2)
-            layout.addWidget(buttonPing, i, 3)
-            layout.addWidget(buttonFocus, i, 4)
-            layout.addWidget(buttonKill, i, 5)
-            layout.addWidget(textMsg[i], i, 6)
-            layout.addWidget(buttonSend, i, 7)
-            layout.addWidget(proc_status_lineedit, i, 8)
+            self.count = False
+            
+            layout.addWidget(QLabel(plugin['name']), i, c())
+            layout.addWidget(QLabel(str(plugin['handshake'])), i, c())
+            layout.addWidget(QLabel(" "), i, c())
+            layout.addWidget(buttonPing, i, c())
+            layout.addWidget(buttonFocus, i, c())
+            layout.addWidget(buttonKill, i, c())
+            layout.addWidget(self.textMsg[i], i, c())
+            layout.addWidget(buttonSend, i, c())
+            layout.addWidget(proc_status_lineedit, i, c())
         
 
 class PluginHandler:
@@ -176,8 +189,12 @@ class PluginHandler:
         
         self.server = QTcpServer()
         self.server.listen(QHostAddress("127.0.0.1"), 12345)
-        self.server.newConnection.connect(self.handle_new_connection)        
-        
+        self.server.newConnection.connect(self.handle_new_connection)       
+
+    # murderous function that should be called when launcher quits.
+    def kill_all(self):
+        pass
+               
     def handle_new_connection(self):
     
         # TODO: first check if we are expecting any incoming connection. For security etc..
@@ -197,11 +214,11 @@ class PluginHandler:
     def read_from_client(self, client_socket):
     
         msg_json = client_socket.readAll().data().decode()
-        print('type msg_json:',type(msg_json))
+        #print('type msg_json:',type(msg_json))
         
         json_objects = parse_multiple_json(msg_json)
 
-        print(json_objects)  
+        #print(json_objects)  
 
         for i in json_objects:
         
@@ -229,6 +246,9 @@ class PluginHandler:
             
             if i['command'] == 'ping':
                 self.pong(i['ID'])
+                
+            elif i['command'] == 'setmenu':
+                print('set menu:',i['menu_ID'],':',i['name'])
         
         
     def send_command(self, command, ID):
@@ -490,6 +510,9 @@ class MainWindow(QMainWindow):
                         newAction = QAction(QIcon('icons/'+each["icon"]), each["name"], self)
                     else:                    
                         newAction = QAction(each['name'],self)
+                        
+                    # update existing menu structure with pyqt menu items
+                    each['QAction'] = newAction
 
                     # Keyboard shortcut
                     if ("shortcut" in each) and useShortCuts:
@@ -569,6 +592,12 @@ class MainWindow(QMainWindow):
                     currentmenu.addAction(newAction)
 
         recursive_read(data['menu'], 0, menubar)
+        
+        self.menudata = data
+        
+        pprint(data['menu'][0]['menu'][0]['name'])
+        #print(menubar)
+        
 
 #        searchBar = QLabel("asdf")
 #        searchContainer = QWidgetAction(self)
@@ -588,6 +617,9 @@ class MainWindow(QMainWindow):
     # Triggered by internal function "_test". For development use only.
     def codeTest(self):
         self.plugins.pluginInfo()
+        #self.menudata['menu'][0]['menu'][0]['QAction'].setText('TEST')
+        
+        
 
     # Shows dialog box for input of parameters to a commandline program, and executes it.
     def onMenuClickCommandline(self, d):
@@ -625,7 +657,6 @@ class MainWindow(QMainWindow):
         return
 
     def onMenuClick(self, text): # text is the command to send to OS
-        print(text)
         try:
             if type(text) is str:
                 logging.info(text)
@@ -655,7 +686,6 @@ class MainWindow(QMainWindow):
         json.dump(data,open(settingsPath,"w"))
 
     def loadSettings(self):
-        print(settingsPath)
         if not os.path.isfile(settingsPath):
             print('Settings file not found, creating it with default values')
             open(settingsPath,'w+').write(open('default_settings.json','r').read())
@@ -668,7 +698,6 @@ class MainWindow(QMainWindow):
         self.fontSize = int(data["fontsize"])
         self.move(int(data['xpos']),int(data['ypos']))
         self.menubar.setFont(QFont('Arial',self.fontSize))
-        print(data)
 
     def onQuickLog(self):
         self.qlog = quickLog(self)
