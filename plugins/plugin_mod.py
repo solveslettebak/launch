@@ -121,8 +121,12 @@ class SelfContainedPlugin(QObject):
     def loadSetting(self, setting):
         pass
 
+global plugin
+plugin = None
+
 # for non-pyqt applications. Defines initialize function, loop function and a callback for messages
 def start(ID, init, loop, quit, cb):
+    global plugin
     USING_PYQT = False
     #app = QCoreApplication(sys.argv)
     app = QApplication(sys.argv)
@@ -139,6 +143,15 @@ def start_pyqt(ID):
 def set_loop_interval(interval):
     global loop_interval
     loop_interval = interval
+    
+def saveParameter(key, value):
+    if (plugin is not None) or STANDALONE:
+        plugin.command('save_parameter',  key=key, value=value) #{'key':key, 'value':value}
+    else:
+        print('Cannot save parameter, plugin not connected')
+    
+def getParameter(key, default):
+    return parameters[key] if key in parameters else str(default)
 
 USING_PYQT = None    
 
@@ -148,9 +161,12 @@ if len(sys.argv) >= 2:
 else:
     STANDALONE = True
     
+parameters = {}
+    
 # TODO: implement passing of saved parameters for plugin on startup
 for each in sys.argv[2:]:
     pair = each.split(':')
     key = pair[0]
     arg = pair[1]
-    print('key:', arg)
+    print('key:', key, 'arg:',arg)
+    parameters[key] = arg

@@ -182,6 +182,11 @@ class PluginHandler:
             elif i['command'] == 'relaunch':
                 self.parent.onRelaunch()
                 
+            elif i['command'] == 'save_parameter':
+                key = i['key']
+                value = i['value']
+                self.parent.changeSetting(key, value, self.plugins[i['ID']]['name'])
+                
     def _name_to_ID(self, name):
         for ID,values in self.plugins.items():
             if values['name'] == name:
@@ -192,13 +197,11 @@ class PluginHandler:
     # todo: make it internal .. _send_command ..
     def send_command(self, command, ID):
         # command = command.text()
-        msg_ID = {'ID':ID}
+        #msg_ID = {'ID':ID}
         msg_json = {'ID':ID, 'command':command}
-        msg_else = msg_json
+        #msg_else = msg_json
         msg = json.dumps(msg_json)
-        print('Launcher sending:',msg)
-        
-        print(self.plugins[ID]['socket'])
+
         self.plugins[ID]['socket'].write(msg.encode())
         self.plugins[ID]['socket'].flush()        
 
@@ -207,10 +210,6 @@ class PluginHandler:
         ID = self._name_to_ID(name)
         self.send_command(command, ID)
 
-    def display_message(self, msg_json): 
-        msg_dict = json.loads(msg_json)
-        print("Plugin:",msg_dict)
-     
     def ping(self, ID):
         self.plugins[ID]['pingInProgress'] = True
         self.plugins[ID]['ping_start_time'] = time.perf_counter()
@@ -238,9 +237,12 @@ class PluginHandler:
         self.start(plug['ID'])
 
     def start(self, ID):
+        settings = self.parent.loadSettings(self.plugins[ID]['name'])
+        params = [key+':'+value for key,value in settings.items()]
+    
         try:
             if current_OS == 'windows':
-                self.plugins[ID]['process'] = Popen(['python',self.plugins[ID]['location'], ID]) #,creationflags=CREATE_NEW_CONSOLE)
+                self.plugins[ID]['process'] = Popen(['python',self.plugins[ID]['location'], ID] + params) #,creationflags=CREATE_NEW_CONSOLE)
             #else: # TODO: make this..
             #    Popen(splitlist, preexec_fn=os.setpgrp) #,creationflags=CREATE_NEW_CONSOLE)   
         except FileNotFoundError:

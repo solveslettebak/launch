@@ -1,7 +1,10 @@
 import os
 import sys
 import json
+from pathlib import Path
 settingsPath = os.path.expanduser('~/settings.json')
+
+newSettingsPath = Path.home() / "settings.json"
 
 current_OS = 'linux' if not sys.platform.lower().startswith('win') else 'windows'
 

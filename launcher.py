@@ -7,9 +7,6 @@
 # Menu editor GUI: don't modify unknown fields.
 # Manage todo list better. maybe in git repo.. 
 
-
-
-
 menu_type = 'JSON' # YAML / JSON
 
 # When true, stdout and stderr from launcher (not launched applications) are caught and redirected to output.log.
@@ -269,8 +266,8 @@ class MainWindow(QMainWindow):
                         newAction.triggered.connect(self.onQuickLog)
                     elif link == '_relaunch':
                         newAction.triggered.connect(self.onRelaunch)
-                    elif link == '_updateall':
-                        newAction.triggered.connect(self.onInitiateUpdate)
+                    #elif link == '_updateall':
+                    #    newAction.triggered.connect(self.onInitiateUpdate)
                     elif link == '_autoramp_shortcut':
                         newAction.toggled.connect(self.autoramp_shortcut) # toggled. This assumes a checkbox.
                     elif link == '_output':
@@ -314,6 +311,13 @@ class MainWindow(QMainWindow):
     # TODO: Implement. This is called when launcher loads, so start keyboard monitoring from here, not in __init__ - also, this should be shortcuts in general, not autoramp.
     def autoramp_shortcut(self):
         pass
+        
+    
+    def saveWindowPos(self):
+        x = self.pos().x()
+        y = self.pos().y()
+        self.changeSetting('xpos',str(x))
+        self.changeSetting('ypos',str(y))
         
     def showSearch(self):
         print('search')
@@ -394,24 +398,36 @@ class MainWindow(QMainWindow):
         except FileNotFoundError as e:
             print('File not found',str(e))
 
-    def changeSetting(self, field, value):
-        data = json.load(open(settingsPath))
-        data[field] = value
-        json.dump(data,open(settingsPath,"w"))
+    def changeSetting(self, field, value, owner='launcher'):
+        data = json.load(open(newSettingsPath))
+        if owner not in data:
+            data[owner] = {}
+        data[owner][field] = value
+        json.dump(data,open(newSettingsPath,"w"), indent=4)
 
-    def loadSettings(self):
-        if not os.path.isfile(settingsPath):
+    def loadSettings(self, owner='launcher'):
+        if not newSettingsPath.exists():
             print('Settings file not found, creating it with default values')
-            open(settingsPath,'w+').write(open('default_settings.json','r').read())
+            open(newSettingsPath,'w+').write(open('default_settings.json','r').read())
         try:
-            data = json.load(open(settingsPath))
+            data = json.load(open(newSettingsPath))
         except json.decoder.JSONDecodeError:
             print('Could not read JSON settings file. Loading default settings instead.')
             data = json.load(open('default_settings.json','r').read())
-        self.layoutFile = 'menus/' + data["defaultLayoutFile"]
-        self.fontSize = int(data["fontsize"])
-        self.move(int(data['xpos']),int(data['ypos']))
-        self.menubar.setFont(QFont('Arial',self.fontSize))
+            
+        if owner in data:
+            data = data[owner]
+        else:
+            data = {}
+        
+        # TODO: split this away, so loadSettings() is not performing anything on launcher
+        if owner == 'launcher':
+            self.layoutFile = 'menus/' + data["defaultLayoutFile"]
+            self.fontSize = int(data["fontsize"])
+            self.move(int(data['xpos']),int(data['ypos']))
+            self.menubar.setFont(QFont('Arial',self.fontSize))
+            
+        return data
 
     def onQuickLog(self):
         self.qlog = quickLog(self)
@@ -420,6 +436,7 @@ class MainWindow(QMainWindow):
     def onQuit(self):
         #if useShortCuts:
         #    self.keyboardlistener.stoplistening()
+        self.saveWindowPos()
         if ALLOW_PLUGINS:
             self.plugins.kill_all()
         QApplication.quit()

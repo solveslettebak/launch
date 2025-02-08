@@ -1,1 +1,8 @@
-{"fontsize": "16", "defaultLayoutFile": "standard_menus.json", "xpos": "245", "ypos": "2"}
+{"launcher":
+	{
+		"fontsize": "16", 
+		"defaultLayoutFile": "standard_menus.json", 
+		"xpos": "245", 
+		"ypos": "2"
+	}
+}
