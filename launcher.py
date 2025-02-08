@@ -47,24 +47,20 @@ from functools import partial
 from pathlib import Path
 from uuid import uuid4
 from pprint import pprint
+import time
 
 from modules.argumentDialog import argumentDialog
 from modules.quickLog import quickLog
 from modules.settingsDialog import settingsDialog
 from modules.rePhauncherDialog import rePhauncherDialog
-from modules.common import settingsPath
+from modules.common import *
 from modules.movableMenuBar import movableMenuBar
+from modules.PluginHandler import PluginHandler, PluginDisplay
 
 if REDIRECT_OUTPUT:
     from modules.outputWindow import OutputWindow, MyStream
     sys.stdout = MyStream(sys.stdout)
     sys.stderr = MyStream(sys.stderr)
-
-
-
-current_OS = 'linux' if not sys.platform.lower().startswith('win') else 'windows'
-print('Current OS:',current_OS)
-
 
 useShortCuts = False
 if ALLOW_SHORTCUTS and current_OS == 'linux':
@@ -90,249 +86,10 @@ if ALLOW_SHORTCUTS and current_OS == 'windows':
     
 
 # TODO replace this with pathlib. Is this used anywhere..? 🤔
+# also put it in common
 realpath = os.path.realpath(__file__)
 SCRIPT_PATH = realpath[:realpath.rfind('/')+1]
 
-
-# data = '{"key1": {"subkey1": "value1"}}{"key2": {"subkey2": "value2"}}{"key3": "value3"}'
-
-# Use JSONDecoder to parse multiple JSON objects
-def parse_multiple_json(data):
-    decoder = json.JSONDecoder()
-    pos = 0
-    objects = []
-    while pos < len(data):
-        json_obj, pos = decoder.raw_decode(data, pos)
-        objects.append(json_obj)
-        # Skip any whitespace between JSON objects
-        while pos < len(data) and data[pos].isspace():
-            pos += 1
-    return objects
-
-
-
-class PluginDisplay(QDialog):
-    def __init__(self,mainwin,plugins):
-        def c():
-            if self.count is False:
-                self.count = 0
-                return 0
-            else:
-                self.count += 1
-                return self.count
-            
-        super().__init__()
-        self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
-        self.resize(400,200)
-        # self.move(mainwin.pos().x()+500,mainwin.pos().y()+40)
-        self.setWindowTitle("Plugin overview")
-        # self.setWindowFlag(Qt.FramelessWindowHint)
-        # self.setAttribute(Qt.WA_TranslucentBackground)
-        # self.setStyleSheet("background-color: lightblue;border: 1px solid black;")
-        # self.setLayout(QGridLayout())
-        # self.setLayout(QFormLayout())
-        
-        
-        layout = QGridLayout()
-        self.setLayout(layout)
-        
-        buttonWidth = 70
-        
-        self.textMsg = []
-        
-        for i,plugin in enumerate(plugins.values()):
-            print(plugin)
-            self.textMsg.append(None)
-            
-            buttonPing = QPushButton("Ping")
-            buttonFocus = QPushButton("Focus")
-            buttonKill = QPushButton("Kill")
-            self.textMsg[i] = QLineEdit()
-            buttonSend = QPushButton("Send")
-            
-            # every day we stray further from God...
-            buttonSend.clicked.connect(partial(lambda t, id: mainwin.send_command(t(), id), self.textMsg[i].text, plugin['ID']))
-            
-            buttonFocus.clicked.connect(partial(mainwin.send_command, "focus", plugin['ID']))
-            
-            buttonPing.setFixedWidth(buttonWidth)
-            buttonFocus.setFixedWidth(buttonWidth)
-            buttonKill.setFixedWidth(buttonWidth)
-            buttonSend.setFixedWidth(buttonWidth)
-            
-            proc_status = 'running' if plugin['process'].poll() is None else 'halted'
-            proc_status_lineedit = QLineEdit()
-            proc_status_lineedit.setText(proc_status)
-            
-            self.count = False
-            
-            layout.addWidget(QLabel(plugin['name']), i, c())
-            layout.addWidget(QLabel(str(plugin['handshake'])), i, c())
-            layout.addWidget(QLabel(" "), i, c())
-            layout.addWidget(buttonPing, i, c())
-            layout.addWidget(buttonFocus, i, c())
-            layout.addWidget(buttonKill, i, c())
-            layout.addWidget(self.textMsg[i], i, c())
-            layout.addWidget(buttonSend, i, c())
-            layout.addWidget(proc_status_lineedit, i, c())
-        
-
-class PluginHandler:
-    
-
-    def __init__(self):
-        # For storing all plugins, whether running/connected or not
-        self.plugins = {}
-        
-        # Temporarily stores incoming connections until they are verified
-        self.sockets = []
-        
-        self.server = QTcpServer()
-        self.server.listen(QHostAddress("127.0.0.1"), 12345)
-        self.server.newConnection.connect(self.handle_new_connection)       
-
-    # murderous function that should be called when launcher quits.
-    def kill_all(self):
-        pass
-               
-    def handle_new_connection(self):
-    
-        # TODO: first check if we are expecting any incoming connection. For security etc..
-    
-        client_socket = self.server.nextPendingConnection()  
-        print("New connection received from port",client_socket.peerPort())
-        self.sockets.append(client_socket) 
-        client_socket.readyRead.connect(lambda: self.read_from_client(client_socket))
-        
-    def pong(self,ID):
-        msg_json = {'ID':ID, 'command':'pong'}
-        msg_text = json.dumps(msg_json)
-        self.plugins[ID]['socket'].write(msg_text.encode())
-        self.plugins[ID]['socket'].flush()
-        
-        
-    def read_from_client(self, client_socket):
-    
-        msg_json = client_socket.readAll().data().decode()
-        #print('type msg_json:',type(msg_json))
-        
-        json_objects = parse_multiple_json(msg_json)
-
-        #print(json_objects)  
-
-        for i in json_objects:
-        
-            #try:
-            #    data = json.loads(i)
-            #except json.JSONDecodeError as e:
-            #    print('shit happened:',i)
-            #    raise
-            
-            print('Read from client:',i)
-            
-            if i['command'] == 'handshake':
-                ID = i['ID']
-                if not ID in self.plugins:
-                    print('ID not found in plugin list:',ID)
-                    return
-                self.plugins[ID]['handshake'] = True
-                print('Handshake complete')
-                self.plugins[ID]['socket'] = client_socket
-                self.sockets.remove(client_socket)
-            
-            if i['ID'] not in self.plugins:
-                print('Invalid ID')
-                return
-            
-            if i['command'] == 'ping':
-                self.pong(i['ID'])
-                
-            elif i['command'] == 'setmenu':
-                print('set menu:',i['menu_ID'],':',i['name'])
-        
-        
-    def send_command(self, command, ID):
-        # command = command.text()
-        msg_ID = {'ID':ID}
-        msg_json = {'ID':ID, 'command':command}
-        msg_else = msg_json
-        msg = json.dumps(msg_json)
-        print('Launcher sending:',msg)
-        
-        print(self.plugins[ID]['socket'])
-        self.plugins[ID]['socket'].write(msg.encode())
-        self.plugins[ID]['socket'].flush()        
-
-    def send_message(self):
-        if self.plugin_connection:
-            self.plugin_connection.send_message("Hello from Launcher!")
-        else:
-            self.log("No plugin connected.")
-
-    def display_message(self, msg_json): 
-        msg_dict = json.loads(msg_json)
-        print("Plugin:",msg_dict)
-
-    def log(self, message):
-        print('launcher log:',message)
-        
-    def ping(ID=None):
-        if ID is None:
-            return
-        
-    def addPlugin(self, data):
-        plug = {}
-        plug['name'] = data['name']
-        plug['location'] = str(Path(__file__).resolve().parent / "plugins" / (data['plugin_name'] + '.py'))
-        plug['ID'] = str(uuid4())
-        plug['handshake'] = False
-        plug['pingInProgress'] = False
-        
-        self.plugins[plug['ID']] = plug        
-   
-        self.start(plug['ID'])
-  
-        print('Process:','running' if self.running(plug['ID']) else 'unknown')
-
-        self.log("Waiting for plugin connection...")
-
-    def start(self, ID):
-        try:
-            if current_OS == 'windows':
-                self.plugins[ID]['process'] = Popen(['python',self.plugins[ID]['location'], ID]) #,creationflags=CREATE_NEW_CONSOLE)
-            #else: # TODO: make this..
-            #    Popen(splitlist, preexec_fn=os.setpgrp) #,creationflags=CREATE_NEW_CONSOLE)   
-        except FileNotFoundError:
-            pass
-        except Exception as e:
-            print('something bad happened. Could not start process. You see this shit?:',e)
-
-        
-    def running(self, ID):
-        return self.plugins[ID]['process'].poll() is None
-    
-    def run(self, name):
-        ID = None
-        for each in self.plugins:
-            print(self.plugins[each]['name'])
-            
-            if self.plugins[each]['name'] == name:
-                ID = each
-                break
-        if ID == None:
-            print('Plugin not found:',name)
-            return
-        if self.running(ID):
-            self.send_command("focus", ID)
-        else:
-            self.start(ID)
-
-    # create pyqt window with info on all plugins
-    # todo: split if it makes sense, to separate data and GUI. only if it actually makes things easier though.
-    def pluginInfo(self):
-        self.qlog = PluginDisplay(self, self.plugins)
-        self.qlog.show()    
-        pprint(self.plugins)
         
         
 class SearchBox(QDialog):
@@ -390,66 +147,12 @@ class MainWindow(QMainWindow):
             self.keyboardlistener = KeyboardListener()
         
         if ALLOW_PLUGINS:
-            self.plugins = PluginHandler()
+            self.plugins = PluginHandler(self)
+        else:
+            self.plugins = None
 	
         self.loadSettings()
         self.generateMenus(self.menubar)
-
-        # Setup for remote update check.
-        self.remoteUpdateTimer = QTimer()
-        self.remoteUpdateTimer.start(4*1000)
-        self.remoteUpdateTimer.timeout.connect(self.remoteUpdateCheck)
-        self.updateInProgress = False
-        self.updateFlag = False
-
-# --- Remote update of application stuff. TODO: Move to separate class/file
-# This stuff allows one instance of launcher to set a "relaunch flag" in a file in the launcher directory, in order to restart all running instances of launcher. It's pretty ugly, but.. it works.
-
-    def remoteUpdateCheck(self):
-        if self.updateFlag: # If this instance initiates the remote update, then we don't listen to that signal. 
-            return
-        try:
-            data = open('update.flag','r').read()[0]
-        except OSError:
-            print('Problem reading update flag file. Giving up..')
-            self.remoteUpdateTimer.stop()
-        if data == '0' and self.updateInProgress: # perform the relaunch on a detected falling edge of the update flag.
-            updateInProgress = False
-            print('Remote update signal detected, relaunching..')
-            self.onRelaunch()
-        if data == '1' and not self.updateInProgress:
-            print('Prepare update..')
-            self.updateInProgress = True
-
-    def clearUpdateFlag(self):
-        self.updateFlag = False
-        self.setRemoteUpdateTimer.stop()
-        try:
-            open('update.flag','w+').write('0')
-        except OSError:
-            print('Problem clearing update flag...')
-        print('Relaunching this instance...')
-        self.onRelaunch()
-
-    def onInitiateUpdate(self):
-        print('Initiating remote update of running instances of launcher')
-        if self.updateFlag: # update already in progress.
-            return
-        self.updateFlag = True
-        self.setRemoteUpdateTimer = QTimer()
-        self.setRemoteUpdateTimer.start(10*1000)
-        self.setRemoteUpdateTimer.timeout.connect(self.clearUpdateFlag)
-        try:
-            open('update.flag','w+').write('1')
-        except OSError:
-            print('Problem setting update flag. Giving up..')
-            updateFlag = False
-            self.setRemoteUpdateTimer.stop()
-        print('done')
-
-
-# --- 
-
 
     def generateMenus(self, menubar):
 
@@ -580,6 +283,10 @@ class MainWindow(QMainWindow):
                             keyboard.add_hotkey('ctrl+alt+f12', self.showSearch)
                     elif link =='_plugin':
                         newAction.triggered.connect(partial(self.plugins.run, each['name']))
+                    elif link.startswith('_plugin_command'):
+                        plugname = link.split()[1]
+                        command  = link.split()[2]
+                        newAction.triggered.connect(partial(self.plugins.plugin_command, plugname, command))
                     else:
 
                         # Still here? Then we have a regular menu link on our hands.
@@ -645,7 +352,14 @@ class MainWindow(QMainWindow):
         self.out_win.show()
         
     def onRelaunch(self):
-        os.execv(__file__, sys.argv)
+    
+        if self.plugins is not None:
+            self.plugins.kill_all()
+    
+        if current_OS == 'linux':
+            os.execv(__file__, sys.argv)
+        elif current_OS == 'windows':
+            os.execv(sys.executable, [sys.executable] + sys.argv)
 
     def onRePhauncher(self):
         phauncher = rePhauncherDialog(self.pos())
@@ -706,6 +420,8 @@ class MainWindow(QMainWindow):
     def onQuit(self):
         #if useShortCuts:
         #    self.keyboardlistener.stoplistening()
+        if ALLOW_PLUGINS:
+            self.plugins.kill_all()
         QApplication.quit()
         sys.exit()
 

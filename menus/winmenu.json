@@ -39,7 +39,18 @@
 					"checkable": true,
 					"checked": true,
 					"submenu_name": "rocket_launches"
-                },			
+                },
+                {
+                    "name": "Relauncher",
+                    "link": "_plugin",
+					"plugin": true,
+					"plugin_name": "remote_relaunch",
+					"run_on_start": true
+                },					
+                {
+                    "name": "Relaunch all",
+                    "link": "_plugin_command Relauncher relaunch"
+                },				
                 {
                     "name": "rocket_launches",
                     "menu": [

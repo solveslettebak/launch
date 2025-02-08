@@ -8,6 +8,8 @@ import time
 
 ID = None
 
+loop_interval = 1000 # ms
+
 class SelfContainedPlugin(QObject):
 
     message_received = pyqtSignal(str)  # Signal carrying the received message
@@ -28,7 +30,7 @@ class SelfContainedPlugin(QObject):
         if loop is not None:
             self.timer = QTimer()
             self.timer.timeout.connect(self.loopcaller)
-            self.timer.start(1000)
+            self.timer.start(loop_interval)
             self.loopfunction = loop
             
         self.cb = cb
@@ -48,7 +50,7 @@ class SelfContainedPlugin(QObject):
         if code == 0:
             self.onQuit()
             #QCoreApplication.quit()
-        self.timer.start(5000)
+        self.timer.start(loop_interval)
 
     def on_connected(self):
         print("[Plugin] Connected to launcher. Attempting handshake")
@@ -68,8 +70,15 @@ class SelfContainedPlugin(QObject):
                 self.pong()
             elif msg_dict['command'] == 'die':
                 self.onQuit()
+            elif msg_dict['command'] == 'ping':
+                self.command('pong')
+            elif msg_dict['command'] == 'test':
+                self.command('relaunch')
             else:
-                self.message_received.emit(msg_dict['command'])
+                if USING_PYQT:
+                    self.message_received.emit(msg_dict['command'])
+                else:
+                    self.cb(msg_dict['command'])
 
     def send_message(self, message):
         if self.socket.state() == QTcpSocket.ConnectedState:
@@ -114,21 +123,34 @@ class SelfContainedPlugin(QObject):
 
 # for non-pyqt applications. Defines initialize function, loop function and a callback for messages
 def start(ID, init, loop, quit, cb):
+    USING_PYQT = False
     #app = QCoreApplication(sys.argv)
     app = QApplication(sys.argv)
-    print('[TEST] starting')
     plugin = SelfContainedPlugin(ID=ID, loop=loop, quit=quit, cb=cb)
-    print('[TEST] plugin created')
     init()
     sys.exit(app.exec_())
 
 # for pyqt applications, provide only access to plugin API
 def start_pyqt(ID):
+    USING_PYQT = True
     plugin = SelfContainedPlugin(ID)
     return plugin
     
+def set_loop_interval(interval):
+    global loop_interval
+    loop_interval = interval
+
+USING_PYQT = None    
+
 STANDALONE = False
 if len(sys.argv) >= 2:
     ID = sys.argv[1]
 else:
     STANDALONE = True
+    
+# TODO: implement passing of saved parameters for plugin on startup
+for each in sys.argv[2:]:
+    pair = each.split(':')
+    key = pair[0]
+    arg = pair[1]
+    print('key:', arg)
