@@ -18,7 +18,7 @@ ALLOW_SHORTCUTS = True
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QIcon, QFont, QCursor, QPalette
-from PyQt5.QtCore import QSize, Qt, QTimer, QThread, pyqtSignal, QObject
+from PyQt5.QtCore import QSize, Qt, QTimer, QThread, pyqtSignal, QObject, QEvent
 from PyQt5.QtWidgets import (
     QAction, QApplication, QCheckBox, QLabel, QMainWindow, QStatusBar, QToolBar, QLineEdit, QSpinBox, QVBoxLayout,
     QFormLayout, QPushButton, QDialog, QFileDialog, QWidgetAction, QWidget, QGridLayout, QGroupBox, QDialogButtonBox,
@@ -93,6 +93,7 @@ class SearchBox(QDialog):
     def __init__(self,mainwin):
         super().__init__()
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.FramelessWindowHint)
+
         self.resize(100,50)
         self.move(mainwin.pos().x(),mainwin.pos().y()+40)
         self.setWindowTitle("QuickLog")
@@ -116,26 +117,21 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Launcher")
         self.resize(60,1)
-        #self.move(200,3) # -3 makes mouse "all the way up" still hover menus. :)
-        
+
         # These two lines seem to make the window frameless in any(?) OS, and also for whatever reason stay on top on linux/gnome
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setWindowFlag(Qt.BypassWindowManagerHint) 
+        self.setWindowFlag(Qt.WindowStaysOnTopHint)    # removed toggling of this. Never not needed, so.. here it is.   
         
         with open('css.css', 'r') as f:
-            stylesheet = f.read()
+            self.stylesheet = f.read()
 
         # TODO instead of this stuff, check if "developer.txt" exists in folder, and then treat this instance as dev. Or add developer locations in settings.json. Then an option for that in settings dialog - "this launcher location is developer"
         if os.getcwd().endswith('Johanna/launcher') or os.getcwd().endswith('dev/launcher'):
-            self.setStyleSheet(stylesheet + 'QMenu,QMenuBar,QMainWindow { background-color: lightgreen;border: 1px solid black; }') # hack to turn it green when run from my dev-location.. 
+            self.setStyleSheet(self.stylesheet + 'QMenu,QMenuBar,QMainWindow { background-color: lightgreen;border: 1px solid black; }') # hack to turn it green when run from my dev-location.. 
         else:
-            self.setStyleSheet(stylesheet)
+            self.setStyleSheet(self.stylesheet)
 
-        if not current_OS == 'linux': # linux refuses to cooperate on this, so fuck it. Window somehow stays on top anyway, just not when told to.
-            self.pinOnTop = True
-            self.onPinToggle(self.pinOnTop)
-
-        #self.menubar = self.menuBar()
         self.menubar = movableMenuBar()
         self.setMenuBar(self.menubar)
         self.menubar.setNativeMenuBar(False)
@@ -150,6 +146,37 @@ class MainWindow(QMainWindow):
 	
         self.loadSettings()
         self.generateMenus(self.menubar)
+        
+        self.notify_active = False
+        
+
+        
+    # Function to grab attention about something. Should stop doing that once launcher is interacted with in any way.
+    # if popup not False, then it is the string that should be displayed. Same with sound - give path to sound.
+    # timeout can be None or given in seconds.
+    # if called with ack=True, ignore all other parameters, and go back to normal mode (normal color, probably)
+    # sound, if True, default sound to be used. If path, play that sound. if string, use system speech digitizer, if available.
+    def notify(self, ack=False, start=True, timeout=None, changeColor = "#FF0000", popup = False, sound = False): 
+        if ack:
+            self.setStyleSheet(self.stylesheet)
+            self.notify_active = False
+            #self.notify_timer.stop()
+            return
+            
+        if start:
+            if changeColor is not False:
+                self.setStyleSheet(self.stylesheet + 'QMenu,QMenuBar,QMainWindow { background-color: '+changeColor+';border: 1px solid black; }')
+            self.notify_active = True
+        else:
+            self.setStyleSheet(self.stylesheet)
+            self.notify_active = False
+            return
+        
+        if timeout is not None:
+            self.notify_timer = QTimer(self)  # Create a QTimer instance
+            self.notify_timer.setSingleShot(True)  # Ensure it runs only once
+            self.notify_timer.timeout.connect(partial(self.notify, start=False))  # Connect to function
+            self.notify_timer.start(timeout * 1000)  # Start timer (5000 ms = 5 seconds)
 
     def generateMenus(self, menubar):
 
@@ -161,12 +188,6 @@ class MainWindow(QMainWindow):
         #drag = QAction(QIcon("icons/drag.png"), "", self)
         #menubar.addAction(drag)
 
-        icon = QAction(QIcon("icons/pin.png"),"",self)
-        icon.setCheckable(True)
-        icon.setChecked(True)
-        icon.triggered.connect(self.onPinToggle)
-
-        # Generate dynamic menus
         if menu_type == 'YAML':
             data = yaml.safe_load(open("SLconsole_menus.yaml",'r'))
         else:
@@ -248,7 +269,7 @@ class MainWindow(QMainWindow):
                     
                     if ALLOW_PLUGINS and "plugin" in each:
                         print('Plugin detected:',each['plugin_name'])
-                        self.plugins.addPlugin(each)
+                        self.plugins.addPlugin(each, newAction)
                         # continue # this or not?
 
                     # Hard-coded internal functions.
@@ -280,6 +301,8 @@ class MainWindow(QMainWindow):
                             keyboard.add_hotkey('ctrl+alt+f12', self.showSearch)
                     elif link =='_plugin':
                         newAction.triggered.connect(partial(self.plugins.run, each['name']))
+                    elif link == '_plugindata':
+                        newAction.triggered.connect(self.showPluginData)
                     elif link.startswith('_plugin_command'):
                         plugname = link.split()[1]
                         command  = link.split()[2]
@@ -295,18 +318,15 @@ class MainWindow(QMainWindow):
                     # At last, add the new item to the menu.
                     currentmenu.addAction(newAction)
 
+
+        menubar.setData(data) # hand it all over to the custom menu bar class
         recursive_read(data['menu'], 0, menubar)
         
-        self.menudata = data
+        # self.menudata = data
         
         pprint(data['menu'][0]['menu'][0]['name'])
         #print(menubar)
         
-
-#        searchBar = QLabel("asdf")
-#        searchContainer = QWidgetAction(self)
-#        searchContainer.setDefaultWidget(searchBar)
-#        menubar.addAction(searchContainer)
 
     # TODO: Implement. This is called when launcher loads, so start keyboard monitoring from here, not in __init__ - also, this should be shortcuts in general, not autoramp.
     def autoramp_shortcut(self):
@@ -320,17 +340,16 @@ class MainWindow(QMainWindow):
         self.changeSetting('ypos',str(y))
         
     def showSearch(self):
-        print('search')
         self.search = SearchBox(self)
         self.search.show()
-        print('showed search')
 
     # Triggered by internal function "_test". For development use only.
     def codeTest(self):
         self.plugins.pluginInfo()
         #self.menudata['menu'][0]['menu'][0]['QAction'].setText('TEST')
         
-        
+    def showPluginData(self):
+        self.plugins.pluginInfo()
 
     # Shows dialog box for input of parameters to a commandline program, and executes it.
     def onMenuClickCommandline(self, d):
@@ -470,15 +489,6 @@ class MainWindow(QMainWindow):
             self.loadSettings()
         return
 
-    # more work than it's worth to make this work on linux it seems. Putting on ice.
-    def onPinToggle(self,e):
-        if e:
-            self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
-        else:
-            self.setWindowFlags(self.windowFlags() & ~QtCore.Qt.WindowStaysOnTopHint)
-        self.show()
-        return
-
 
 def handle_exception(exc_type, exc_value, exc_traceback):
     s = ''.join(traceback.format_exception(exc_type, exc_value, exc_traceback))
@@ -489,6 +499,16 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     QMessageBox.critical(None, 'Launcher: Shit happened',msg)
 
 
+# to intercept clicks and acknowledge notifications
+class ClickInterceptor(QObject):
+    def __init__(self, mainwin):
+        super().__init__()
+        self.mainwin = mainwin
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.MouseButtonPress:
+            self.mainwin.notify(ack=True)
+        return super().eventFilter(obj, event)
 
 if __name__ == "__main__":
 
@@ -507,8 +527,7 @@ if __name__ == "__main__":
 
     app = QApplication(sys.argv)
     w = MainWindow()
+    interceptor = ClickInterceptor(w)
+    app.installEventFilter(interceptor)  # Global click detection
     w.show()
     app.exec()
-
-    
-

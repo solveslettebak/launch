@@ -14,6 +14,8 @@ class movableMenuBar(QMenuBar):
         super().__init__()
         self.draggable = False
         self.offset = None
+        
+    #### --- Related to drag to move launcher stuff --- ####
 
     def mousePressEvent(self, event):
         if event.button() == Qt.RightButton:
@@ -36,7 +38,6 @@ class movableMenuBar(QMenuBar):
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
-
             self.draggable = False
             self.offset = None
         super().mouseReleaseEvent(event)
@@ -44,3 +45,31 @@ class movableMenuBar(QMenuBar):
     def isOverMenuItem(self, pos):
         action = self.actionAt(pos)
         return isinstance(action, QAction)
+
+    #### //// Related to drag to move launcher stuff --- ####
+    
+    # from menu file json.
+    def setData(self, data):
+        self.data = data
+    
+    # "[o]/rocket_launches/asdf"
+    def _get_QAction_by_path(path):
+    
+        pathlist = path.split('/')
+        currentlevel = self.data['menu']
+        for menu in pathlist[:-1]:
+            for each in currentlevel:
+                pass
+            currentlevel = currentlevel[menu]
+        
+        #if self.data['menu']
+        
+        #pass
+        
+    def changeMenuItem(path, **kw):
+        pass
+        
+    # for the search function, to go through and able to run items directly
+    def get_flat_list():
+        pass
+    

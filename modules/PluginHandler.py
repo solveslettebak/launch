@@ -24,9 +24,6 @@ from uuid import uuid4
 from pprint import pprint
 import time
 
-
-
-
 class PluginDisplay(QDialog):
     def __init__(self,mainwin,plugins):
         def c():
@@ -60,6 +57,7 @@ class PluginDisplay(QDialog):
             self.textMsg.append(None)
             
             buttonPing = QPushButton("Ping")
+            pingTime = QLineEdit("-" if "lastPingTime" not in plugin else "{:.3f}".format(plugin['lastPingTime']))
             buttonFocus = QPushButton("Focus")
             buttonKill = QPushButton("Kill")
             self.textMsg[i] = QLineEdit()
@@ -70,6 +68,7 @@ class PluginDisplay(QDialog):
             
             buttonFocus.clicked.connect(partial(mainwin.send_command, "focus", plugin['ID']))
             buttonPing.clicked.connect(partial(mainwin.ping, plugin['ID']))
+            buttonKill.clicked.connect(partial(mainwin.kill, plugin['ID']))
             
             buttonPing.setFixedWidth(buttonWidth)
             buttonFocus.setFixedWidth(buttonWidth)
@@ -86,6 +85,8 @@ class PluginDisplay(QDialog):
             layout.addWidget(QLabel(str(plugin['handshake'])), i, c())
             layout.addWidget(QLabel(" "), i, c())
             layout.addWidget(buttonPing, i, c())
+            layout.addWidget(pingTime, i, c())
+            layout.addWidget(QLabel("ms"), i, c())
             layout.addWidget(buttonFocus, i, c())
             layout.addWidget(buttonKill, i, c())
             layout.addWidget(self.textMsg[i], i, c())
@@ -112,7 +113,10 @@ class PluginHandler:
         self.server = QTcpServer()
         self.server.listen(QHostAddress("127.0.0.1"), 12345)
         self.server.newConnection.connect(self.handle_new_connection)     
+        
   
+    def on_error(self, error):
+        print('[Launcher] - there was an error:',error)
 
     # murderous function to ensure if we're going down, we're talking them all with us.
     def kill_all(self, double_tap = False):
@@ -123,6 +127,8 @@ class PluginHandler:
         if double_tap:
             pass # kill processes
         
+    def kill(self, ID, doble_tap = False):
+        self.send_command('die', ID)
         
     def relaunch(self):
         self.kill_all()
@@ -137,6 +143,7 @@ class PluginHandler:
         print("New connection received from port",client_socket.peerPort())
         self.sockets.append(client_socket) 
         client_socket.readyRead.connect(lambda: self.read_from_client(client_socket))
+        client_socket.errorOccurred.connect(self.on_error)
         
     def pong(self,ID):
         self.send_command('pong', ID)
@@ -144,11 +151,7 @@ class PluginHandler:
     def read_from_client(self, client_socket):
     
         msg_json = client_socket.readAll().data().decode()
-        #print('type msg_json:',type(msg_json))
-        
         json_objects = parse_multiple_json(msg_json)
-
-        #print(json_objects)  
 
         for i in json_objects:
     
@@ -158,12 +161,16 @@ class PluginHandler:
                     print('ID not found in plugin list:',ID)
                     return
                 self.plugins[ID]['handshake'] = True
-                print('Handshake complete')
+                self.plugins[ID]['menuQAction'].setChecked(True)
                 self.plugins[ID]['socket'] = client_socket
                 self.sockets.remove(client_socket)
             
             if i['ID'] not in self.plugins:
                 print('Invalid ID')
+                return
+                
+            if self.plugins[i['ID']]['handshake'] == False:
+                print('Handshake not complete.')
                 return
                 
             # Basic commands
@@ -179,13 +186,21 @@ class PluginHandler:
             elif i['command'] == 'setmenu':
                 print('set menu:',i['menu_ID'],':',i['name'])
                 
+            # general notify, should make launcher display something
+            elif i['command'] == 'notify':
+                self.parent.notify()
+                
             elif i['command'] == 'relaunch':
                 self.parent.onRelaunch()
                 
             elif i['command'] == 'save_parameter':
-                key = i['key']
-                value = i['value']
-                self.parent.changeSetting(key, value, self.plugins[i['ID']]['name'])
+                try:
+                    key = i['key']
+                    value = i['value']
+                except KeyError:
+                    print('Received malformed key/value pair')
+                else:
+                    self.parent.changeSetting(key, value, self.plugins[i['ID']]['name'])
                 
     def _name_to_ID(self, name):
         for ID,values in self.plugins.items():
@@ -196,10 +211,7 @@ class PluginHandler:
         
     # todo: make it internal .. _send_command ..
     def send_command(self, command, ID):
-        # command = command.text()
-        #msg_ID = {'ID':ID}
         msg_json = {'ID':ID, 'command':command}
-        #msg_else = msg_json
         msg = json.dumps(msg_json)
 
         self.plugins[ID]['socket'].write(msg.encode())
@@ -223,15 +235,17 @@ class PluginHandler:
             
         elapsed = (time.perf_counter() - self.plugins[ID]['ping_start_time']) * 1000
         print(self.plugins[ID]['name'],'-> Launcher: Pong! .. in',elapsed,'ms')
-        self.plugins[ID]['pingInProgres'] = False     
+        self.plugins[ID]['pingInProgres'] = False    
+        self.plugins[ID]['lastPingTime'] = elapsed        
         
-    def addPlugin(self, data):
+    def addPlugin(self, data, newAction):
         plug = {}
         plug['name'] = data['name']
         plug['location'] = str(Path(__file__).resolve().parent.parent / "plugins" / (data['plugin_name'] + '.py'))
         plug['ID'] = str(uuid4())
         plug['handshake'] = False
         plug['pingInProgress'] = False
+        plug['menuQAction'] = newAction
         
         self.plugins[plug['ID']] = plug        
         self.start(plug['ID'])

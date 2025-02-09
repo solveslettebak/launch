@@ -21,7 +21,6 @@ class SelfContainedPlugin(QObject):
         self.socket.connected.connect(self.on_connected)
         self.socket.readyRead.connect(self.read_message)
         self.socket.errorOccurred.connect(self.on_error)
-        print('[TESTTEST] we are in init')
         self.ID = ID
         self.quit_call = quit
         self.pinging = False
@@ -46,7 +45,6 @@ class SelfContainedPlugin(QObject):
         
     def loopcaller(self):
         code = self.loopfunction(self)
-        print(code)
         if code == 0:
             self.onQuit()
             #QCoreApplication.quit()
@@ -55,15 +53,15 @@ class SelfContainedPlugin(QObject):
     def on_connected(self):
         print("[Plugin] Connected to launcher. Attempting handshake")
         self.handshake()
-        self.send_message("Hello from Self-Contained Plugin!")
 
     def read_message(self):
         while self.socket.bytesAvailable():
             message = self.socket.readAll().data().decode()
-            print(f"[Plugin] Received: {message}")
             msg_dict = json.loads(message)
-            print('ID check passed:',msg_dict['ID'] == self.ID)
-            print('Command:',msg_dict['command'])
+            if not msg_dict['ID'] == self.ID:
+                print('ID check failed')
+                continue
+            
             if msg_dict['command'] == 'focus':
                 self.focus.emit()
             elif msg_dict['command'] == 'pong':
@@ -97,6 +95,10 @@ class SelfContainedPlugin(QObject):
             
     def handshake(self):
         self.command('handshake')
+        
+    # TODO: expand to match launcher's accepted parameters
+    def notify(self):
+        self.command('notify')
 
     def ping(self):
         self.pinging = True
@@ -168,5 +170,4 @@ for each in sys.argv[2:]:
     pair = each.split(':')
     key = pair[0]
     arg = pair[1]
-    print('key:', key, 'arg:',arg)
     parameters[key] = arg

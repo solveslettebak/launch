@@ -24,13 +24,13 @@ from subprocess import call
 import plugin_mod as pm
 
 
-from PyQt5.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QPushButton, QTextEdit, QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QDialog, QMessageBox
-)
+#from PyQt5.QtWidgets import (
+#    QApplication, QWidget, QVBoxLayout, QPushButton, QTextEdit, QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QDialog, QMessageBox
+#)
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer, Qt
 from PyQt5.QtNetwork import QTcpSocket
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QTextEdit, QVBoxLayout, QWidget, QHBoxLayout
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QTextEdit, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QHeaderView, QDialog, QMessageBox
 
 BROWSER_PATH = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
 
@@ -88,52 +88,10 @@ class RocketLaunchApp(QMainWindow):
         self.raise_()
         self.activateWindow()
 
-#        if self.standalone == False:
-#            # TCP Client
-#            self.socket = QTcpSocket()
-#            self.socket.connected.connect(self.on_connected)
-#            self.socket.readyRead.connect(self.read_message)
-#            self.socket.errorOccurred.connect(self.on_error)
-#            self.socket.connectToHost("127.0.0.1", 12345)
-#
-#            self.log("Connecting to launcher...")
-#            # self.send_message()
-#            
-#
-#
-#    def on_connected(self):
-#        self.log("Connected to launcher!")
-#        self.handshake()
-#        # self.send_message()
-#
-#    def read_message(self):
-#        while self.socket.bytesAvailable():
-#            message = self.socket.readAll().data().decode()
-#            self.log(f"Launcher: {message}")
-#            self.show()
-#            self.raise_()
-#            self.activateWindow()
-#
-#    def send_message(self): 
-#        if self.socket.state() == QTcpSocket.ConnectedState:
-#            self.socket.write("Hello from Plugin!\n".encode())
-#        else:
-#            self.log("Not connected to launcher.")
-#            
-#    def handshake(self):
-#        self.socket.write(json.dumps({'command':'handshake', 'ID':self.ID}).encode())
-#
-#    def on_error(self, error):
-#        self.log(f"Error: {error}")
-
     def log(self, message):
         print('rocket:',message)
         #self.text_edit.append(f"[Plugin] {message}")
-    
-    def ping(self):
-        self.socket.write(json.dumps({'command':'ping', 'ID':self.ID}).encode())
-        
-        
+   
         
         
     def show_test(self):
@@ -235,11 +193,14 @@ class RocketLaunchApp(QMainWindow):
     def onLinkPress(self, URL):
         call([BROWSER_PATH,URL])
         print(URL)
-        
+    
     def notify(self):
-        self.notify_dialog = QMessageBox()
-        self.notify_dialog.setText("Things arent the way they used to be!")
-        self.notify_dialog.show()
+        if self.standalone:
+            self.notify_dialog = QMessageBox()
+            self.notify_dialog.setText("Things arent the way they used to be!")
+            self.notify_dialog.show()
+        else:
+            self.plugin.notify()
 
     def display_data(self):
         # print(data["result"][0]['t0'])

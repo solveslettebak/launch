@@ -15,12 +15,25 @@
                 {
                     "name": "test",
                     "link": "_test"
-                },				
+                },		
+			    {
+                    "name": "Plugin overview",
+                    "link": "_plugindata"
+                },						
                 {
                     "name": "search",
                     "link": "_search",
 					"shortcut": "Ctrl F12"
                 },
+                {
+                    "name": "pyqt_example",
+					"link": "_plugin",
+					"plugin": true,
+					"plugin_name": "pyqt_example",
+					"run_on_start": true,
+					"checkable": true,
+					"checked": false
+                },					
                 {
                     "name": "Plugtest",
 					"link": "_plugin",
@@ -28,7 +41,7 @@
 					"plugin_name": "plug_test",
 					"run_on_start": true,
 					"checkable": true,
-					"checked": true
+					"checked": false
                 },					
                 {
                     "name": "Rockets",
@@ -37,7 +50,7 @@
 					"plugin_name": "rocketdata",
 					"run_on_start": true,
 					"checkable": true,
-					"checked": true,
+					"checked": false,
 					"submenu_name": "rocket_launches"
                 },
                 {
