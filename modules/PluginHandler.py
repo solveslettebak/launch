@@ -188,7 +188,8 @@ class PluginHandler:
                 
             # general notify, should make launcher display something
             elif i['command'] == 'notify':
-                self.parent.notify(menuitem=self.plugins[i['ID']]['name'])
+                #self.parent.notify(menuitem=self.plugins[i['ID']]['name'])
+                self.parent.notify(item_ID=i['ID'])
                 
             elif i['command'] == 'relaunch':
                 self.parent.onRelaunch()
@@ -242,7 +243,7 @@ class PluginHandler:
         plug = {}
         plug['name'] = data['name']
         plug['location'] = str(Path(__file__).resolve().parent.parent / "plugins" / (data['plugin_name'] + '.py'))
-        plug['ID'] = str(uuid4())
+        plug['ID'] = data['ID'] # str(uuid4())
         plug['handshake'] = False
         plug['pingInProgress'] = False
         plug['menuQAction'] = newAction

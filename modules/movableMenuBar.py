@@ -49,8 +49,9 @@ class movableMenuBar(QMenuBar):
     #### //// Related to drag to move launcher stuff --- ####
     
     # from menu file json.
-    def setData(self, data):
+    def setData(self, data, flatmenu):
         self.data = data
+        self.flatmenu = flatmenu
     
     def _get_item_by_path(self, path):
     
@@ -61,7 +62,6 @@ class movableMenuBar(QMenuBar):
             for i,each in enumerate(currentlevel):
                 if each['name'] == menu:
                     currentlevel = currentlevel[i]['menu']
-                    print('found',each['name'])
                     found = True
                     break
             if not found:
@@ -70,15 +70,19 @@ class movableMenuBar(QMenuBar):
         
         for each in currentlevel:
             if each['name'] == pathlist[-1]:
-                print('found final:',each['name'])
                 return each
 
         return None
         
-    def notify(self, menuitem):
-        action = self._get_item_by_path('[o]/rocket_launches/asdf')
+    def notify_ID(self, ID):
+        self.flatmenu[ID]['QAction'].setIcon(QIcon('icons/quit.png'))
         
-        action['QAction'].setIcon(QIcon('icons/quit.png'))
+    # this one is probably obsolete...
+    def notify(self, menuitem):
+        item = self._get_item_by_path('[o]/rocket_launches/asdf')
+        
+        item['QAction'].setIcon(QIcon('icons/quit.png'))
+        
         self.data['menu'][0]['menu'][0]['name'] = 'HURAY'
         self.data['menu'][0]['menu'][0]['QAction'].setText('HURAY')
         self.data['menu'][0]['menu'][0]['QAction'].setIcon(QIcon('icons\quit.png'))

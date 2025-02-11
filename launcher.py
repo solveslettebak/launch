@@ -156,16 +156,16 @@ class MainWindow(QMainWindow):
     # timeout can be None or given in seconds.
     # if called with ack=True, ignore all other parameters, and go back to normal mode (normal color, probably)
     # sound, if True, default sound to be used. If path, play that sound. if string, use system speech digitizer, if available.
-    def notify(self, menuitem=None, ack=False, start=True, timeout=None, changeColor = "#FF0000", popup = False, sound = False): 
+    def notify(self, item_ID=None, ack=False, start=True, timeout=None, changeColor = "#FF0000", popup = False, sound = False): 
         if ack:
             self.setStyleSheet(self.stylesheet)
             self.notify_active = False
             #self.notify_timer.stop()
             return
             
-        if menuitem is not None:
-            print('menuitem not None')
-            self.menubar.notify(menuitem)
+        # 
+        if item_ID is not None:
+            self.menubar.notify_ID(item_ID)
             
         if start:
             if changeColor is not False:
@@ -202,9 +202,13 @@ class MainWindow(QMainWindow):
                 print('Running json.tool...')
                 os.system('python -m json.tool '+self.layoutFile)
                 self.onQuit()
+                
+        flatmenu = {} # should contain uuid4:{'QAction': <qaction>, 'path':'menu/adsf/qwer'} ... actually no.
 
         # read tree structured menus from menu file and produce pyqt menu structure.
         def recursive_read(menu, indent, currentmenu):
+        
+            nonlocal flatmenu
 
             for each in menu:
 
@@ -218,6 +222,8 @@ class MainWindow(QMainWindow):
 
                 # regular menu-item
                 else:
+                
+
 
                     # Separators
                     if 'separator' in each:
@@ -229,6 +235,9 @@ class MainWindow(QMainWindow):
 
                     # Required fields
                     assert ('name' in each) and ('link' in each)
+                    
+
+                    
 
                     # Create new QAction for the menu. With an icon if specified in the menu file.
                     if "icon" in each:
@@ -238,6 +247,10 @@ class MainWindow(QMainWindow):
                         
                     # update existing menu structure with pyqt menu items
                     each['QAction'] = newAction
+                    
+                    # Assign unique ID to every item in menu (apart from separators)
+                    each['ID'] = str(uuid4())
+                    flatmenu[each['ID']] = each # flatmenu becomes second way to reference menu structure, but by unique ID, not path.
 
                     # Keyboard shortcut
                     if ("shortcut" in each) and useShortCuts:
@@ -271,9 +284,12 @@ class MainWindow(QMainWindow):
 
                     link = each['link']
                     
+                    
+                    
                     if ALLOW_PLUGINS and "plugin" in each:
                         print('Plugin detected:',each['plugin_name'])
                         self.plugins.addPlugin(each, newAction)
+                          
                         # continue # this or not?
 
                     # Hard-coded internal functions.
@@ -324,7 +340,7 @@ class MainWindow(QMainWindow):
                         currentmenu.addAction(newAction)
 
 
-        menubar.setData(data) # hand it all over to the custom menu bar class
+        menubar.setData(data, flatmenu) # hand it all over to the custom menu bar class
         recursive_read(data['menu'], 0, menubar)
         
         # self.menudata = data
