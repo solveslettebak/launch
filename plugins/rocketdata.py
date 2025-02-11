@@ -117,7 +117,7 @@ class RocketLaunchApp(QMainWindow):
         self.setCentralWidget(container)
 
         self.refresh_button = QPushButton('Refresh Now', self)
-        self.refresh_button.clicked.connect(self.update_data)
+        self.refresh_button.clicked.connect(self.refresh_clicked)
         self.hide_button = QPushButton('Hide')
         self.hide_button.clicked.connect(self.hide)
         self.quit_button = QPushButton('Quit')  
@@ -144,6 +144,10 @@ class RocketLaunchApp(QMainWindow):
         self.data = [] # list of dicts with launch data
 
         self.setLayout(self.layout)
+        self.update_data()
+        
+    def refresh_clicked(self):
+        self.firstUpdate = True # to not generate a popup/notification when manually refreshing
         self.update_data()
 
     def update_data(self):
@@ -200,7 +204,7 @@ class RocketLaunchApp(QMainWindow):
             self.notify_dialog.setText("Things arent the way they used to be!")
             self.notify_dialog.show()
         else:
-            self.plugin.notify()
+            self.plug.notify()
 
     def display_data(self):
         # print(data["result"][0]['t0'])

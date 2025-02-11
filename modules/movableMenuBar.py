@@ -52,24 +52,41 @@ class movableMenuBar(QMenuBar):
     def setData(self, data):
         self.data = data
     
-    # "[o]/rocket_launches/asdf"
-    def _get_QAction_by_path(path):
+    def _get_item_by_path(self, path):
     
         pathlist = path.split('/')
         currentlevel = self.data['menu']
         for menu in pathlist[:-1]:
-            for each in currentlevel:
-                pass
-            currentlevel = currentlevel[menu]
+            found = False
+            for i,each in enumerate(currentlevel):
+                if each['name'] == menu:
+                    currentlevel = currentlevel[i]['menu']
+                    print('found',each['name'])
+                    found = True
+                    break
+            if not found:
+                print('did not find :(')
+                return None
         
-        #if self.data['menu']
+        for each in currentlevel:
+            if each['name'] == pathlist[-1]:
+                print('found final:',each['name'])
+                return each
+
+        return None
         
-        #pass
+    def notify(self, menuitem):
+        action = self._get_item_by_path('[o]/rocket_launches/asdf')
         
-    def changeMenuItem(path, **kw):
+        action['QAction'].setIcon(QIcon('icons/quit.png'))
+        self.data['menu'][0]['menu'][0]['name'] = 'HURAY'
+        self.data['menu'][0]['menu'][0]['QAction'].setText('HURAY')
+        self.data['menu'][0]['menu'][0]['QAction'].setIcon(QIcon('icons\quit.png'))
+        
+    def changeMenuItem(self, path, **kw):
         pass
         
     # for the search function, to go through and able to run items directly
-    def get_flat_list():
+    def get_flat_list(self):
         pass
     

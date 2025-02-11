@@ -188,7 +188,7 @@ class PluginHandler:
                 
             # general notify, should make launcher display something
             elif i['command'] == 'notify':
-                self.parent.notify()
+                self.parent.notify(menuitem=self.plugins[i['ID']]['name'])
                 
             elif i['command'] == 'relaunch':
                 self.parent.onRelaunch()

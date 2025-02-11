@@ -7,7 +7,7 @@
 # Menu editor GUI: don't modify unknown fields.
 # Manage todo list better. maybe in git repo.. 
 
-menu_type = 'JSON' # YAML / JSON
+menu_type = ['YAML','JSON'][1] # YAML / JSON
 
 # When true, stdout and stderr from launcher (not launched applications) are caught and redirected to output.log.
 # TODO: allow both options, not just either option.
@@ -156,12 +156,16 @@ class MainWindow(QMainWindow):
     # timeout can be None or given in seconds.
     # if called with ack=True, ignore all other parameters, and go back to normal mode (normal color, probably)
     # sound, if True, default sound to be used. If path, play that sound. if string, use system speech digitizer, if available.
-    def notify(self, ack=False, start=True, timeout=None, changeColor = "#FF0000", popup = False, sound = False): 
+    def notify(self, menuitem=None, ack=False, start=True, timeout=None, changeColor = "#FF0000", popup = False, sound = False): 
         if ack:
             self.setStyleSheet(self.stylesheet)
             self.notify_active = False
             #self.notify_timer.stop()
             return
+            
+        if menuitem is not None:
+            print('menuitem not None')
+            self.menubar.notify(menuitem)
             
         if start:
             if changeColor is not False:
@@ -262,7 +266,7 @@ class MainWindow(QMainWindow):
                         datapack['link'] = each['link']
 
                         newAction.triggered.connect((lambda datapack: lambda: self.onMenuClickCommandline(datapack))(datapack)) # not winning any awards with this code...
-                        currentmenu.addAction(newAction)
+                        currentmenu.addAction(newAction) # this should not be here, but only at bottom of all this..
                         continue # and we're done. On to the next menu item.
 
                     link = each['link']
@@ -315,8 +319,9 @@ class MainWindow(QMainWindow):
                             link = {"cwd":each['cwd'], "link":each['link']}
                         newAction.triggered.connect(partial(self.onMenuClick, link)) 
 
-                    # At last, add the new item to the menu.
-                    currentmenu.addAction(newAction)
+                    # At last, add the new item to the menu - if it is not a hidden item
+                    if not "hidden" in each:
+                        currentmenu.addAction(newAction)
 
 
         menubar.setData(data) # hand it all over to the custom menu bar class

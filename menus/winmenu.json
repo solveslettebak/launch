@@ -30,18 +30,14 @@
 					"link": "_plugin",
 					"plugin": true,
 					"plugin_name": "pyqt_example",
-					"run_on_start": true,
-					"checkable": true,
-					"checked": false
+					"run_on_start": true
                 },					
                 {
                     "name": "Plugtest",
 					"link": "_plugin",
 					"plugin": true,
 					"plugin_name": "plug_test",
-					"run_on_start": true,
-					"checkable": true,
-					"checked": false
+					"run_on_start": true
                 },					
                 {
                     "name": "Rockets",
@@ -49,8 +45,6 @@
 					"plugin": true,
 					"plugin_name": "rocketdata",
 					"run_on_start": true,
-					"checkable": true,
-					"checked": false,
 					"submenu_name": "rocket_launches"
                 },
                 {
@@ -58,7 +52,8 @@
                     "link": "_plugin",
 					"plugin": true,
 					"plugin_name": "remote_relaunch",
-					"run_on_start": true
+					"run_on_start": true,
+					"hidden": true
                 },					
                 {
                     "name": "Relaunch all",
