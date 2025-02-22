@@ -22,7 +22,7 @@ from PyQt5.QtCore import QSize, Qt, QTimer, QThread, pyqtSignal, QObject, QEvent
 from PyQt5.QtWidgets import (
     QAction, QApplication, QCheckBox, QLabel, QMainWindow, QStatusBar, QToolBar, QLineEdit, QSpinBox, QVBoxLayout,
     QFormLayout, QPushButton, QDialog, QFileDialog, QWidgetAction, QWidget, QGridLayout, QGroupBox, QDialogButtonBox,
-    QPlainTextEdit, QMenu, QMenuBar, QMessageBox
+    QPlainTextEdit, QMenu, QMenuBar, QMessageBox, QCompleter
 )
 from PyQt5.QtNetwork import QTcpServer, QTcpSocket, QHostAddress
 
@@ -104,12 +104,45 @@ class SearchBox(QDialog):
         layout = QVBoxLayout()
         self.setLayout(layout)
         
+        flatmenu = mainwin.menubar.get_flat_menu()
+        self.keypairs = {i['name']:i['QAction'] for i in list(flatmenu.values())}
+        self.word_list = list(self.keypairs.keys())
+        
+        #self.word_list = ["apple", "banana", "cherry", "date", "grape", "kiwi", "mango", "orange", "pear", "watermelon"]
+
+        self.completer = QCompleter(self.word_list, self)
+        self.completer.setCaseSensitivity(False)  # Makes it case-insensitive
+        self.completer.activated.connect(self._item_selected)
+        
+        
         self.inputfield = QLineEdit()
-        self.inputfield.textChanged.connect(self._char_input)
+        self.inputfield.setCompleter(self.completer)
+        self.inputfield.returnPressed.connect(self._enter_pressed)
+        
+        #self.inputfield.textChanged.connect(self._char_input)
         layout.addWidget(self.inputfield)
         
     def _char_input(self, text):
         print('text is',text)
+        
+    def _item_selected(self, text):
+        self.keypairs[text].trigger()
+        self.accept()
+        
+    def _enter_pressed(self):
+        text = self.inputfield.text().strip()
+        
+        # Find matches
+        #matches = [word for word in self.word_list if text.lower() in word.lower()]
+        matches = [word for word in self.word_list if word.lower().startswith(text.lower())]
+        
+        print(matches)
+
+        if len(matches) == 1:
+            self.inputfield.setText(matches[0])  # Auto-fill the remaining text
+            self._item_selected(matches[0])
+        else:
+            print(f"Enter pressed! Searching for: {text}")
     
 
 class MainWindow(QMainWindow):
@@ -222,8 +255,6 @@ class MainWindow(QMainWindow):
 
                 # regular menu-item
                 else:
-                
-
 
                     # Separators
                     if 'separator' in each:
@@ -235,9 +266,6 @@ class MainWindow(QMainWindow):
 
                     # Required fields
                     assert ('name' in each) and ('link' in each)
-                    
-
-                    
 
                     # Create new QAction for the menu. With an icon if specified in the menu file.
                     if "icon" in each:

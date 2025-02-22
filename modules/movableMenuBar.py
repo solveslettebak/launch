@@ -15,6 +15,9 @@ class movableMenuBar(QMenuBar):
         self.draggable = False
         self.offset = None
         
+        self.notifying = False # are we currently displaying a different icon (or something) to notify?
+        self.menu_seen = False # ...and did we already see it
+        
     #### --- Related to drag to move launcher stuff --- ####
 
     def mousePressEvent(self, event):
@@ -48,6 +51,15 @@ class movableMenuBar(QMenuBar):
 
     #### //// Related to drag to move launcher stuff --- ####
     
+    #### --- Notify stuff ####
+    
+    def menu_clicked(self):
+        self.menu_seen = True
+        print('debugging stuff. clicked.')
+        
+    
+    ######## 
+    
     # from menu file json.
     def setData(self, data, flatmenu):
         self.data = data
@@ -75,6 +87,7 @@ class movableMenuBar(QMenuBar):
         return None
         
     def notify_ID(self, ID):
+        self.notifying = True
         self.flatmenu[ID]['QAction'].setIcon(QIcon('icons/quit.png'))
         
     # this one is probably obsolete...
@@ -91,6 +104,5 @@ class movableMenuBar(QMenuBar):
         pass
         
     # for the search function, to go through and able to run items directly
-    def get_flat_list(self):
-        pass
-    
+    def get_flat_menu(self):
+        return self.flatmenu
