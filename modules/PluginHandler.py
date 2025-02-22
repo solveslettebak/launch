@@ -35,6 +35,9 @@ class PluginDisplay(QDialog):
                 return self.count
             
         super().__init__()
+        
+        self.parent = mainwin #mainwin makes no sense, change that
+        
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
         self.resize(400,200)
         # self.move(mainwin.pos().x()+500,mainwin.pos().y()+40)
@@ -52,21 +55,23 @@ class PluginDisplay(QDialog):
         buttonWidth = 70
         
         self.textMsg = []
+        self.pingTimes = {}
+        self.proc_status = {}
         
         for i,plugin in enumerate(plugins.values()):
             self.textMsg.append(None)
             
             buttonPing = QPushButton("Ping")
-            pingTime = QLineEdit("-" if "lastPingTime" not in plugin else "{:.3f}".format(plugin['lastPingTime']))
+            self.pingTimes[plugin['ID']] = QLineEdit("-" if "lastPingTime" not in plugin else "{:.3f}".format(plugin['lastPingTime']))
             buttonFocus = QPushButton("Focus")
             buttonKill = QPushButton("Kill")
             self.textMsg[i] = QLineEdit()
             buttonSend = QPushButton("Send")
             
             # every day we stray further from God...
-            buttonSend.clicked.connect(partial(lambda t, id: mainwin.send_command(t(), id), self.textMsg[i].text, plugin['ID']))
+            buttonSend.clicked.connect(partial(lambda t, id: mainwin._send_command(t(), id), self.textMsg[i].text, plugin['ID']))
             
-            buttonFocus.clicked.connect(partial(mainwin.send_command, "focus", plugin['ID']))
+            buttonFocus.clicked.connect(partial(mainwin._send_command, "focus", plugin['ID']))
             buttonPing.clicked.connect(partial(mainwin.ping, plugin['ID']))
             buttonKill.clicked.connect(partial(mainwin.kill, plugin['ID']))
             
@@ -75,9 +80,9 @@ class PluginDisplay(QDialog):
             buttonKill.setFixedWidth(buttonWidth)
             buttonSend.setFixedWidth(buttonWidth)
             
-            proc_status = 'running' if plugin['process'].poll() is None else 'halted'
-            proc_status_lineedit = QLineEdit()
-            proc_status_lineedit.setText(proc_status)
+            #proc_status = 'running' if plugin['process'].poll() is None else 'halted'
+            self.proc_status[plugin['ID']] = QLineEdit()
+            self.proc_status[plugin['ID']].setText('running' if plugin['process'].poll() is None else 'halted')
             
             self.count = False
             
@@ -85,22 +90,36 @@ class PluginDisplay(QDialog):
             layout.addWidget(QLabel(str(plugin['handshake'])), i, c())
             layout.addWidget(QLabel(" "), i, c())
             layout.addWidget(buttonPing, i, c())
-            layout.addWidget(pingTime, i, c())
+            layout.addWidget(self.pingTimes[plugin['ID']], i, c())
             layout.addWidget(QLabel("ms"), i, c())
             layout.addWidget(buttonFocus, i, c())
             layout.addWidget(buttonKill, i, c())
             layout.addWidget(self.textMsg[i], i, c())
             layout.addWidget(buttonSend, i, c())
-            layout.addWidget(proc_status_lineedit, i, c())
+            layout.addWidget(self.proc_status[plugin['ID']], i, c())
+            
+        self.parent.pong_received_signal.connect(self.pong_recv)
+        self.parent.plugin_halted.connect(self.plugin_halted)
+        
+    def pong_recv(self, ID, ms):
+        self.pingTimes[ID].setText("{:.3f}".format(ms))
+        
+    def plugin_halted(self, ID):
+        self.proc_status[ID].setText("halted")
         
 
 
 
 
-class PluginHandler:
+class PluginHandler(QObject):
+
+    pong_received_signal = pyqtSignal(str, float) # ID, elapsed time in ms
+    plugin_halted = pyqtSignal(str) # ID
     
 
     def __init__(self, parent):
+    
+        super().__init__()
     
         self.parent = parent
     
@@ -114,21 +133,40 @@ class PluginHandler:
         self.server.listen(QHostAddress("127.0.0.1"), 12345)
         self.server.newConnection.connect(self.handle_new_connection)     
         
-  
-    def on_error(self, error):
-        print('[Launcher] - there was an error:',error)
+    # on socket error. Which means lost connection. I think.
+    def on_error(self, ID, error):
+        print('[Launcher] - Lost connection to',self.plugins[ID]['name'],'. Error:',error)
+        self.plugin_halted.emit(ID)
+        
 
+    #def kill_process(self, process):
+    def kill_process(self, ID):
+        process = self.plugins[ID].process
+        print('killing',process)
+        process.kill() # could also use terminate, but .. naah.
+        process.wait()
+        self.plugin_halted.emit(ID)
+        
     # murderous function to ensure if we're going down, we're talking them all with us.
     def kill_all(self, double_tap = False):
+        self.killtimers = [0,0,0,0]
         # suggest suicide, or kill. 
         for ID, values in self.plugins.items():
-            self.send_command('die', ID)
+            self._send_command('die', ID)
             
-        if double_tap:
-            pass # kill processes
+            
+            # TODO: get the timer stuff to work, so i give the application a chance to quit on its own
+            # Will need some way to delay application exit probably. Because otherwise it quits before timers trigger
+            # TODO: changed kill_process to take ID not process. update this section
+            if double_tap:
+                #self.kill_process(values['process'])
+                print('Double tap: killing',values['name'])
+                self.killtimers[i] = QTimer.singleShot(100, partial(self.kill_process, values['process']))
+                #timer = QTimer.singleShot(100, lambda: self.kill_process(values['process']))
+                self.killtimers.append(timer)
         
     def kill(self, ID, doble_tap = False):
-        self.send_command('die', ID)
+        self._send_command('die', ID)
         
     def relaunch(self):
         self.kill_all()
@@ -138,15 +176,14 @@ class PluginHandler:
     
         # TODO: first check if we are expecting any incoming connection. For security etc..
         # TODO: Ensure connection comes from allowed peer host (localhost, per default, maybe exclusively)
-    
+
         client_socket = self.server.nextPendingConnection()  
         print("New connection received from port",client_socket.peerPort())
         self.sockets.append(client_socket) 
         client_socket.readyRead.connect(lambda: self.read_from_client(client_socket))
-        client_socket.errorOccurred.connect(self.on_error)
         
     def pong(self,ID):
-        self.send_command('pong', ID)
+        self._send_command('pong', ID)
 
     def read_from_client(self, client_socket):
     
@@ -163,14 +200,16 @@ class PluginHandler:
                 self.plugins[ID]['handshake'] = True
                 self.plugins[ID]['menuQAction'].setChecked(True)
                 self.plugins[ID]['socket'] = client_socket
+                self.plugins[ID]['socket'].errorOccurred.connect(partial(self.on_error, ID))
                 self.sockets.remove(client_socket)
+
             
             if i['ID'] not in self.plugins:
                 print('Invalid ID')
                 return
                 
             if self.plugins[i['ID']]['handshake'] == False:
-                print('Handshake not complete.')
+                print('Handshake not complete. Ignoring request.')
                 return
                 
             # Basic commands
@@ -209,9 +248,7 @@ class PluginHandler:
                 return ID
         raise KeyError('Name not found: '+name)
         
-        
-    # todo: make it internal .. _send_command ..
-    def send_command(self, command, ID):
+    def _send_command(self, command, ID):
         msg_json = {'ID':ID, 'command':command}
         msg = json.dumps(msg_json)
 
@@ -221,13 +258,13 @@ class PluginHandler:
     # meant as external interface to this class, for custom communication to plugins via menu items.
     def plugin_command(self, name, command):
         ID = self._name_to_ID(name)
-        self.send_command(command, ID)
+        self._send_command(command, ID)
 
     def ping(self, ID):
         self.plugins[ID]['pingInProgress'] = True
         self.plugins[ID]['ping_start_time'] = time.perf_counter()
         print('Launcher ->',self.plugins[ID]['name'],': Ping?')
-        self.send_command('ping', ID)
+        self._send_command('ping', ID)
     
     def pong_received(self, ID):
         if not self.plugins[ID]['pingInProgress']:
@@ -237,7 +274,9 @@ class PluginHandler:
         elapsed = (time.perf_counter() - self.plugins[ID]['ping_start_time']) * 1000
         print(self.plugins[ID]['name'],'-> Launcher: Pong! .. in',elapsed,'ms')
         self.plugins[ID]['pingInProgres'] = False    
-        self.plugins[ID]['lastPingTime'] = elapsed        
+        self.plugins[ID]['lastPingTime'] = elapsed    
+        
+        self.pong_received_signal.emit(ID, elapsed)
         
     def addPlugin(self, data, newAction):
         plug = {}
@@ -281,7 +320,7 @@ class PluginHandler:
             print('Plugin not found:',name)
             return
         if self.running(ID):
-            self.send_command("focus", ID)
+            self._send_command("focus", ID)
         else:
             self.start(ID)
 
@@ -289,5 +328,4 @@ class PluginHandler:
     # todo: split if it makes sense, to separate data and GUI. only if it actually makes things easier though.
     def pluginInfo(self):
         self.qlog = PluginDisplay(self, self.plugins)
-        self.qlog.show()    
-        pprint(self.plugins)
+        self.qlog.show()

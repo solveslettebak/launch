@@ -86,7 +86,11 @@ class SelfContainedPlugin(QObject):
             print("[Plugin] Not connected to launcher.")
 
     def on_error(self, error):
-        print(f"[Plugin] Socket error: {error}")
+        print("[Plugin] Connection lost, error",error)
+        
+        if QUIT_ON_DISCONNECT:
+            print("Can't live without launcher...")
+            self.onQuit()
         
     def command(self, command, **kw):
         c = {'command':command, 'ID':ID}
@@ -150,14 +154,17 @@ def saveParameter(key, value):
     if (plugin is not None) or STANDALONE:
         plugin.command('save_parameter',  key=key, value=value) #{'key':key, 'value':value}
     else:
-        print('Cannot save parameter, plugin not connected')
+        print('Cannot save parameter, plugin not plugged in')
     
 def getParameter(key, default):
     return parameters[key] if key in parameters else str(default)
 
-USING_PYQT = None    
+# once connected, require staying connected - otherwise exit
+QUIT_ON_DISCONNECT = True
 
+USING_PYQT = None    
 STANDALONE = False
+
 if len(sys.argv) >= 2:
     ID = sys.argv[1]
 else:

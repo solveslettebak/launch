@@ -9,12 +9,11 @@
 #   - birthday reminder også. Men splitt det ut i sin egen app, men den blir vel nesten identisk. Kan jeg vurdere 1 app stort sett, men 2 ulike GUIs? nei, for mange forskjeller tror jeg. API på den ene, json på den andre. Kunne prøvd å lage en interface som da håndterer begge, men... blir litt far fetched tror jeg. Bare lag ulike apper.
 #   - husk todo-appen også.
 
-
 import re
 import sys
 import requests
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
 import time
 from pprint import pprint
@@ -23,16 +22,39 @@ from copy import deepcopy
 from subprocess import call
 import plugin_mod as pm
 
-
-#from PyQt5.QtWidgets import (
-#    QApplication, QWidget, QVBoxLayout, QPushButton, QTextEdit, QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QDialog, QMessageBox
-#)
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer, Qt
 from PyQt5.QtNetwork import QTcpSocket
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QTextEdit, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QHeaderView, QDialog, QMessageBox
 
 BROWSER_PATH = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
+
+def time_until(timestamp: str):
+    """Calculate the time remaining until a given timestamp.
+    
+    Args:
+        timestamp (str): The target time in 'YYYY-MM-DD HH:MM:SS' format.
+    
+    Returns:
+        str: The time remaining in days, hours, and minutes.
+    """
+    future_time = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+    now = datetime.now()
+    delta = future_time - now
+
+    if delta.total_seconds() <= 0:
+        return "Fishy..."
+
+    days, remainder = divmod(delta.total_seconds(), 86400)  # 86400 seconds in a day
+    hours, remainder = divmod(remainder, 3600)  # 3600 seconds in an hour
+    minutes, _ = divmod(remainder, 60)  # 60 seconds in a minute
+    
+    if days == 0:
+        return f"{int(hours)}h,{int(minutes)}m"
+    elif days < 3:
+        return f"{int(days)}d,{int(hours)}h"
+    else:
+        return f"{int(days)}days"
 
 def convert_to_localtime(iso_string, format_string="%Y-%m-%d %H:%M:%S"):
     """
@@ -108,7 +130,7 @@ class RocketLaunchApp(QMainWindow):
         self.setWindowTitle('Rocket Launch Viewer')
         # self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)        
         
-        self.resize(650,270)
+        self.resize(800,280)
 
         self.layout = QVBoxLayout()
         
@@ -132,8 +154,9 @@ class RocketLaunchApp(QMainWindow):
 
         self.table = QTableWidget()
         self.table.setRowCount(5)
-        self.table.setColumnCount(4)
-        self.table.setHorizontalHeaderLabels(["Date", "Company", "Name", "URL",])      
+        cols = ["Date", "T-", "Company", "Name", "URL",]
+        self.table.setColumnCount(len(cols))
+        self.table.setHorizontalHeaderLabels(cols)      
 
 
         self.layout.addLayout(self.buttonBar)
@@ -215,10 +238,11 @@ class RocketLaunchApp(QMainWindow):
         for row, data in enumerate(self.data):
             
             date = data['date']
+            t_minus = time_until(date) if date != "unknown" else "??"
             company = data['company']
             name = data['name']
             url = data['url']
-            for col,key in enumerate([date, company, name]):
+            for col,key in enumerate([date, t_minus, company, name]):
                 
                 item = QTableWidgetItem(key + "   ")
                 item.setFont(font)
@@ -227,7 +251,7 @@ class RocketLaunchApp(QMainWindow):
             linkBtn = QPushButton("link")
             linkBtn.setFixedWidth(50)
             linkBtn.clicked.connect(partial(self.onLinkPress, url))
-            self.table.setCellWidget(row, 3, linkBtn)
+            self.table.setCellWidget(row, 4, linkBtn)
 
         #self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)    
         self.table.resizeColumnsToContents()
