@@ -42,13 +42,7 @@ class PluginDisplay(QDialog):
         self.resize(400,200)
         # self.move(mainwin.pos().x()+500,mainwin.pos().y()+40)
         self.setWindowTitle("Plugin overview")
-        # self.setWindowFlag(Qt.FramelessWindowHint)
-        # self.setAttribute(Qt.WA_TranslucentBackground)
-        # self.setStyleSheet("background-color: lightblue;border: 1px solid black;")
-        # self.setLayout(QGridLayout())
-        # self.setLayout(QFormLayout())
-        
-        
+
         layout = QGridLayout()
         self.setLayout(layout)
         
@@ -279,6 +273,13 @@ class PluginHandler(QObject):
         self.pong_received_signal.emit(ID, elapsed)
         
     def addPlugin(self, data, newAction):
+    
+        # dirty(?) way to make reload menus work
+        for key,value in self.plugins.items():
+            if value['name'] == data['name']:
+                print('Plugin already registered. Skipping')
+                return
+    
         plug = {}
         plug['name'] = data['name']
         plug['location'] = str(Path(__file__).resolve().parent.parent / "plugins" / (data['plugin_name'] + '.py'))
@@ -302,7 +303,7 @@ class PluginHandler(QObject):
         except FileNotFoundError:
             pass
         except Exception as e:
-            print('something bad happened. Could not start process. You see this shit?:',e)
+            print('something bad happened. Could not start process:',e)
 
         
     def running(self, ID):

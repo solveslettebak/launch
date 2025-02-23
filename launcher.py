@@ -441,10 +441,8 @@ class MainWindow(QMainWindow):
                 else:
                     Popen(splitlist, preexec_fn=os.setpgrp) #,creationflags=CREATE_NEW_CONSOLE)
             else:
-                print('ASDF')
                 splitlist = shlex.split(text['link'])
                 logging.info(text['link'])
-                print(current_OS)
                 if current_OS == 'windows':
                     print(text['cwd'])
                     os.chdir(text['cwd'])
