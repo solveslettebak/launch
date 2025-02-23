@@ -3,8 +3,7 @@ import os
 
 from PyQt5.QtWidgets import QDialog, QGroupBox, QFormLayout, QLineEdit, QLabel, QSpinBox, QDialogButtonBox, QVBoxLayout
 
-from modules.common import settingsPath
-
+from modules.common import newSettingsPath as settingsPath
 
 class settingsDialog(QDialog):
     def __init__(self,position):
@@ -13,7 +12,7 @@ class settingsDialog(QDialog):
         self.resize(300,150)
         self.move(position.x(), position.y())
 
-        self.data = json.load(open(settingsPath))
+        self.data = json.load(open(settingsPath))["launcher"]
 
         self.formGroupBox = QGroupBox("Settings:")
         layout = QFormLayout()
@@ -49,5 +48,5 @@ class settingsDialog(QDialog):
         self.data["fontsize"] = str(self.fontsizeSpinbox.value())
         self.data["defaultLayoutFile"] = self.menufileinput.text()
         self.data['venv'] = self.condavenv.text()
-        json.dump(self.data,open(settingsPath,"w"))
+        #json.dump(self.data,open(settingsPath,"w"))
         self.accept()

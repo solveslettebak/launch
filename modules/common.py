@@ -2,7 +2,9 @@ import os
 import sys
 import json
 from pathlib import Path
-settingsPath = os.path.expanduser('~/settings.json')
+
+# Not sure if used anymore. To be removed.
+#settingsPath = os.path.expanduser('~/settings.json')
 
 newSettingsPath = Path.home() / "settings.json"
 

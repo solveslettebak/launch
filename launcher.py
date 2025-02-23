@@ -88,16 +88,15 @@ realpath = os.path.realpath(__file__)
 SCRIPT_PATH = realpath[:realpath.rfind('/')+1]
 
         
-        
+# Known issue - will not handle items of the same name
 class SearchBox(QDialog):
     def __init__(self,mainwin):
         super().__init__()
+        #self.setModal(True)
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.FramelessWindowHint)
-
         self.resize(100,50)
-        self.move(mainwin.pos().x(),mainwin.pos().y()+40)
-        self.setWindowTitle("QuickLog")
-        # self.setWindowFlag(Qt.FramelessWindowHint)
+        self.move(mainwin.pos().x() - 20,mainwin.pos().y()+20)
+        self.setWindowTitle("Search")
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setStyleSheet("background-color: lightblue;border: 1px solid black;")
             
@@ -107,42 +106,31 @@ class SearchBox(QDialog):
         flatmenu = mainwin.menubar.get_flat_menu()
         self.keypairs = {i['name']:i['QAction'] for i in list(flatmenu.values())}
         self.word_list = list(self.keypairs.keys())
-        
-        #self.word_list = ["apple", "banana", "cherry", "date", "grape", "kiwi", "mango", "orange", "pear", "watermelon"]
 
         self.completer = QCompleter(self.word_list, self)
         self.completer.setCaseSensitivity(False)  # Makes it case-insensitive
         self.completer.activated.connect(self._item_selected)
-        
+        self.completer.popup().setFixedWidth(150)
         
         self.inputfield = QLineEdit()
         self.inputfield.setCompleter(self.completer)
         self.inputfield.returnPressed.connect(self._enter_pressed)
         
-        #self.inputfield.textChanged.connect(self._char_input)
         layout.addWidget(self.inputfield)
         
-    def _char_input(self, text):
-        print('text is',text)
-        
+
     def _item_selected(self, text):
         self.keypairs[text].trigger()
         self.accept()
         
     def _enter_pressed(self):
         text = self.inputfield.text().strip()
-        
-        # Find matches
-        #matches = [word for word in self.word_list if text.lower() in word.lower()]
+
         matches = [word for word in self.word_list if word.lower().startswith(text.lower())]
-        
-        print(matches)
 
         if len(matches) == 1:
             self.inputfield.setText(matches[0])  # Auto-fill the remaining text
             self._item_selected(matches[0])
-        else:
-            print(f"Enter pressed! Searching for: {text}")
     
 
 class MainWindow(QMainWindow):
@@ -535,6 +523,8 @@ class MainWindow(QMainWindow):
     def onSettings(self):
         settings = settingsDialog(self.pos())
         if settings.exec():
+            for key,value in settings.data.items():
+                self.changeSetting(key,value,owner="launcher")
             self.loadSettings()
         return
 
