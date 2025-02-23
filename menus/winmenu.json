@@ -1,7 +1,7 @@
 {
     "menu": [
         {
-            "name": "[o]",
+            "name": "[]",
             "menu": [
                 {
                     "name": "Load layout...",
@@ -140,6 +140,10 @@
                     ]
                 }
             ]
-        }
+        },
+		{
+			"name": "s",
+			"link": "_search"
+		}
     ]
 }

@@ -361,8 +361,6 @@ class MainWindow(QMainWindow):
         
         # self.menudata = data
         
-        pprint(data['menu'][0]['menu'][0]['name'])
-        #print(menubar)
         
 
     # TODO: Implement. This is called when launcher loads, so start keyboard monitoring from here, not in __init__ - also, this should be shortcuts in general, not autoramp.
