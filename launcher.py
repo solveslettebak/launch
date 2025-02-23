@@ -268,9 +268,7 @@ class MainWindow(QMainWindow):
                         # continue # this or not?
 
                     # Hard-coded internal functions.
-                    if link == '_rephauncher':
-                        newAction.triggered.connect(self.onRePhauncher) # there used to be a phauncher. It got updated -> rePhauncher.
-                    elif link == '_quit':
+                    if link == '_quit':
                         newAction.triggered.connect(self.onQuit)
                     elif link == '_reload':
                         newAction.triggered.connect(self.onReload)
@@ -282,10 +280,6 @@ class MainWindow(QMainWindow):
                         newAction.triggered.connect(self.onQuickLog)
                     elif link == '_relaunch':
                         newAction.triggered.connect(self.onRelaunch)
-                    #elif link == '_updateall':
-                    #    newAction.triggered.connect(self.onInitiateUpdate)
-                    elif link == '_autoramp_shortcut':
-                        newAction.toggled.connect(self.autoramp_shortcut) # toggled. This assumes a checkbox.
                     elif link == '_output':
                         newAction.triggered.connect(self.showOutput)
                     elif link == '_test':
@@ -317,10 +311,7 @@ class MainWindow(QMainWindow):
         menubar.setData(data, flatmenu) # hand it all over to the custom menu bar class
         recursive_read(data['menu'], 0, menubar)
 
-    # TODO: Implement. This is called when launcher loads, so start keyboard monitoring from here, not in __init__ - also, this should be shortcuts in general, not autoramp.
-    def autoramp_shortcut(self):
-        pass
-        
+
     def saveWindowPos(self):
         x = self.pos().x()
         y = self.pos().y()
@@ -372,14 +363,6 @@ class MainWindow(QMainWindow):
         elif current_OS == 'windows':
             os.execv(sys.executable, [sys.executable] + sys.argv)
 
-    def onRePhauncher(self):
-        phauncher = rePhauncherDialog(self.pos())
-        if phauncher.exec_() == 1:
-            if phauncher.helpRequest:
-                self.onMenuClick("firefox https://confluence.esss.lu.se/display/~solveslettebak/Phauncher+help")
-            else:
-                self.onMenuClick("/usr/local/bin/phoebus")
-        return
 
     def onMenuClick(self, text): # text is the command to send to OS
         try:
