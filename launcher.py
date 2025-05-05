@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
-
 # todo
-# search bar, integrated in launcher as internal function. Add optional shortcut.
-    # fix shortcuts on windows
+# fix shortcuts on windows
 # Menu editor GUI: don't modify unknown fields.
 # Manage todo list better. maybe in git repo.. 
 
@@ -81,16 +79,7 @@ if ALLOW_SHORTCUTS and current_OS == 'windows':
     else:
         useShortCuts = True
         #from modules.KeyboardListener import KeyboardListener
-    
 
-# TODO replace this with pathlib. Is this used anywhere..? 🤔
-# also put it in common
-realpath = os.path.realpath(__file__)
-SCRIPT_PATH = realpath[:realpath.rfind('/')+1]
-
-        
-
-    
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -128,7 +117,6 @@ class MainWindow(QMainWindow):
         self.generateMenus(self.menubar)
         
         self.notify_active = False
-        
 
         
     # Function to grab attention about something. Should stop doing that once launcher is interacted with in any way.
@@ -163,14 +151,6 @@ class MainWindow(QMainWindow):
             self.notify_timer.start(timeout * 1000)  # Start timer (5000 ms = 5 seconds)
 
     def generateMenus(self, menubar):
-
-        # q = QAction(QIcon("icons/quit.png"), "", self)
-        # q.triggered.connect(self.onQuit)
-        # menubar.addAction(q)
-
-        # TODO: one day... make this work. 
-        #drag = QAction(QIcon("icons/drag.png"), "", self)
-        #menubar.addAction(drag)
 
         if menu_type == 'YAML':
             data = yaml.safe_load(open("SLconsole_menus.yaml",'r'))
